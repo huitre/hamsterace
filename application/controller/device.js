@@ -1,6 +1,6 @@
 var DeviceController = (function () {
   var Auth = require('../hra/bo/auth.js'),
-      Stats = require('../model/stats.js');
+      Events = require('../model/events.js');
 
   function index (req, res) {
     res.send('this is index');
@@ -10,22 +10,20 @@ var DeviceController = (function () {
     res.send('this is auth');
   }
   
-  var stats = {};
+  var events = {};
   
-  stats.get = function (req, res) {
+  events.get = function (req, res) {
     
     res.send(html);
   }
   
-  stats.post = function (req, res) {
+  events.post = function (req, res) {
     var onAuth, onFail;
 
-    onAuth = function () {
-      if (req.body != "undefined" && req.body.length) {
-        Stats.insert(req.body)
-        res.send({success: true});
+    onAuth = function (req) {
+      if (req.body.events && req.body.events.length) {
+        Events.insert(req, req.body.events);
       }
-      res.send()
     } 
     
     onFail = function (err) {
@@ -38,7 +36,7 @@ var DeviceController = (function () {
   return {
     "index" : index,
     "register" : register,
-    "stats" : stats
+    "events" : events
   }
 })();
 

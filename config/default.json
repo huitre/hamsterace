@@ -7,5 +7,6 @@
       "dbName": "hamsterdbdev",
       "password":"password"
     }
-  }
+  },
+  "SSL" : false
 }

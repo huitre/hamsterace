@@ -11,7 +11,8 @@ var express = require('express'),
     methodOverride = require('method-override'),
     routes = require('./application/routes'),
     fs = require('fs'),
-    https = require('https');
+    https = require('https'),
+    config = require('config');
 
 module.exports = app;
 
@@ -28,6 +29,17 @@ if (!module.parent) {
 app.use(methodOverride('_method'));
 app.use(multi({ dest: './uploads/'}));
 app.use(cookieParser());
+app.use(function(req, res, next) {
+  req.rawBody = '';
+  //req.setEncoding('utf8');
+
+  req.on('data', function(chunk) {
+    req.rawBody += chunk;
+  });
+
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
@@ -42,6 +54,9 @@ var httpsOptions = {
 
 /* istanbul ignore next */
 if (!module.parent) {
-  https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  if (config.SSL)
+    https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  else
+    app.listen(4242);
   console.log('Express started on port 4242');
 }

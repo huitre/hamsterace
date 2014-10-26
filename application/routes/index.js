@@ -21,11 +21,11 @@ exports.init = function init (router) {
 
   // get requests
 	router.get('/device', Device.index);
-  router.get('/device/stats', Device.stats.get);
+  router.get('/device/events', Device.events.get);
     
   // post requests
-  router.post('/device/stats', Device.stats.post);
-  router.post('/device/auth', Device.auth);
+  router.post('/device/events', Device.events.post);
+  router.post('/device/register', Device.register);
   
 
   /*

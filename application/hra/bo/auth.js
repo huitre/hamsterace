@@ -1,13 +1,3 @@
-/*
- * This method check the signature used to authentificate the device
- * to allow it to insert data into the database
- * 
- * @params apiKey string Device Serial Number
- * @params signature string Signature generated with HMAC-SHA1
- * @params onAuth function callback called when authentificated
- * @params onFail function callback called when something is wrong !
- */
-
 var BOAuthDevice = (function () {
   // list of requirement
   var crypto = require('crypto');
@@ -33,6 +23,15 @@ var BOAuthDevice = (function () {
             date;
   }
 
+/*
+ * This method check the signature used to authentificate the device
+ * to allow it to insert data into the database
+ * 
+ * @params apiKey string Device Serial Number
+ * @params signature string Signature generated with HMAC-SHA1
+ * @params onAuth function callback called when authentificated
+ * @params onFail function callback called when something is wrong !
+ */
   var checkSignature = function (req, onAuth, onFail) {
     if (!req.headers.authorization)
         return onFail({message: "Missing parameters API Key & signature !"})
@@ -52,9 +51,8 @@ var BOAuthDevice = (function () {
         err = err || {}
         if (rows && rows.length > 0) {
           var sign = makeSignature(rows[0].private_key.trim(), makeStringTosign(req))
-          console.log(signature, sign)
           if (signature == sign)
-            return onAuth()
+            return onAuth(req)
           err.message = "Signature not valid !"
           return onFail(err);
         } 
