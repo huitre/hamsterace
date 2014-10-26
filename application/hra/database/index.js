@@ -1,5 +1,8 @@
+var Config = require('config');
+var PgQuery = require('pg-query');
+
 module.exports = function () {
-  var query = require('pg-query');
-  query.connectionParameters = 'postgres://huitre:password@localhost:5432/hamsterdbdev';
-  return query;
+  var dbConfig = Config.get('Developpment.dbConfig');
+  PgQuery.connectionParameters = 'postgres://' + dbConfig.user + ':' + dbConfig.password + '@' + dbConfig.host + ':' + dbConfig.port + '/' + dbConfig.dbName;
+  return PgQuery;
 }
