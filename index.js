@@ -2,14 +2,16 @@
  * Module dependencies.
  */
 
-var express = require('express');
-var app = express();
-var logger = require('morgan');
-var multi = require('multer');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var methodOverride = require('method-override');
-var routes = require('./application/routes');
+var express = require('express'),
+    app = express(),
+    logger = require('morgan'),
+    multi = require('multer'),
+    bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    routes = require('./application/routes'),
+    fs = require('fs'),
+    https = require('https');
 
 module.exports = app;
 
@@ -32,8 +34,14 @@ app.use(express.static(__dirname + '/public'));
 
 routes.init(app);
 
+var httpsOptions = {
+  key: fs.readFileSync('config/api.key'),
+  cert: fs.readFileSync('config/api.crt')
+};
+ 
+
 /* istanbul ignore next */
 if (!module.parent) {
-  app.listen(80);
-  console.log('Express started on port 80');
+  https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  console.log('Express started on port 4242');
 }

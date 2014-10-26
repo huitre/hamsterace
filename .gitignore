@@ -1,5 +1,5 @@
-*.crt
-*.key
+/config/api.crt
+/config/api.key
 *.log
 *.out
 /node_modules
