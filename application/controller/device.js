@@ -1,46 +1,43 @@
 var DeviceController = (function () {
+  var Auth = require('../hra/bo/auth.js'),
+      Stats = require('../model/stats.js');
+
   function index (req, res) {
     res.send('this is index');
   }
 
-  function auth (req, res) {
+  function register (req, res) {
     res.send('this is auth');
   }
   
   var stats = {};
   
   stats.get = function (req, res) {
-    var model = require('../model/device'),
-      html = '<form action="/device/stats" method="post">' +
-               'apikey:' +
-               '<input type="text" name="apiKey" placeholder="..." />' +
-               'signature:' +
-               '<input type="text" name="signature" placeholder="..." />' +
-               '<br>' +
-               '<button type="submit">Submit</button>' +
-            '</form>';
-               
+    
     res.send(html);
   }
   
   stats.post = function (req, res) {
-    var boDevice = require('../hra/bo/device.js'),
-        onAuth, onFail;
+    var onAuth, onFail;
 
     onAuth = function () {
-      res.send('done');
-    }
+      if (req.body != "undefined" && req.body.length) {
+        Stats.insert(req.body)
+        res.send({success: true});
+      }
+      res.send()
+    } 
     
     onFail = function (err) {
       res.send(err);
     }
 
-    boDevice.checkSignature(req, onAuth, onFail);
+    Auth.checkSignature(req, onAuth, onFail);
   }
 
   return {
     "index" : index,
-    "auth" : auth,
+    "register" : register,
     "stats" : stats
   }
 })();
