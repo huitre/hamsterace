@@ -46,7 +46,7 @@ var BOAuthDevice = (function () {
       signature = tmp[1];
     }
 
-    pg("SELECT * FROM DEVICE WHERE SERIAL_NUMBER = $1", [apikey], 
+    pg("SELECT private_key FROM DEVICE WHERE SERIAL_NUMBER = $1", [apikey], 
       function(err, rows, result) {
         err = err || {}
         if (rows && rows.length > 0) {
