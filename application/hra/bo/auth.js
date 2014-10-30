@@ -28,7 +28,7 @@ var BOAuthDevice = (function () {
  * to allow it to insert data into the database
  * 
  * @params apiKey string Device Serial Number
- * @params signature string Signature generated with HMAC-SHA1
+ * @params signature string Signature generated with HMAC-SHA256
  * @params onAuth function callback called when authentificated
  * @params onFail function callback called when something is wrong !
  */
