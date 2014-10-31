@@ -5,7 +5,7 @@ var DeviceBO = (function () {
   var pg = require('../database')(),
 
   getDeviceUserKey = function (params, onRows, onNull) {
-    pg("SELECT * FROM DEVICE WHERE PRIVATE_KEY = $2 AND USER_KEY = $1", params,
+    pg("SELECT * FROM DEVICE WHERE PRIVATE_KEY = $2 AND USER_KEY = $1 AND SERIAL_NUMBER = $3", params,
         function(err, rows, result) {
           if (rows && rows.length > 0) {
             return onRows(rows);
@@ -16,7 +16,9 @@ var DeviceBO = (function () {
   },
 
   registerUserDevice = function (params, onInsert, onError) {
-    pg("INSERT INTO PERSON_REGISTERED (TOKEN, EMAIL) VALUES($1, $2) RETURNING ID", [params], 
+    console.log(params);
+    var pg = require('../database')()
+    pg("INSERT INTO PERSON_REGISTERED (id, token, email) VALUES(DEFAULT, $1, $2) RETURNING ID", params, 
         function(err, rows, result) {
           if (rows && rows.length > 0) {
             onInsert(rows);
@@ -26,7 +28,8 @@ var DeviceBO = (function () {
       )
   }
   return {
-    getDeviceUserKey : getDeviceUserKey
+    getDeviceUserKey : getDeviceUserKey,
+    registerUserDevice: registerUserDevice
   }
 })()
 

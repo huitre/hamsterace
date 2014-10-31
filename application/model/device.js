@@ -11,33 +11,37 @@ var DeviceModel = (function () {
    * user key and public key, then we insert the user email 
    * into a temporary table to future activation
    *
-   * @params userKey
-   * @params apiKey
-   * @params userEmail
+   * @params req        Express request object containing :
+   *  @params userKey
+   *  @params apiKey
+   *  @params userEmail
+   * @params res        Express response object
+   * @params onSuccess  Callback when everything went as planned
+   * @params onFail     Callback when everything is fucked up
    */
-  var register = function (req, onSuccess, onFail) {
+  var register = function (req, res, onSuccess, onFail) {
     var uKey = req.param('userKey'),
-        apiKey = req.param('serialNumber'),
+        privateKey = req.param('privateKey'),
+        apiKey = req.param('apiKey'),
         email = req.param('userEmail'),
  
       onKeyExists = function (row) {
-        console.log(row);
-        bo.registerUserDevice(row, onRegisterDevice, onError);
+        bo.registerUserDevice([createToken(uKey, apiKey), email], onRegisterDevice, onError);
       },
 
       onRegisterDevice = function (row) {
-        onSuccess({content: row, 'message' : 'user.register.success'});
+        onSuccess(res, {content: row, 'message' : 'user.register.success'});
       },
 
       onNull = function () {
-        onFail({'message': 'user.key.invalid'});
+        onFail(res, {'message': 'user.key.invalid'});
       },
 
-      onError = function () {
-        onFail({'message': 'user.registered.fail'});
+      onError = function (err) {
+        onFail(res, {'error': err, 'message': 'user.registered.fail'});
       };
 
-      bo.getDeviceUserKey([uKey, apiKey], onKeyExists, onNull);
+      bo.getDeviceUserKey([uKey, privateKey, apiKey], onKeyExists, onNull);
   }
 
   var createToken = function (uKey, apiKey) {

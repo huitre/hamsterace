@@ -21,10 +21,12 @@ var DeviceController = (function () {
     var onAuth, onSucces;
 
     onAuth = function (req) {
-      if (req.param('privateKey') && req.param('userEmail') && req.param('apiKey')) {
-        Device.register(req, onSuccess, onFail);
+      if (req.param('privateKey') && req.param('userEmail') 
+          && req.param('apiKey') && req.param('userKey')) {
+        Device.register(req, res, onSuccess, onFail);
+      } else {
+        onFail(res, {'message': 'missing parameters'});
       }
-      res.status(500).send({'message': 'missing parameters'});
     } 
     
     if (Config.env !== "Developpment")
