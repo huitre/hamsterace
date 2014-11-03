@@ -10,6 +10,12 @@ exports.init = function init (router) {
       Config = require('config');
 
   /*
+   * Type definition for route parameters
+   */
+
+   router.param('email', /^[a-z0-9.-]+@[a-z0-9-]+\.[a-z]{2,4}$/);
+
+  /*
    * Index
    */
 
@@ -23,6 +29,7 @@ exports.init = function init (router) {
 
   // get requests
 	router.get('/device', Device.index);
+  router.get('/device/activate/:token/:email', Device.activate);
   router.get('/device/events', Device.events.get);
   if (Config.env == "Developpment")
     router.get('/device/register', Device.register);

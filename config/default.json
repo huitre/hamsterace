@@ -18,5 +18,11 @@
       "dbName": "hamsterdbdev",
       "password":"password"
     }
+  },
+  "Mailer" : {
+    "apiKey" : "bdoGUu3iBP0bAlLnVBuZ_Q",
+    "user" : "contact@hamsterace.com",
+    "replyto" : "contact@hamsterace.com",
+    "name" : "Hamster ace"
   }
 }

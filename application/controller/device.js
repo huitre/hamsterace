@@ -25,7 +25,7 @@ var DeviceController = (function () {
           && req.param('apiKey') && req.param('userKey')) {
         Device.register(req, res, onSuccess, onFail);
       } else {
-        onFail(res, {'message': 'missing parameters'});
+        onFail(res, {'message': 'user.missing.parameters'});
       }
     } 
     
@@ -52,6 +52,7 @@ var DeviceController = (function () {
    * @param obj error
    */
   function onFail (res, err) {
+    console.log(err);
     res.status(500).send(err);
   }
 
@@ -59,9 +60,16 @@ var DeviceController = (function () {
    * Endpoint used to activte a device to a user preregister with /device/register
    * This Endpoint doesn't need to be signed
    * @params authentification token
+   * @params email
    */
   function activate (req, res) {
-
+    if (req.param('token') && req.param('email')) {
+      Device.activate(req, res, function onActivated () {
+          Device.sendActivationMail(req.param('email'), onSuccess, onFail)
+      }, onFail);
+    }
+    else
+      onFail(res, {'message': 'missing.parameters'});
   }
 
 

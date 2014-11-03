@@ -15,7 +15,8 @@
     "multer": "~0.1.6",
     "pg": "~3.6.2",
     "pg-query": "~0.10.1",
-    "config": "~1.6.0"
+    "config": "~1.6.0",
+    "mandrill-api": "~1.0.41"
   },
   "devDependencies": {},
   "scripts": {
