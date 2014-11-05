@@ -5,7 +5,15 @@ exports.init = function init (router) {
   		Users = require('../controller/users'),
   		Rankings = require('../controller/rankings'),
   		Team = require('../controller/teams'),
-  		Stats = require('../controller/stats');
+  		Stats = require('../controller/stats'),
+      // config
+      Config = require('config');
+
+  /*
+   * Type definition for route parameters
+   */
+
+   router.param('email', /^[a-z0-9.-]+@[a-z0-9-]+\.[a-z]{2,4}$/);
 
   /*
    * Index
@@ -21,8 +29,11 @@ exports.init = function init (router) {
 
   // get requests
 	router.get('/device', Device.index);
+  router.get('/device/activate/:token/:email', Device.activate);
   router.get('/device/events', Device.events.get);
-    
+  if (Config.env == "Developpment")
+    router.get('/device/register', Device.register);
+
   // post requests
   router.post('/device/events', Device.events.post);
   router.post('/device/register', Device.register);

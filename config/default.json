@@ -1,4 +1,6 @@
 {
+  "SSL" : false,
+  "env" : "Developpment",
   "Developpment": {
     "dbConfig": {
       "user": "huitre",
@@ -8,5 +10,19 @@
       "password":"password"
     }
   },
-  "SSL" : false
+  "Production": {
+    "dbConfig": {
+      "user": "huitre",
+      "host": "localhost",
+      "port": 5432,
+      "dbName": "hamsterdbdev",
+      "password":"password"
+    }
+  },
+  "Mailer" : {
+    "apiKey" : "bdoGUu3iBP0bAlLnVBuZ_Q",
+    "user" : "contact@hamsterace.com",
+    "replyto" : "contact@hamsterace.com",
+    "name" : "Hamster ace"
+  }
 }

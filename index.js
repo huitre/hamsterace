@@ -44,18 +44,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+/* allow regex for captures parameters */
+app.param(function(name, fn){
+  if (fn instanceof RegExp) {
+    return function(req, res, next, val){
+      var captures;
+      if (captures = fn.exec(String(val))) {
+        req.params[name] = captures[0];
+        next();
+      } else {
+        next('route');
+      }
+    }
+  }
+});
+
 routes.init(app);
 
-var httpsOptions = {
-  key: fs.readFileSync('config/api.key'),
-  cert: fs.readFileSync('config/api.crt')
-};
- 
 
 /* istanbul ignore next */
 if (!module.parent) {
-  if (config.SSL)
+  if (config.SSL) {
+    var httpsOptions = {
+      key: fs.readFileSync('config/api.key'),
+      cert: fs.readFileSync('config/api.crt')
+    };
     https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  }
   else
     app.listen(4242);
   console.log('Express started on port 4242');

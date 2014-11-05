@@ -26,9 +26,9 @@ var BOAuthDevice = (function () {
 /*
  * This method check the signature used to authentificate the device
  * to allow it to insert data into the database
- * 
+ *
  * @params apiKey string Device Serial Number
- * @params signature string Signature generated with HMAC-SHA1
+ * @params signature string Signature generated with HMAC-SHA256
  * @params onAuth function callback called when authentificated
  * @params onFail function callback called when something is wrong !
  */
@@ -46,7 +46,7 @@ var BOAuthDevice = (function () {
       signature = tmp[1];
     }
 
-    pg("SELECT * FROM DEVICE WHERE SERIAL_NUMBER = $1", [apikey], 
+    pg("SELECT private_key FROM DEVICE WHERE SERIAL_NUMBER = $1", [apikey], 
       function(err, rows, result) {
         err = err || {}
         if (rows && rows.length > 0) {
