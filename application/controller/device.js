@@ -52,7 +52,6 @@ var DeviceController = (function () {
    * @param obj error
    */
   function onFail (res, err) {
-    console.log(err);
     res.status(500).send(err);
   }
 
@@ -98,7 +97,9 @@ var DeviceController = (function () {
         Events.insert(req, req.param('events'));
       }
     } 
-    Auth.checkSignature(req, onAuth, onFail);
+    Auth.checkSignature(req, 
+      onAuth, 
+      function (err) {onFail(res, err)});
   }
 
   return {
