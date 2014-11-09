@@ -12,6 +12,10 @@ var express = require('express'),
     routes = require('./application/routes'),
     fs = require('fs'),
     https = require('https'),
+    passport = require('passport'),
+    FB = require('passport-facebook'),
+    LocalStrategy = require('passport-local'),
+    GoogleStrategy = rquire('passport-google'),
     config = require('config');
 
 module.exports = app;
@@ -29,6 +33,9 @@ if (!module.parent) {
 app.use(methodOverride('_method'));
 app.use(multi({ dest: './uploads/'}));
 app.use(cookieParser());
+/*
+ * Raw body to check md5 content integrity
+ */
 app.use(function(req, res, next) {
   req.rawBody = '';
   //req.setEncoding('utf8');
@@ -43,6 +50,13 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+
+/* passport for login/session */
+
+app.use(express.session({ secret: config.Session.secret }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 /* allow regex for captures parameters */
 app.param(function(name, fn){
