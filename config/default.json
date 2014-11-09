@@ -27,5 +27,15 @@
   },
   "Session" : {
     "secret" : "hamsteracesecretsessionpassphrase"
+  },
+  "Facebook" : {
+    "clientID": null,
+    "clientSecret": null,
+    "callbackURL": null
+  },
+  "Google" : {
+    "clientID": null,
+    "clientSecret": null,
+    "callbackURL": null
   }
 }

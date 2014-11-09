@@ -6,6 +6,8 @@ exports.init = function init (router) {
   		Rankings = require('../controller/rankings'),
   		Team = require('../controller/teams'),
   		Stats = require('../controller/stats'),
+      Auth = require('../controller/auth'),
+      Passport = require('passport'),
       // config
       Config = require('config');
 
@@ -20,8 +22,59 @@ exports.init = function init (router) {
    */
 
   router.get('/', function (req, res) {
-    res.render('index', {title: 'Hamsterace is under development !'});
+    if(req.isAuthenticated()){
+      res.render('index', {title: 'Hamsterace is under development !', user: req.user});
+    } else {
+      res.render("index", { user : null});
+    }
   })
+
+  /*
+   * Signup / Auth / Login 
+   */
+  router.get("/login", function(req, res){ 
+    res.render("login");
+  });
+
+  router.post("/login",
+    Passport.authenticate('local',{
+      successRedirect : "/",
+      failureRedirect : "/login",
+    })
+  );
+
+  router.get("/signup", function (req, res) {
+    res.render("signup");
+  });
+
+  router.post("/signup",  Auth.signup);
+
+  router.get("/auth/facebook", Passport.authenticate("facebook",{ scope : "email"}));
+  router.get("/auth/facebook/callback", 
+    Passport.authenticate("facebook",{ failureRedirect: '/login'}),
+    function(req,res){
+      res.render("profile", {user : req.user});
+    }
+  );
+
+  router.get('/auth/google',
+    Passport.authenticate(
+      'google',
+      {
+        scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+        ]
+      })
+    );
+
+  router.get('/auth/google/callback', 
+    Passport.authenticate('google', { failureRedirect: '/login' }),
+    function(req, res) {
+      // Successful authentication, redirect home.
+      res.redirect('/');
+    });
+
 
   /*
    * Device route
