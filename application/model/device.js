@@ -20,36 +20,25 @@ var DeviceModel = (function () {
    *  @params userKey
    *  @params apiKey
    *  @params userEmail
-   * @params res        Express response object
    * @params onSuccess  Callback when everything went as planned
    * @params onFail     Callback when everything is fucked up
    */
-  register = function (req, res, onSuccess, onFail) {
+  register = function (req, done) {
     var uKey = req.param('userKey'),
         privateKey = req.param('privateKey'),
         apiKey = req.param('apiKey'),
         email = req.param('userEmail'),
-        token = createToken(uKey, apiKey),
+        token = createToken(uKey, apiKey);
  
-      onKeyExists = function (row) {
-        bo.registerUserDevice([token, email], onRegisterDevice, onError);
-      },
-
-      onRegisterDevice = function (row) {
-        sendRegistrationMail(token, email, 
-          function onRegistrationMailSuccess () { onSuccess(res, {content: row, 'message' : 'user.register.success'}) }, 
-          function onRegistrationMailFail (err) { onFail(res, err) })
-      },
-
-      onNull = function () {
-        onFail(res, {'message': 'user.key.invalid'});
-      },
-
-      onError = function (err) {
-        onFail(res, {'error': err, 'message': 'user.registered.fail'});
-      };
-
-      bo.getDeviceUserKey([uKey, privateKey, apiKey], onKeyExists, onNull);
+      bo.getDeviceUserKey([uKey, privateKey, apiKey], function (err, rows, result) {
+        if (err) return ({'error': err, 'message': 'user.key.invalid'});
+        if (rows && rows.length > 0) {
+          bo.registerUserDevice([token, email], function (err, rows, result) {
+            if (err) return done({'error': err, 'message': 'user.registered.fail'});
+            sendRegistrationMail(token, email, done, done)
+          });
+        }
+      });
   },
 
   /*
@@ -70,34 +59,27 @@ var DeviceModel = (function () {
    * @params onSuccess  Callback when everything went as planned
    * @params onFail     Callback when everything is fucked up
    */
-  activate = function (req, res, onSuccess, onFail) {
+  activate = function (req, onActivated) {
     var token = req.param('token'),
-        email = req.param('email'),
+        email = req.param('email');
 
-      onTokenExists = function (row) {
-        var when = new Date().getTime();
-        bo.activateUserDevice([email, when, when], onRegisterDevice, onError);
-      },
+      bo.getRegisteredUser([token, email], 
+        function (err, rows, result) {
+          if (err) return onActivated(new Error({'error': err, 'message': 'user.key.invalid'}));
+          var when = new Date().getTime();
+          bo.activateUserDevice([email, when, when], onRegisterDevice);
+        }
+      );
 
-      onRegisterDevice = function (row) {
-        bo.deleteOldToken([token, email], onDelete, onError);
-      },
-
-      onDelete = function (row) {
-        sendActivationMail(email, 
-          function onRegistrationMailSuccess () { onSuccess(res, {content: row, 'message' : 'user.activate.success'}) }, 
-          function onRegistrationMailFail (err) { onFail(res, err) })
-      }
-
-      onNull = function (err) {
-        onFail(res, {'message': 'user.key.invalid'});
-      },
-
-      onError = function (err) {
-        onFail(res, {'error': err, 'message': 'user.registered.fail'});
+      var onRegisterDevice = function (err, rows, result) {
+        if (err) return onActivated(err);
+        bo.deleteOldToken([token, email], 
+          function (err, rows, result) {
+            if (err) return onActivated(new Error({'error': err, 'message': 'user.registered.fail'}));
+            sendActivationMail(email, onActivated, onActivated);
+          }
+        );
       };
-
-      bo.getRegisteredUser([token, email], onTokenExists, onNull);
   },
 
   sendActivationMail = function (email, onSuccess, onFail) {

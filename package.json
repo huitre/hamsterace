@@ -16,7 +16,11 @@
     "pg": "~3.6.2",
     "pg-query": "~0.10.1",
     "config": "~1.6.0",
-    "mandrill-api": "~1.0.41"
+    "mandrill-api": "~1.0.41",
+    "passport": "~0.2.1",
+    "passport-local": "~1.0.0",
+    "passport-facebook": "~1.0.3",
+    "passport-google": "~0.3.0"
   },
   "devDependencies": {},
   "scripts": {

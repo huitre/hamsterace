@@ -24,5 +24,8 @@
     "user" : "contact@hamsterace.com",
     "replyto" : "contact@hamsterace.com",
     "name" : "Hamster ace"
+  },
+  "Session" : {
+    "secret" : "hamsteracesecretsessionpassphrase"
   }
 }

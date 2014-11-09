@@ -23,7 +23,10 @@ var DeviceController = (function () {
     onAuth = function (req) {
       if (req.param('privateKey') && req.param('userEmail') 
           && req.param('apiKey') && req.param('userKey')) {
-        Device.register(req, res, onSuccess, onFail);
+        Device.register(req, function (err, result) {
+          if (err) return onFail(res, err);
+          return onSucces(res, result);
+        });
       } else {
         onFail(res, {'message': 'user.missing.parameters'});
       }
@@ -63,9 +66,10 @@ var DeviceController = (function () {
    */
   function activate (req, res) {
     if (req.param('token') && req.param('email')) {
-      Device.activate(req, res, function onActivated () {
-          Device.sendActivationMail(req.param('email'), onSuccess, onFail)
-      }, onFail);
+      Device.activate(req, function onActivated (err) {
+        if (err) return onFail(res, err);
+        Device.sendActivationMail(req.param('email'), onSuccess, onFail)
+      });
     }
     else
       onFail(res, {'message': 'missing.parameters'});
