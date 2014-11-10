@@ -38,7 +38,7 @@ module.exports = function (passport, config) {
         return done(err, user);
       });
     }));
-
+/*
   passport.use(new GoogleStrategy({
       clientID: config.Google.clientID,
       clientSecret: config.Google.clientSecret,
@@ -51,5 +51,5 @@ module.exports = function (passport, config) {
       });
     }
   ));
-
+*/
 }
