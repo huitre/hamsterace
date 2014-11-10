@@ -9,14 +9,16 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
-    routes = require('./application/routes'),
     fs = require('fs'),
     https = require('https'),
     passport = require('passport'),
     FB = require('passport-facebook'),
     LocalStrategy = require('passport-local'),
-    GoogleStrategy = rquire('passport-google'),
-    config = require('config');
+    GoogleStrategy = require('passport-google'),
+    routes = require('./application/routes'),
+    config = require('config'),
+    session = require('express-session'),
+    passportMidlleWare = require('./application/middleware/passport')(passport, config);
 
 module.exports = app;
 
@@ -53,7 +55,7 @@ app.use(express.static(__dirname + '/public'));
 
 /* passport for login/session */
 
-app.use(express.session({ secret: config.Session.secret }));
+app.use(session({ secret: config.Session.secret }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -73,7 +75,7 @@ app.param(function(name, fn){
   }
 });
 
-routes.init(app);
+routes.init(app, passport);
 
 
 /* istanbul ignore next */
