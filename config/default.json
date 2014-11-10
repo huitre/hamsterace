@@ -29,9 +29,9 @@
     "secret" : "hamsteracesecretsessionpassphrase"
   },
   "Facebook" : {
-    "clientID": null,
-    "clientSecret": null,
-    "callbackURL": null
+    "clientID": "355352861291458",
+    "clientSecret": "eb13b32b5d68a349d6466fec35660943",
+    "callbackURL": "/auth/facebook/callback"
   },
   "Google" : {
     "clientID": null,

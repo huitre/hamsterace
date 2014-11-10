@@ -1,17 +1,19 @@
 var LocalStrategy = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google').OAuth2Strategy,
-    Person = require('../model/person');
+    Person = require('../model/person'),
+    Auth = require('../hra/bo/auth');
 
 
 module.exports = function (passport, config) {
 
   passport.serializeUser(function(user, done) {
+    console.log(user);
     done(null, user.id);
   });
 
   passport.deserializeUser(function(id, done) {
-    Person.findOneById([id], function (err, user) {
+    Person.findUserForAuth([id], function (err, user) {
       done(err, user);
     });
   });
@@ -26,14 +28,13 @@ module.exports = function (passport, config) {
     })
   );
 
-  /*passport.use(new FacebookStrategy({
+  passport.use(new FacebookStrategy({
     clientID: config.Facebook.clientID,
     clientSecret: config.Facebook.clientSecret,
     callbackURL: config.Facebook.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
-      profile.authOrigin = 'facebook';
-      User.findOrCreateOAuthUser(profile, function (err, user) {
+      Person.getFBoAuthUser(profile, function (err, user) {
         return done(err, user);
       });
     }));
@@ -49,5 +50,6 @@ module.exports = function (passport, config) {
         return done(err, user);
       });
     }
-  ));*/
+  ));
+
 }

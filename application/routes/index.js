@@ -23,6 +23,7 @@ exports.init = function init (router) {
 
   router.get('/', function (req, res) {
     if(req.isAuthenticated()){
+      console.log('User is authenticated');
       res.render('index', {title: 'Hamsterace is under development !', user: req.user});
     } else {
       res.render("index", { user : null});
