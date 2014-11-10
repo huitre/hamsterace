@@ -11,12 +11,13 @@ var PersonBO = (function () {
   }
 
   this.findForAuth = function (params, done) {
+    console.log('toto', params);
     pg("SELECT \
         p.id, p.email, p.hash, p.created, p.updated, \
         d.type, d.name, d.first_name \
       FROM \
         PERSON p \
-      INNER JOIN \
+      CROSS JOIN \
         PERSON_DETAILS d\
       LEFT JOIN \
         FB_PERSON f on (f.id_person = p.id) \
