@@ -31,11 +31,11 @@ exports.init = function init (router) {
   })
 
   /*
-   * Signup / Auth / Login 
+   * Signup / Auth / Login / Logout
    */
-  router.get("/login", function(req, res){ 
+  /*router.get("/login", function(req, res){ 
     res.render("login");
-  });
+  });*/
 
   router.post("/login",
     Passport.authenticate('local',{
@@ -73,8 +73,13 @@ exports.init = function init (router) {
     Passport.authenticate('google', { failureRedirect: '/login' }),
     function(req, res) {
       // Successful authentication, redirect home.
-      res.redirect('/');
+      res.render("profile", {user : req.user});
     });
+
+  router.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
 
 
   /*

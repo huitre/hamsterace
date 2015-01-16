@@ -18,6 +18,7 @@ var AuthController = (function () {
    * @params req express request
    */
   var signup = function (req, res) {
+    console.log('Auth.signup');
     if (req.body.email.length && req.body.password.length) {
       bo.signup(req.body.email, req.body.password, req.body.name,
         function(err, user){

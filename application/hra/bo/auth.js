@@ -64,29 +64,13 @@ var BOAuthDevice = (function () {
   }
 
   var signup = function (email, password, name, done) {
-    Person.find({email: email}, function (err, result) {
-      if (err) return done(err);
-      if (result.length === 0 || !result)
-        Person.insert([email, password, name], done)
-    });
+    Person.insert([email, password, name], done);
   }
 
-  var isValidUserPassword = function (params, done) {
-    if (params.password) {
-      var hash = crypto.createHash('md5').update(params.password).digest('hex')
-      Person.findForAuth([params.userEmail, hash], function (err, row, result) {
-        if (err) return done(new Error(err));
-        if (row.length < 0) return done(new Error({'message': 'user.not.found'}));
-        return done(null,populate(row[0]));
-      })
-    }
-    return done(new Error({'message': 'user.missing.parameters'}))
-  }
 
   return {
     checkSignature : checkSignature,
-    signup : signup,
-    isValidUserPassword : isValidUserPassword
+    signup : signup
   }
 })()
 

@@ -17,6 +17,18 @@ var DateUtils = (function () {
   }
 })()
 
+
+var RandomUtils = (function () {
+  var hash = function () {
+    return new Date().getTime() * Math.floor((Math.random() * 100) + 1) + (new Date().getTime() + '');
+  }
+
+  return {
+    hash: hash
+  }
+})()
+
 if (typeof module !== 'undefined') {
-  module.exports.DateUtils = DateUtils;
+  module.exports.DateUtils = DateUtils
+  module.exports.RandomUtils = RandomUtils
 }

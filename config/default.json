@@ -34,8 +34,8 @@
     "callbackURL": "/auth/facebook/callback"
   },
   "Google" : {
-    "clientID": null,
-    "clientSecret": null,
-    "callbackURL": null
+    "clientID": "790829462353-312digf597b4eljpnbh651vn9fcvponm.apps.googleusercontent.com",
+    "clientSecret": "J9i505U9CA8UPxxLFDHqJjhK",
+    "callbackURL": "/auth/google/callback"
   }
 }

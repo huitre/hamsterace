@@ -1,6 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
-    GoogleStrategy = require('passport-google').OAuth2Strategy,
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     Person = require('../model/person'),
     Auth = require('../hra/bo/auth');
 
@@ -24,7 +24,10 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(email, password, done) {
-      Person.isValidUserPassword({userEmail : email, password: password}, done);
+      Person.isValidUserPassword({userEmail : email, password: password}, function (err, user) {
+        if (err || !user) { return done(err); }
+        return done(null, user);
+        });
     })
   );
 
@@ -34,11 +37,11 @@ module.exports = function (passport, config) {
     callbackURL: config.Facebook.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
-      Person.getFBoAuthUser(profile, function (err, user) {
+      Person.findOrCreateFBoAuthUser(profile, function (err, user) {
         return done(err, user);
       });
     }));
-/*
+
   passport.use(new GoogleStrategy({
       clientID: config.Google.clientID,
       clientSecret: config.Google.clientSecret,
@@ -46,10 +49,10 @@ module.exports = function (passport, config) {
     },
     function(accessToken, refreshToken, profile, done) {
       profile.authOrigin = 'google';
-      User.findOrCreateOAuthUser(profile, function (err, user) {
+      Person.findOrCreateGPoAuthUser(profile, function (err, user) {
         return done(err, user);
       });
     }
   ));
-*/
+
 }
