@@ -18,7 +18,7 @@
     <![endif]-->
 
     <style>
-    @import url('public/css/main.css');
+    @import url('/css/main.css');
     </style>
   </head>
 
@@ -103,9 +103,9 @@
         </text>-->
       </g>
     </svg>
-    <img src="public/images/hamster.png" width="128" />
+    <img src="/images/hamster.png" width="128" />
     <div id="form-wrapper">
-        <form>
+        <form action="/login">
           <div class="form-group">
             <label for="exampleInputEmail1">Identifiant</label>
             <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
@@ -125,8 +125,8 @@
         <div class="form-group">
             <label for="exampleInputPassword1">Se connecter avec :</label>
             <p>
-              <button type="button" class="btn btn-danger">Google+</button>
-              <button type="button" class="btn btn-info">Facebook</button>
+              <a href="/auth/google" type="button" class="btn btn-danger">Google+</a>
+              <a href="/auth/facebook" type="button" class="btn btn-info">Facebook</a>
             </p>
           </div>
       </div>
