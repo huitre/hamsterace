@@ -104,22 +104,13 @@ var PersonModel = (function () {
     bo.insertNewPerson(params, done);
   }
 
-var isValidUserPassword = function (params, done) {
-    if (params.password) {
-      var hash = crypto.createHash('md5').update(params.password).digest('hex')
-      Person.findForAuth([params.userEmail, hash], function (err, row, result) {
-        
-      })
-    }
-    return done(new Error({'message': 'user.missing.parameters'}))
-  }
-
   this.isValidUserPassword = function (params, done) {
     var md5 = crypto.createHash('md5');
 
-    params.password = md5.update(params.password).digest('hex'),
-    this.findQuery(" p.hash = $1 and p.email = $2", [params.password, params.userEmail], 
+    params.password = md5.update(params.password).digest('hex');
+    bo.findQuery(" p.hash = $1 and p.email = $2", [params.password, params.userEmail], 
       function (err, row, result) {
+        console.log(err, row, result);
         if (err) return done(new Error(err));
         if (row.length < 0) return done(new Error({'message': 'user.not.found'}));
         return done(null,populate(row[0]));

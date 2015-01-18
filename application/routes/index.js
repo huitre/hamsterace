@@ -24,23 +24,25 @@ exports.init = function init (router) {
   router.get('/', function (req, res) {
     if(req.isAuthenticated()){
       console.log('User is authenticated');
-      res.render('index', {title: 'Hamsterace is under development !', user: req.user});
+      res.send(req.user);
+      //res.render('index', {title: 'Hamsterace is under development !', user: req.user});
     } else {
       res.render("index", { user : null});
+      //res.send(500, {error: "not authenticated"});
     }
   })
 
   /*
    * Signup / Auth / Login / Logout
    */
-  /*router.get("/login", function(req, res){ 
+  router.get("/login", function(req, res){ 
     res.render("login");
-  });*/
+  });
 
   router.post("/login",
     Passport.authenticate('local',{
       successRedirect : "/",
-      failureRedirect : "/login",
+      failureRedirect : "/",
     })
   );
 

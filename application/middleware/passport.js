@@ -8,7 +8,6 @@ var LocalStrategy = require('passport-local').Strategy,
 module.exports = function (passport, config) {
 
   passport.serializeUser(function(user, done) {
-    console.log(user);
     done(null, user.id);
   });
 
