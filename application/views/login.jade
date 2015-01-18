@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  img(src="http://c4.staticflickr.com/4/3611/3295233526_3e9014af88_m.jpg")
+  if (!user)
+    form(action='/login', method='post')
+      div
+        label Email:
+        input(type='text', name='email')
+        div
+          label Password:
+          input(type='password', name='password')
+        div
+          input(type='submit', value='Log In')
+    div
+      a(href="/auth/facebook") Log In With Facebook
+      br
+      a(href="/auth/google") Log In With Google
+      br
+      a(href="/signup") signup
+  else
+    div
+      p 
+        b Welcome #{user.name} #{user.firstName} !
+      a(href="/logout") logout

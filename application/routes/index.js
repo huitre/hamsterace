@@ -24,14 +24,16 @@ exports.init = function init (router) {
   router.get('/', function (req, res) {
     if(req.isAuthenticated()){
       console.log('User is authenticated');
-      res.render('index', {title: 'Hamsterace is under development !', user: req.user});
+      res.send(req.user);
+      //res.render('index', {title: 'Hamsterace is under development !', user: req.user});
     } else {
       res.render("index", { user : null});
+      //res.send(500, {error: "not authenticated"});
     }
   })
 
   /*
-   * Signup / Auth / Login 
+   * Signup / Auth / Login / Logout
    */
   router.get("/login", function(req, res){ 
     res.render("login");
@@ -40,7 +42,7 @@ exports.init = function init (router) {
   router.post("/login",
     Passport.authenticate('local',{
       successRedirect : "/",
-      failureRedirect : "/login",
+      failureRedirect : "/",
     })
   );
 
@@ -73,8 +75,13 @@ exports.init = function init (router) {
     Passport.authenticate('google', { failureRedirect: '/login' }),
     function(req, res) {
       // Successful authentication, redirect home.
-      res.redirect('/');
+      res.render("profile", {user : req.user});
     });
+
+  router.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
 
 
   /*
