@@ -11,14 +11,22 @@ var express = require('express'),
     methodOverride = require('method-override'),
     fs = require('fs'),
     https = require('https'),
+    routes = require('./application/routes'),
+    config = require('config'),
+    session = require('express-session'),
+    /*
+     * ORM Sequelize
+     */
+    sequelize = require('./application/models'),
+    /*
+     * Passport for authentification
+     */
     passport = require('passport'),
     FB = require('passport-facebook'),
     LocalStrategy = require('passport-local'),
     GoogleStrategy = require('passport-google'),
-    routes = require('./application/routes'),
-    config = require('config'),
-    session = require('express-session'),
     passportMidlleWare = require('./application/middleware/passport')(passport, config);
+
 
 module.exports = app;
 
@@ -76,18 +84,22 @@ app.param(function(name, fn){
 });
 
 routes.init(app, passport);
-
-
-/* istanbul ignore next */
-if (!module.parent) {
-  if (config.SSL) {
-    var httpsOptions = {
-      key: fs.readFileSync('config/api.key'),
-      cert: fs.readFileSync('config/api.crt')
-    };
-    https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+sequelize.sequelize.drop().done(function () {
+sequelize.sequelize.sync().done(function() {
+  // database setted up
+  // launching server
+  if (!module.parent) {
+    if (config.SSL) {
+      var httpsOptions = {
+        key: fs.readFileSync('config/api.key'),
+        cert: fs.readFileSync('config/api.crt')
+      };
+      https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+    }
+    else
+      app.listen(4242);
+    console.log('Express started on port 4242');
   }
-  else
-    app.listen(4242);
-  console.log('Express started on port 4242');
-}
+
+});
+});
