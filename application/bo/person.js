@@ -22,20 +22,20 @@ var PersonModel = (function () {
   }
 
   this.authFindOrCreate = function (profile, done) {
-    var where = {
-        email : profile.emails[0].value,
-      }
+    console.log(profile);
+    var where = {}
     
+    where.email = profile.emails[0].value || profile.email;
+    where.password = profile.password || null;
+
     if (profile.authOrign == 'google')
       where.gid = profile.id;
     if (profile.authOrign == 'facebook')
       where.fbid = profile.id;
 
-
     Db.Person.findOrCreate({
       where : where
     }).spread(function (User) {
-      console.log(User);
       if (!User.PersonDetails || User.PersonDetails.length < 1) {
         var details = Db.PersonDetails.build({
           type : 'owner',
@@ -46,8 +46,7 @@ var PersonModel = (function () {
       }
       return done(null, User);
     }).catch(function (err) {
-      console.log(err);
-      done(err);
+      return done(err, false);
     });
   }
 

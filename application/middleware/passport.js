@@ -35,13 +35,11 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(email, password, done) {
-      Db.Person.find({ 
-          where : {
-            email: email,
-            password : password
-          },
-          include : [ Db.PersonDetails ]
-      }).then(done)  
+      var profile = {
+        email : email,
+        password : password
+      }
+      Person.authFindOrCreate(profile, done);
     })
   );
 
@@ -51,13 +49,8 @@ module.exports = function (passport, config) {
     callbackURL: config.Facebook.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
-      Db.findOrCreate({
-        where : {
-          email : profile.emails[0].value
-        }
-      }).spread(function (User) {
-        return done(User.toPassport());
-      });
+      profile.authOrigin = 'facebook';
+      Person.authFindOrCreate(profile, done);
     }));
 
   passport.use(new GoogleStrategy({

@@ -13,6 +13,10 @@ var AuthController = (function () {
   }
 
   this.login = function (req, res, next) {
+    if (!req.body.password || req.body.password.trim() == "" 
+      || !req.body.email || req.body.email.trim() == "") {
+      throw new Error('Email or password cannot be empty');
+    }
     Passport.authenticate('local',{
       successRedirect : "/me",
       failureRedirect : "/",
