@@ -1,7 +1,7 @@
 var BOAuthDevice = (function () {
   // list of requirement
   var crypto = require('crypto'),
-      Db = require('../../models');
+      Db = require('../models');
 
   var makeSignature = function (privateKey, stringToSign) {
     var sha1 = crypto.createHmac('sha256', privateKey),

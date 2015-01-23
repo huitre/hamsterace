@@ -1,5 +1,5 @@
 exports.index = function (req, res) {
-	res.send('this is index');
+	res.send(req.user);
 }
 
 exports.feed = function (req, res) {

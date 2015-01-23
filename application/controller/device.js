@@ -1,7 +1,7 @@
 var DeviceController = (function () {
-  var Auth = require('../hra/bo/auth.js'),
-      Device = require('../model/device.js')
-      Events = require('../model/events.js'),
+  var Auth = require('../bo/auth.js'),
+      Device = require('../bo/device.js')
+      Events = require('../bo/events.js'),
       // config
       Config = require('config');
 

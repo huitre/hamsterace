@@ -2,29 +2,31 @@ var LocalStrategy = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     Db = require('../models/'),
-    Auth = require('../hra/bo/auth'),
+    Person = require('../bo/person'),
     console = require("console-plus");
 
 
 module.exports = function (passport, config) {
 
   passport.serializeUser(function(Person, done) {
-    done(null, Person)
+    if (Person.email)
+      done(null, Person)
+    else
+      done(null, false, {'error' : "Can't serialize user"})
   });
 
   passport.deserializeUser(function(User, done) {
-    console.log(User)
     if (User.id) {
-      User.find({ 
+      Db.Person.find({ 
         where : {
           id : User.id
         },
         include : [ Db.PersonDetails ]
       }).then( function (user) {
-        done(null, user);
+        done(null, user)
       })
     }
-    done({'Error' : 'Unable to deserialize User'});
+    done(null, false, {'error' : "Can't deserialize user"});
   });
 
   passport.use(
@@ -64,19 +66,8 @@ module.exports = function (passport, config) {
       callbackURL: config.Google.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
-      console.log(profile)
       profile.authOrigin = 'google';
-      Db.Person.findOrCreate({
-        where : {
-          email : profile.emails[0].value,
-          gid : profile.id
-        }
-      }).spread(function (User) {
-        return done(null, User);
-      }).catch(function (err) {
-        console.log(err.errors);
-        done(err);
-      });
+      Person.authFindOrCreate(profile, done);
     }
   ));
 

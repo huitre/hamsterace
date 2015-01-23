@@ -34,12 +34,10 @@ module.exports = function(Sequelize, DataTypes) {
     associate: function (models) {
       models.Person.hasMany(models.PersonDetails);
       models.Person.hasMany(models.Friend);
-      models.Person.belongsTo(models.Post);
+      //models.Person.belongsTo(models.Post);
     },
-    instanceMethods: {
-      toPassport: function () {
-        return this.id;
-      }
+    classMethods: {
+      
     }
   });
 }

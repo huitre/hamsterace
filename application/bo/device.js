@@ -2,8 +2,7 @@ var DeviceModel = (function () {
   /*
    * Requirements
    */
-  var pg = require('../hra/database')(),
-      bo = require('../hra/bo/device.js'),
+  var bo = require('../models').Device,
       crypto = require('crypto'),
       Mandrill = require('mandrill-api/mandrill'),
       Utils = require('../hra/lib/utils'),
