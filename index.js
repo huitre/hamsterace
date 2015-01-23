@@ -85,21 +85,21 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 sequelize.sequelize.drop().done(function () {
-sequelize.sequelize.sync().done(function() {
-  // database setted up
-  // launching server
-  if (!module.parent) {
-    if (config.SSL) {
-      var httpsOptions = {
-        key: fs.readFileSync('config/api.key'),
-        cert: fs.readFileSync('config/api.crt')
-      };
-      https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  sequelize.sequelize.sync().done(function() {
+    // database setted up
+    // launching server
+    if (!module.parent) {
+      if (config.SSL) {
+        var httpsOptions = {
+          key: fs.readFileSync('config/api.key'),
+          cert: fs.readFileSync('config/api.crt')
+        };
+        https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+      }
+      else
+        app.listen(4242);
+      console.log('Express started on port 4242');
     }
-    else
-      app.listen(4242);
-    console.log('Express started on port 4242');
-  }
 
-});
+  });
 });

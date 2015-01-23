@@ -1,7 +1,7 @@
 var BOAuthDevice = (function () {
   // list of requirement
   var crypto = require('crypto'),
-      Person = require('../../model/person');
+      Db = require('../../models');
 
   var makeSignature = function (privateKey, stringToSign) {
     var sha1 = crypto.createHmac('sha256', privateKey),
@@ -47,30 +47,30 @@ var BOAuthDevice = (function () {
       signature = tmp[1];
     }
 
-    pg("SELECT private_key FROM DEVICE WHERE SERIAL_NUMBER = $1", [apikey], 
-      function(err, rows, result) {
-        err = err || {}
-        if (rows && rows.length > 0) {
-          var sign = makeSignature(rows[0].private_key.trim(), makeStringTosign(req))
-          if (signature == sign)
-            return onAuth(req)
-          err.message = "Signature not valid !"
-          return onFail(err);
-        } 
-        err.message = "API key not registered !"
-        return onFail(err);
+    Db.Device.find({
+      where : {
+        apiKey : apikey
       }
-    )
-  }
+    }).then(function (Device) {
+      var err,
+          sign = makeSignature(Device.privateKey.trim(), makeStringTosign(req))
 
-  var signup = function (email, password, name, done) {
-    Person.insert([email, password, name], done);
+      if (signature == sign)
+        return onAuth(req);
+      else {
+        err.message = "Signature not valid !";
+        return onFail(err);
+      }       
+      err.message = "API key not registered !";
+      return onFail(err);
+    }).catch(function (err) {
+      return onFail(err)
+    })
   }
 
 
   return {
-    checkSignature : checkSignature,
-    signup : signup
+    checkSignature : checkSignature
   }
 })()
 

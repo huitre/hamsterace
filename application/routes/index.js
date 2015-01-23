@@ -39,44 +39,16 @@ exports.init = function init (router) {
     res.render("login");
   });
 
-  router.post("/login",
-    Passport.authenticate('local',{
-      successRedirect : "/",
-      failureRedirect : "/",
-    })
-  );
+  router.post("/login", Auth.login);
 
-  router.get("/signup", function (req, res) {
-    res.render("signup");
-  });
+  router.post("/signin",  Auth.signIn);
 
-  router.post("/signup",  Auth.signup);
+  router.get("/auth/facebook", Auth.login.fb);
+  router.get("/auth/facebook/callback", Auth.login.fb.ok);
 
-  router.get("/auth/facebook", Passport.authenticate("facebook",{ scope : "email"}));
-  router.get("/auth/facebook/callback", 
-    Passport.authenticate("facebook",{ failureRedirect: '/login'}),
-    function(req,res){
-      res.render("profile", {user : req.user});
-    }
-  );
+  router.get('/auth/google',  Auth.login.google);
 
-  router.get('/auth/google',
-    Passport.authenticate(
-      'google',
-      {
-        scope: [
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email'
-        ]
-      })
-    );
-
-  router.get('/auth/google/callback', 
-    Passport.authenticate('google', { failureRedirect: '/login' }),
-    function(req, res) {
-      // Successful authentication, redirect home.
-      res.render("profile", {user : req.user});
-    });
+  router.get('/auth/google/callback', Auth.login.google.ok);
 
   router.get('/logout', function(req, res){
     req.logout();

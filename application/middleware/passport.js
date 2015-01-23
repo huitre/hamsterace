@@ -1,20 +1,30 @@
 var LocalStrategy = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-    Person = require('../models/person'),
-    Auth = require('../hra/bo/auth');
+    Db = require('../models/'),
+    Auth = require('../hra/bo/auth'),
+    console = require("console-plus");
 
 
 module.exports = function (passport, config) {
 
-  passport.serializeUser(function(user, done) {
-    done(null, user.id);
+  passport.serializeUser(function(Person, done) {
+    done(null, Person)
   });
 
-  passport.deserializeUser(function(id, done) {
-    Person.findUserForAuth([id], function (err, user) {
-      done(err, user);
-    });
+  passport.deserializeUser(function(User, done) {
+    console.log(User)
+    if (User.id) {
+      User.find({ 
+        where : {
+          id : User.id
+        },
+        include : [ Db.PersonDetails ]
+      }).then( function (user) {
+        done(null, user);
+      })
+    }
+    done({'Error' : 'Unable to deserialize User'});
   });
 
   passport.use(
@@ -23,10 +33,13 @@ module.exports = function (passport, config) {
       passwordField: 'password'
     },
     function(email, password, done) {
-      Person.isValidUserPassword({userEmail : email, password: password}, function (err, user) {
-        if (err || !user) { return done(err); }
-        return done(null, user);
-        });
+      Db.Person.find({ 
+          where : {
+            email: email,
+            password : password
+          },
+          include : [ Db.PersonDetails ]
+      }).then(done)  
     })
   );
 
@@ -36,8 +49,12 @@ module.exports = function (passport, config) {
     callbackURL: config.Facebook.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
-      Person.findOrCreateFBoAuthUser(profile, function (err, user) {
-        return done(err, user);
+      Db.findOrCreate({
+        where : {
+          email : profile.emails[0].value
+        }
+      }).spread(function (User) {
+        return done(User.toPassport());
       });
     }));
 
@@ -47,11 +64,21 @@ module.exports = function (passport, config) {
       callbackURL: config.Google.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
+      console.log(profile)
       profile.authOrigin = 'google';
-      Person.findOrCreateGPoAuthUser(profile, function (err, user) {
-        return done(err, user);
+      Db.Person.findOrCreate({
+        where : {
+          email : profile.emails[0].value,
+          gid : profile.id
+        }
+      }).spread(function (User) {
+        return done(null, User);
+      }).catch(function (err) {
+        console.log(err.errors);
+        done(err);
       });
     }
   ));
 
 }
+
