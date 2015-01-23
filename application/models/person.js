@@ -1,9 +1,18 @@
 "use strict"
 
+var crypto = require('crypto');
+
 module.exports = function(Sequelize, DataTypes) {
   return Sequelize.define('Person', {
     email : { type : DataTypes.STRING(50), unique: true},
-    hash: { type : DataTypes.STRING(32) }
+    password : { type : DataTypes.STRING(32),
+      set:  function(v) {
+          var md5 = crypto.createHash('md5'),
+              hash = md5.update(v).digest('hex');
+
+          this.setDataValue('password', hash);
+      }
+    }
   },
   {
     associate: function (models) {
@@ -11,12 +20,7 @@ module.exports = function(Sequelize, DataTypes) {
       models.Person.hasMany(models.PersonFriend);
       models.Person.hasMany(models.FBPerson);
       models.Person.hasMany(models.GooglePerson);
-    },
-    classMethods : {
-      findUserForAuth : function () {},
-      findOrCreateGPoAuthUser : function () {},
-      findOrCreateFBoAuthUser : function () {},
-      isValidUserPassword : function () {},
+      models.Person.belongsTo(models.Post);
     }
   });
 }

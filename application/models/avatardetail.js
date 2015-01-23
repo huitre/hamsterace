@@ -2,7 +2,7 @@
 
 module.exports = function(Sequelize, DataTypes) {
   return Sequelize.define("AvatarDetail", {
-    content : { type : DataTypes.BLOB, unique: true}
+    content : { type : DataTypes.JSON}
   },
   {
    associate: function (models) {
