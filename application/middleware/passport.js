@@ -21,12 +21,15 @@ module.exports = function (passport, config) {
         where : {
           id : User.id
         },
-        include : [ Db.PersonDetails ]
+        include : [ {
+          model: Db.PersonDetails 
+        }]
       }).then( function (user) {
         done(null, user)
+      }).catch(function () {
+        done(null, false, {'error' : "Can't deserialize user"});    
       })
     }
-    done(null, false, {'error' : "Can't deserialize user"});
   });
 
   passport.use(

@@ -1,12 +1,13 @@
 "use strict"
 
 module.exports = function(Sequelize, DataTypes) {
-  return Sequelize.define("Post", {
+  return Sequelize.define("Comment", {
     content : { type : DataTypes.JSON }
   },
   {
    associate: function (models) {
-      models.Post.belongsTo(models.Person)
+      models.Comment.belongsTo(models.Post);
+      models.Comment.belongsTo(models.Person);
     }
   });
 }

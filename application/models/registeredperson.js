@@ -6,9 +6,6 @@ module.exports = function(sequelize, DataTypes) {
     email : { type : DataTypes.STRING(50) }
   }, {
     classMethods : {
-      associate: function(models) {
-        models.RegisteredPerson.belongsTo(models.RegisteredDevice);
-      }
     }
   });
 };

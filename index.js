@@ -27,6 +27,7 @@ var express = require('express'),
     GoogleStrategy = require('passport-google'),
     passportMidlleWare = require('./application/middleware/passport')(passport, config);
 
+var FakeDatas = require('./install/fakeData');
 
 module.exports = app;
 
@@ -86,8 +87,13 @@ app.param(function(name, fn){
 });
 
 routes.init(app, passport);
-/*sequelize.sequelize.drop().done(function () {*/
+
+sequelize.sequelize.drop().done(function () {
   sequelize.sequelize.sync().done(function() {
+  
+    // populate
+    FakeDatas.populate();
+
     // database setted up
     // launching server
     if (!module.parent) {
@@ -104,4 +110,4 @@ routes.init(app, passport);
     }
 
   });
-/*});*/
+});

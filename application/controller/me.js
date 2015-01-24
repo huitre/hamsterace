@@ -1,6 +1,6 @@
 exports.index = function (req, res) {
-  console.log(req);
-	res.send(JSON.stringify(req.user));
+  console.log(req.user);
+  res.send(req.user);
 }
 
 exports.feed = function (req, res) {
