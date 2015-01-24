@@ -57,8 +57,14 @@ var FakeData = (function () {
         PersonId: Person.id
       })
       Db.Post.create({
-        content : {text : "Hey mate cette video, ca dechire !", video : "http://img-9gag-ftw.9cache.com/photo/aGV3m17_460sv.mp4"},
+        content: {text : "Hey mate cette video, ca dechire !", video : "http://img-9gag-ftw.9cache.com/photo/aGV3m17_460sv.mp4"},
         PersonId: Person.id
+      }).then(function (post) {
+        Db.Comment.create({
+          content: {text: "Effectivement, trop marrant quand il encule le chaton mort !"},
+          PersonId: Person.id,
+          PostId: post.id
+        })
       })
     }).catch(function (err) {
       console.log(err)
@@ -77,33 +83,56 @@ var FakeData = (function () {
         age : new Date('1984-11-11'),
         PersonId: Person.id
       })
+
+      // populate friend
+      Db.PeopleFriend.create({
+        PersonId: 4,
+        FriendId: 3,
+        confirmed: true
+      })
+
+      Db.PeopleFriend.create({
+        PersonId: 1,
+        FriendId: 3,
+        confirmed: true
+      })
+
+      Db.PeopleFriend.create({
+        PersonId: 4,
+        FriendId: 2,
+        confirmed: true
+      })
+      
+      Db.PeopleFriend.create({
+        PersonId: 2,
+        FriendId: 3,
+        confirmed: true
+      })
+
     }).catch(function (err) {
       console.log(err)
     })
 
-    Db.PeopleFriend.create({
-      PersonId: p4.id,
-      FriendId: p3.id,
-      confirmed: true
+    // populate device
+    Db.Device.create({
+      apiKey: 4242,
+      userKey: 'azerty',
+      privateKey: 'keyboardcat'
     })
 
-    Db.PeopleFriend.create({
-      PersonId: p1.id,
-      FriendId: p3.id,
-      confirmed: true
+    Db.RegisteredPerson.create({
+      token: 'thisisafaketokenfortesting',
+      email: p1.email
+    }).then(function (rp1) {
+      Db.RegisteredDevice.create({
+        hash: 'thisisafakehashfortesting',
+        PersonId: 1,
+        RegisteredPersonId: rp1.id
+      })
     })
 
-    Db.PeopleFriend.create({
-      PersonId: p4.id,
-      FriendId: p2.id,
-      confirmed: true
-    })
-    
-    Db.PeopleFriend.create({
-      PersonId: p2.id,
-      FriendId: p3.id,
-      confirmed: true
-    })
+    // populate events
+
   }
   return this;
 })()
