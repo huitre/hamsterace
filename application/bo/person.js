@@ -22,11 +22,16 @@ var PersonModel = (function () {
   }
 
   this.authFindOrCreate = function (profile, done) {
-    console.log(profile);
-    var where = {}
+    var where = {},
+        md5 = crypto.createHash('md5');
     
-    where.email = profile.emails[0].value || profile.email;
+    try {
+      where.email = profile.emails[0].value
+    } catch (e) {
+      where.email = profile.email || null;
+    }
     where.password = profile.password || null;
+    where.password = md5.update(where.password).digest('hex');
 
     if (profile.authOrign == 'google')
       where.gid = profile.id;

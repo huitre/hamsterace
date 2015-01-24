@@ -43,6 +43,7 @@ if (!module.parent) {
 app.use(methodOverride('_method'));
 app.use(multi({ dest: './uploads/'}));
 app.use(cookieParser());
+
 /*
  * Raw body to check md5 content integrity
  */
@@ -56,6 +57,7 @@ app.use(function(req, res, next) {
 
   next();
 });
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,7 +86,7 @@ app.param(function(name, fn){
 });
 
 routes.init(app, passport);
-sequelize.sequelize.drop().done(function () {
+/*sequelize.sequelize.drop().done(function () {*/
   sequelize.sequelize.sync().done(function() {
     // database setted up
     // launching server
@@ -102,4 +104,4 @@ sequelize.sequelize.drop().done(function () {
     }
 
   });
-});
+/*});*/
