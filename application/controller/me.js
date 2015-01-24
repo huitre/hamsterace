@@ -1,10 +1,21 @@
+var Db = require('../models');
+
 exports.index = function (req, res) {
-  console.log(req.user);
   res.send(req.user);
 }
 
 exports.feed = function (req, res) {
-	res.send('this is feed');
+  Db.Post.findAll({
+    where : {
+      PersonId: req.user.id
+    }
+  }).then(function (posts) {
+    result = {
+      profile : req.user,
+      post : posts
+    }
+    res.send(result)
+  })
 }
 
 exports.link = function (req, res) {
