@@ -1,21 +1,21 @@
-var Db = require('../models');
+var Bo = require('../bo/person'),
+    //Db = require('../models'),
+    console = require('console-plus');
 
 exports.index = function (req, res) {
   res.send(req.user);
 }
 
 exports.feed = function (req, res) {
-  Db.Post.findAll({
-    where : {
-      PersonId: req.user.id
-    }
-  }).then(function (posts) {
-    result = {
-      profile : req.user,
-      post : posts
-    }
-    res.send(result)
-  })
+  if (req.user) {
+    Bo.getFeed(req.user, function (err, result) {
+      if (!err)
+        res.send(result);
+      else
+        res.send(err);
+    });
+  } else
+    res.redirect('/', req);
 }
 
 exports.link = function (req, res) {

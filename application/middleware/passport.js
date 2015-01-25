@@ -15,19 +15,13 @@ module.exports = function (passport, config) {
       done(null, false, {'error' : "Can't serialize user"})
   });
 
-  passport.deserializeUser(function(User, done) {
-    if (User.id) {
-      Db.Person.find({ 
-        where : {
-          id : User.id
-        },
-        include : [ {
-          model: Db.PersonDetails 
-        }]
-      }).then( function (user) {
-        done(null, user)
-      }).catch(function () {
-        done(null, false, {'error' : "Can't deserialize user"});    
+  passport.deserializeUser(function(user, done) {
+    console.log(user)
+    if (user.id) {
+      Person.getOne(user.id, function (err, User) {
+        if (err)
+          return done(err, false, {'error' : "Can't deserialize user"}); 
+        done(null, User)
       })
     }
   });

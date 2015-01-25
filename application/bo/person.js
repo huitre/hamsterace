@@ -8,7 +8,8 @@ var Db = require('../models'),
 
 var PersonModel = (function () {
 
-  this.isValidUserPassword = function (params, done) {
+  // not used anymore ?
+  /*this.isValidUserPassword = function (params, done) {
     var md5 = crypto.createHash('md5');
 
     params.password = md5.update(params.password).digest('hex');
@@ -19,7 +20,7 @@ var PersonModel = (function () {
         if (row.length < 0) return done(new Error({'message': 'user.not.found'}));
         return done(null,populate(row[0]));
       });
-  }
+  }*/
 
   this.authFindOrCreate = function (profile, done) {
     var where = {},
@@ -53,6 +54,48 @@ var PersonModel = (function () {
     }).catch(function (err) {
       return done(err, false);
     });
+  }
+
+  this.getOne = function (id, done) {
+    Db.Person.find({ 
+      where : {
+        id : id
+      },
+      include : [{
+        model: Db.PersonDetails 
+      }]
+    }).then( function (user) {
+      done(null, user)
+    }).catch(function (err) {
+      done(err)
+    })
+  }
+
+  this.getFeed = function (User, done) {
+    Db.PeopleFriend.findAll({
+      where : {PersonId: User.id}
+    }).then(function (friends) {
+      var friendsId = []
+      friends.map(function (friend) {
+        friendsId.push(friend.FriendId);
+      })
+      friendsId.push(User.id)
+      Db.Post.findAll({
+        where : {
+          PersonId: friendsId
+        },
+        order : '"Post"."updatedAt" DESC',
+        include : [{
+          model: Db.Comment
+        }]
+      }).then(function (posts) {
+        result = {
+          profile : User,
+          post : posts
+        }
+        done(null, result)
+      })
+    }).catch(done)
   }
 
   return this;
