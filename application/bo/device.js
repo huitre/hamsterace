@@ -1,3 +1,7 @@
+var console = require('console-plus'),
+    Promise = require("bluebird"),
+    Db = require('../models');
+
 var DeviceModel = (function () {
   /*
    * Requirements
@@ -8,7 +12,7 @@ var DeviceModel = (function () {
       Utils = require('../hra/lib/utils'),
       // config
       Config = require('config'),
-      self = this,
+      self = this;
 
   /*
    * First we check if with can find a device with the
@@ -22,7 +26,7 @@ var DeviceModel = (function () {
    * @params onSuccess  Callback when everything went as planned
    * @params onFail     Callback when everything is fucked up
    */
-  register = function (req, done) {
+  this.register = function (req, done) {
     var uKey = req.param('userKey'),
         privateKey = req.param('privateKey'),
         apiKey = req.param('apiKey'),
@@ -38,15 +42,15 @@ var DeviceModel = (function () {
           });
         }
       });
-  },
+  }
 
   /*
    * Return a token based on the user secret key and the device secret key
    * This token is used for activation when the user is registered
    */
-  createToken = function (uKey, apiKey) {
+  this.createToken = function (uKey, apiKey) {
     return crypto.createHash('md5').update(uKey).update(apiKey).update(new Date().getTime() + '').digest('hex');
-  },
+  }
 
 
   /*
@@ -58,7 +62,7 @@ var DeviceModel = (function () {
    * @params onSuccess  Callback when everything went as planned
    * @params onFail     Callback when everything is fucked up
    */
-  activate = function (req, onActivated) {
+  this.activate = function (req, onActivated) {
     var token = req.param('token'),
         email = req.param('email');
 
@@ -81,12 +85,18 @@ var DeviceModel = (function () {
       };
   }
 
-  return {
-    register : register,
-    activate : activate,
-    //sendActivationMail : sendActivationMail,
-    //sendRegistrationMail: sendRegistrationMail
+  this.find = function (User, done) {
+    Db.RegisteredDevice.find({
+      where: {
+        PersonId : User
+      }
+    }).then(function (Device) {
+      return done(null, Device)
+    }).catch(function (e) {
+      return done(e)
+    })
   }
+  return this;
 })()
 
 if (typeof module !== 'undefined') {

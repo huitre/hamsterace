@@ -71,33 +71,13 @@ var PersonModel = (function () {
     })
   }
 
-  this.getFeed = function (User, done) {
+  this.getFriends = function (UserId, done) {
     Db.PeopleFriend.findAll({
-      where : {PersonId: User.id}
+      where : {PersonId: UserId}
     }).then(function (friends) {
-      var friendsId = []
-      friends.map(function (friend) {
-        friendsId.push(friend.FriendId);
-      })
-      friendsId.push(User.id)
-      Db.Post.findAll({
-        where : {
-          PersonId: friendsId
-        },
-        order : '"Post"."updatedAt" DESC',
-        include : [{
-          model: Db.Comment
-        }]
-      }).then(function (posts) {
-        result = {
-          profile : User,
-          post : posts
-        }
-        done(null, result)
-      })
-    }).catch(done)
+      done(friends);
+    })
   }
-
   return this;
 })()
 

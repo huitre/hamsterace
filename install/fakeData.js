@@ -1,5 +1,6 @@
 var Db = require('../application/models'),
-    Utils = require('../application/hra/lib/utils').RandomUtils;
+    Utils = require('../application/hra/lib/utils').RandomUtils,
+    Moment = require('moment');
 
 var FakeData = (function () {
 
@@ -108,36 +109,40 @@ var FakeData = (function () {
 
           var r = function (s, l) {
             var a = s || new Date(),
-              eventDatas = [{
-              type: 'lapsStart'},
-            {
-              type: 'laps',
-              content : Utils.range(8, 12)
-            }];
+                eventDatas = [];
+
+            a = Moment(a);
 
             for (var i = l; --i > 0;) {
-              a = new Date(a.getTime() + Utils.range(2, 5));
+              a.add(Utils.range(200, 1500), 's');
               eventDatas.push({
-                  type: 'laps',
-                  content : Utils.range(8, 12),
-                  createdAt : a,
-                  DeviceId : device.id
-                })
-            }
-            eventDatas.push({type: 'lapsStop'});
+                type: 'lapsStart',
+                DeviceId: device.id,
+                createdAt : a
+              });
 
+              for (var j = Utils.range(5, 20); --j > 0;) {
+                a.add(Utils.range(50, 80), 's');
+                eventDatas.push({
+                    type: 'laps',
+                    content : Utils.range(90, 120),
+                    createdAt : a.toISOString(),
+                    DeviceId : device.id
+                  })
+              }
+              eventDatas.push({
+                type: 'lapsStop',
+                DeviceId: device.id,
+                createdAt : a
+              });
+            }
             return { datas : eventDatas, date : a }
           }
 
           // populate events
-          var d = new Date(),
-              b = r(d, 30);
-          for (var i = 0; i < 50; i++) {
-            Db.Event.bulkCreate(b.datas);
-            d = b.date;
-            b = r(d, Utils.range(30, 150));
-          }
-
+          var d = new Date();
+          b = r(d, Utils.range(50, 250));
+          Db.Event.bulkCreate(b.datas);
         })
         
       });

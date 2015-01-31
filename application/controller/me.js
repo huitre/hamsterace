@@ -1,4 +1,4 @@
-var Bo = require('../bo/person'),
+var Bo = require('../bo/feed'),
     //Db = require('../models'),
     console = require('console-plus');
 
@@ -7,15 +7,13 @@ exports.index = function (req, res) {
 }
 
 exports.feed = function (req, res) {
-  if (req.user) {
-    Bo.getFeed(req.user, function (err, result) {
-      if (!err)
+  try {
+    Bo.getFeed(req.user, function (result) {
         res.send(result);
-      else
-        res.send(err);
     });
-  } else
-    res.redirect('/', req);
+  } catch (e) {
+    res.status(500).send(e)
+  }
 }
 
 exports.link = function (req, res) {

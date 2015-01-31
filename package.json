@@ -11,7 +11,6 @@
     "logger": "0.0.1",
     "method-override": "^2.3.0",
     "morgan": "^1.4.1",
-    "vhost": "^3.0.0",
     "multer": "~0.1.6",
     "pg": "~3.6.2",
     "pg-query": "~0.10.1",
@@ -24,7 +23,10 @@
     "passport-google-oauth": "~0.1.5",
     "passport-google": "~0.3.0",
     "sequelize": "~2.0.0-rc7",
-    "console-plus": "~0.1.1"
+    "console-plus": "~0.1.1",
+    "bluebird": "~2.9.3",
+    "moment": "~2.9.0",
+    "underscore": "~1.7.0"
   },
   "devDependencies": {},
   "scripts": {

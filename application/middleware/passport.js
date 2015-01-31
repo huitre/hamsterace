@@ -16,7 +16,6 @@ module.exports = function (passport, config) {
   });
 
   passport.deserializeUser(function(user, done) {
-    console.log(user)
     if (user.id) {
       Person.getOne(user.id, function (err, User) {
         if (err)
