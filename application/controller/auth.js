@@ -1,77 +1,62 @@
+var console = require('console-plus'),
+    Passport = require('passport'),
+    Db = require('../models');
+
 var AuthController = (function () {
-  var bo = require('../hra/bo/auth.js'),
-      Passport = require('passport'),
-      // config
-      Config = require('config');
-
-
-  /*
-   * Endpoint for local login
-   * @params req express request
-   */
-  function login (req, res) {
-    res.send('this is index');
-  }
 
   /*
    * Endpoint for local signup
    * @params req express request
    */
-  var signup = function (req, res) {
-    console.log('Auth.signup');
-    if (req.body.email.length && req.body.password.length) {
-      bo.signup(req.body.email, req.body.password, req.body.name,
-        function(err, user){
-          if(err) throw err;
-          req.login(user, function(err){
-            if(err) return next(err);
-            return res.redirect("/me");
-          });
-        });
+  this.signIn = function (req, res) {
+    
+  }
+
+  this.login = function (req, res, next) {
+    if (!req.body.password || req.body.password.trim() == "" 
+      || !req.body.email || req.body.email.trim() == "") {
+      throw new Error('Email or password cannot be empty');
     }
-    return onFail(res, new Error('missing.parameters'));
+    Passport.authenticate('local',{
+      successRedirect : "/me/feed",
+      failureRedirect : "/",
+    })(req, res, next)
   }
 
-  /*
-   * Endpoint for facebook signup
-   * @params req express request
-   */
-  signup.fb = function (req, res) {
-
+  this.login.google = function (req, res, next) {
+    Passport.authenticate(
+      'google',
+      {
+        scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+        ]
+      })(req, res, next)
   }
 
-  /*
-   * Endpoint for google signup
-   * @params req express request
-   */
-  signup.google = function (req, res) {
-
+  this.login.google.ok = function (req, res, next) {
+    Passport.authenticate('google', { 
+      successRedirect : "/me",
+      failureRedirect : "/"
+    })(req, res, next)
   }
 
-
-  /*
-   * Generic success call back
-   * @param res express response object
-   * @param success obj
-   */
-  function onSuccess (res, success) {
-    res.status(200).send(success);
+  this.login.fb = function (req, res, next) {
+    Passport.authenticate('facebook', { 
+      successRedirect : "/me",
+      failureRedirect : "/"
+    })(req, res, next)
   }
 
-
-  /*
-   * Generic error call back
-   * @param obj express response object
-   * @param obj error
-   */
-  function onFail (res, err) {
-    res.status(500).send(err);
+  this.login.fb.ok = function (req, res, next) {
+    Passport.authenticate('facebook', { 
+      successRedirect : "/me",
+      failureRedirect : "/"
+    })(req, res, next)
   }
+  
+  return this;
 
-  return {
-    "login" : login,
-    "signup" : signup,
-  }
 })();
 
 if (typeof module !== 'undefined') {

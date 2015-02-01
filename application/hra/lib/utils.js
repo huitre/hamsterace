@@ -19,13 +19,15 @@ var DateUtils = (function () {
 
 
 var RandomUtils = (function () {
-  var hash = function () {
+  this.hash = function () {
     return new Date().getTime() * Math.floor((Math.random() * 100) + 1) + (new Date().getTime() + '');
   }
 
-  return {
-    hash: hash
+  this.range = function (max, min) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+
+  return this
 })()
 
 if (typeof module !== 'undefined') {

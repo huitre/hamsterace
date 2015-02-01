@@ -11,14 +11,23 @@ var express = require('express'),
     methodOverride = require('method-override'),
     fs = require('fs'),
     https = require('https'),
+    routes = require('./application/routes'),
+    config = require('config'),
+    session = require('express-session'),
+    /*
+     * ORM Sequelize
+     */
+    sequelize = require('./application/models'),
+    /*
+     * Passport for authentification
+     */
     passport = require('passport'),
     FB = require('passport-facebook'),
     LocalStrategy = require('passport-local'),
     GoogleStrategy = require('passport-google'),
-    routes = require('./application/routes'),
-    config = require('config'),
-    session = require('express-session'),
     passportMidlleWare = require('./application/middleware/passport')(passport, config);
+
+var FakeDatas = require('./install/fakeData');
 
 module.exports = app;
 
@@ -35,6 +44,7 @@ if (!module.parent) {
 app.use(methodOverride('_method'));
 app.use(multi({ dest: './uploads/'}));
 app.use(cookieParser());
+
 /*
  * Raw body to check md5 content integrity
  */
@@ -49,6 +59,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public/'));
@@ -58,7 +69,13 @@ app.use(express.static(__dirname + '/public/'));
 app.use(session({ secret: config.Session.secret }));
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(function (req, res, next) {
+  /*if (!req.user && 
+      req.url !== '/' &&
+      req.url !== '/login')
+    return res.redirect('/')*/
+  next();
+})
 
 /* allow regex for captures parameters */
 app.param(function(name, fn){
@@ -77,17 +94,24 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 
+sequelize.sequelize.sync({force : true}).done(function() {
 
-/* istanbul ignore next */
-if (!module.parent) {
-  if (config.SSL) {
-    var httpsOptions = {
-      key: fs.readFileSync('config/api.key'),
-      cert: fs.readFileSync('config/api.crt')
-    };
-    https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+  // populate
+  FakeDatas.populate();
+
+  // database setted up
+  // launching server
+  if (!module.parent) {
+    if (config.SSL) {
+      var httpsOptions = {
+        key: fs.readFileSync('config/api.key'),
+        cert: fs.readFileSync('config/api.crt')
+      };
+      https.createServer(httpsOptions, app).listen(4242, '127.0.0.1');
+    }
+    else
+      app.listen(4242);
+    console.log('Express started on port 4242');
   }
-  else
-    app.listen(4242);
-  console.log('Express started on port 4242');
-}
+
+});

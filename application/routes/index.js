@@ -22,14 +22,7 @@ exports.init = function init (router) {
    */
 
   router.get('/', function (req, res) {
-    if(req.isAuthenticated()){
-      console.log('User is authenticated');
-      res.send(req.user);
-      //res.render('index', {title: 'Hamsterace is under development !', user: req.user});
-    } else {
       res.render("index", { user : null});
-      //res.send(500, {error: "not authenticated"});
-    }
   })
 
   /*
@@ -39,44 +32,16 @@ exports.init = function init (router) {
     res.render("login");
   });
 
-  router.post("/login",
-    Passport.authenticate('local',{
-      successRedirect : "/",
-      failureRedirect : "/",
-    })
-  );
+  router.post("/login", Auth.login);
 
-  router.get("/signup", function (req, res) {
-    res.render("signup");
-  });
+  router.post("/signin",  Auth.signIn);
 
-  router.post("/signup",  Auth.signup);
+  router.get("/auth/facebook", Auth.login.fb);
+  router.get("/auth/facebook/callback", Auth.login.fb.ok);
 
-  router.get("/auth/facebook", Passport.authenticate("facebook",{ scope : "email"}));
-  router.get("/auth/facebook/callback", 
-    Passport.authenticate("facebook",{ failureRedirect: '/login'}),
-    function(req,res){
-      res.render("profile", {user : req.user});
-    }
-  );
+  router.get('/auth/google',  Auth.login.google);
 
-  router.get('/auth/google',
-    Passport.authenticate(
-      'google',
-      {
-        scope: [
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email'
-        ]
-      })
-    );
-
-  router.get('/auth/google/callback', 
-    Passport.authenticate('google', { failureRedirect: '/login' }),
-    function(req, res) {
-      // Successful authentication, redirect home.
-      res.render("profile", {user : req.user});
-    });
+  router.get('/auth/google/callback', Auth.login.google.ok);
 
   router.get('/logout', function(req, res){
     req.logout();
@@ -136,9 +101,12 @@ exports.init = function init (router) {
    * Stats routes
    */	
 
+  // get request
+  router.get('/stats/:id/monthly/:type', Stats.monthly)
+  router.get('/stats/:id/daily/:type', Stats.daily)
+  
   // post request
   router.post('/stats', Stats.find);
-
 
   /*
    * Users routes
@@ -149,7 +117,7 @@ exports.init = function init (router) {
   router.get('/user/:id/friends', Users.friends);
 	router.get('/user/:id/followers', Users.followers);
 	router.get('/user/:id/badges', Users.badges);
-	router.get('/user/:id/wall', Users.wall);
+	router.get('/user/:id/feed', Users.wall);
 
 	/*
    * Users routes

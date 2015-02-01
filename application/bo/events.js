@@ -4,7 +4,7 @@
  */
 
 var EventsModel = (function () {
-  var pg = require('../hra/database')();
+  var pg = require('../models');
 
   var insert = function (req, events) {
     events.forEach(function (event) {
