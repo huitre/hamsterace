@@ -7,7 +7,7 @@ module.exports = function(Sequelize, DataTypes) {
   },
   {
     associate: function (models) {
-      
+     models.Avatar.hasMany(models.AvatarDetail) 
     }
   });
 }

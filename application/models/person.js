@@ -33,6 +33,7 @@ module.exports = function(Sequelize, DataTypes) {
   {
     associate: function (models) {
       models.Person.hasMany(models.PersonDetails);
+      models.Person.hasOne(models.RegisteredDevice);
       models.Person.hasMany(models.Post);
     },
     classMethods: {

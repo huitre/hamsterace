@@ -6,8 +6,7 @@ var crypto = require('crypto'),
     Moment = require('moment'),
     Promise = require("bluebird"),
     //console = require('console-plus'),
-    Device = require('../bo/device'),
-    _ = require('underscore'),
+    Device = require('../bo/device')
     Db = require('../models');
 
 var StatsModel = function () {};
@@ -23,7 +22,7 @@ StatsModel.prototype.get = function (User, time, type) {
     ]
   },
   /*
-   * No more usable for the moment
+   * No more useful for the moment
    *
   checkEventIntegrity = function (datas) {
     var e = getEventStartAndStop(),
@@ -59,12 +58,16 @@ StatsModel.prototype.get = function (User, time, type) {
 
       switch (type) {
         case 'wheel':
-          result.distance = getDistance(datas);
-          result.averageDistance = getAverageDistance(result.distance);
-          result.maxDistance = getMaxDistance(result.distance);
-          result.speed = getSpeed(result.distance);
-          result.maxSpeed = getMaxSpeed(result.speed);
-          result.averageSpeed = getAverageSpeed(result.speed);
+          result.distance = {}
+          result.distance.datas = getDistance(datas);
+          result.distance.averageDistance = getAverageDistance(result.distance.datas);
+          result.distance.maxDistance = getMaxDistance(result.distance.datas);
+          result.distance.units = 'km';
+          result.speed = {}
+          result.speed.datas = getSpeed(result.distance.datas);
+          result.speed.maxSpeed = getMaxSpeed(result.speed.datas);
+          result.speed.averageSpeed = getAverageSpeed(result.speed.datas);
+          result.speed.units = 'km/h';
         break;
       }
       fulfill(result);
@@ -143,7 +146,7 @@ StatsModel.prototype.get = function (User, time, type) {
   switch (time) {
     case 'daily':
       time = {}
-      time.start = Moment().substract(1, 'days').hours(0).minutes(0).seconds(0).format();
+      time.start = Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
     break;
 
@@ -157,8 +160,8 @@ StatsModel.prototype.get = function (User, time, type) {
     break;
   }
 
-  // get device for userID
   return new Promise(function (fulfill, reject){
+        // get device for userID  
         Device.find(User, function (err, res){
           if (err)
             reject(err);

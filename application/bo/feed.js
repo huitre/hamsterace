@@ -12,16 +12,25 @@ var FeedModel = (function () {
   /*
    * Return lastest posts and comments
    * of a user and his friends
-   * @params User.id
+   *
+   *
+   * @params User || id
    * @params callback
    */
   this.getFeed = function (User, done) {
-    Person.getFriends(User.id, function (friends) {
+    var publicy, UserId;
+    
+    if (typeof User == "object")
+      publicy = false;
+    
+    UserId = User.id || User;
+
+    Person.getFriendsIdList(UserId, function (friends) {
       var friendsId = []
       friends.map(function (friend) {
         friendsId.push(friend.FriendId);
       })
-      friendsId.push(User.id)
+      friendsId.push(UserId)
       Db.Post.findAll({
         where : {
           PersonId: friendsId
@@ -36,9 +45,9 @@ var FeedModel = (function () {
           profile : User,
           post : posts
         }
-        done(result);
-      }).catch (function () {
-        throw new Error('No feed available');
+        done(null, result);
+      }).catch (function (e) {
+        done(e)
       })
     })
   }

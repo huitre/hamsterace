@@ -117,7 +117,7 @@ exports.init = function init (router) {
   router.get('/user/:id/friends', Users.friends);
 	router.get('/user/:id/followers', Users.followers);
 	router.get('/user/:id/badges', Users.badges);
-	router.get('/user/:id/wall', Users.wall);
+	router.get('/user/:id/feed', Users.wall);
 
 	/*
    * Users routes

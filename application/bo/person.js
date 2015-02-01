@@ -40,7 +40,10 @@ var PersonModel = (function () {
       where.fbid = profile.id;
 
     Db.Person.findOrCreate({
-      where : where
+      where : where,
+      include : [{
+        model: Db.PersonDetails 
+      }]
     }).spread(function (User) {
       if (!User.PersonDetails || User.PersonDetails.length < 1) {
         var details = Db.PersonDetails.build({
@@ -52,6 +55,7 @@ var PersonModel = (function () {
       }
       return done(null, User);
     }).catch(function (err) {
+      console.log(err);
       return done(err, false);
     });
   }
@@ -73,7 +77,20 @@ var PersonModel = (function () {
 
   this.getFriends = function (UserId, done) {
     Db.PeopleFriend.findAll({
-      where : {PersonId: UserId}
+      where : {PersonId: UserId, confirmed: true},
+      include : [{
+        model: Db.Person,
+        attributes : ['email'],
+        include : [Db.PersonDetails]
+      }]
+    }).then(function (friends) {
+      done(friends);
+    })
+  }
+
+  this.getFriendsIdList = function (UserId, done) {
+    Db.PeopleFriend.findAll({
+      where : {PersonId: UserId, confirmed: true},
     }).then(function (friends) {
       done(friends);
     })
