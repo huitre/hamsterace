@@ -65,6 +65,7 @@ var PersonModel = (function () {
       where : {
         id : id
       },
+      attributes : ['email', 'id'],
       include : [{
         model: Db.PersonDetails 
       }]

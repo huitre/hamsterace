@@ -38,7 +38,26 @@ var FeedModel = (function () {
         order : '"Post"."updatedAt" DESC',
         limit: 15,
         include : [{
-          model: Db.Comment
+          model: Db.Comment,
+          include : {
+            model: Db.Person,
+            attributes : ['id'],
+            include : [{
+              model : Db.PersonDetails,
+              attributes : ['name', 'firstname']
+            }, {
+              model : Db.Image
+            }]
+          }
+        },{
+          model: Db.Person,
+          attributes : ['id'],
+          include : [{
+            model : Db.PersonDetails,
+            attributes : ['name', 'firstname']
+          },{
+            model : Db.Image
+          }]
         }]
       }).then(function (posts) {
         result = {
@@ -50,6 +69,36 @@ var FeedModel = (function () {
         done(e)
       })
     })
+  }
+
+  this.addPost = function (User, content, done) {
+    var UserId;
+    
+    UserId = User.id || User;
+    // TODO parse content toget pictures/links/video
+    Db.Post.create({
+      content : {text: content},
+      PersonId: UserId
+    }).then(function (post) {
+      done(null, post);
+    }).catch(done);
+  }
+
+  this.addComment = function (User, content, postId, done) {
+    var publicy, UserId;
+    
+    if (typeof User == "object")
+      publicy = false;
+    
+    UserId = User.id || User;
+
+    Db.Comment.create({
+      content: {text: content},
+      PersonId: UserId,
+      PostId: postId
+    }).then(function (post) {
+      done(null, post);
+    }).catch(done);
   }
 
   return this;

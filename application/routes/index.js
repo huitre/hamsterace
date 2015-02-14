@@ -86,10 +86,15 @@ exports.init = function init (router) {
 	router.get('/me/link', Me.link);
 	router.get('/me/devices', Me.devices);
 
-	// post request
-	router.post('/me/feed', Me.feed);
-	router.post('/me/auth', Me.auth);
+  // post request
+  router.post('/me/auth', Me.auth);
 
+  // put request
+  router.put('/me/feed/post', Me.post);
+  router.put('/me/feed/comment/:postid', Me.comment);
+
+  //delete
+  router.delete('/me/feed/comment/:id', Me.comment);
 	/*
    * Rankings routes
    */	

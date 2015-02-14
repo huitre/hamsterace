@@ -25,6 +25,9 @@
     "replyto" : "contact@hamsterace.com",
     "name" : "Hamster ace"
   },
+  "Cors" : [
+    "http://localhost:3000"
+  ],
   "Session" : {
     "secret" : "hamsteracesecretsessionpassphrase"
   },

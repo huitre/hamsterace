@@ -25,7 +25,8 @@ var express = require('express'),
     FB = require('passport-facebook'),
     LocalStrategy = require('passport-local'),
     GoogleStrategy = require('passport-google'),
-    passportMidlleWare = require('./application/middleware/passport')(passport, config);
+    passportMidlleWare = require('./application/middleware/passport')(passport, config),
+    cors = require('cors');
 
 var FakeDatas = require('./install/fakeData');
 
@@ -59,7 +60,27 @@ app.use(function(req, res, next) {
   next();
 });
 
-
+app.use(function(req, res, next) {
+  config.Cors.forEach(function (host) {
+    if (req.headers.origin == host) {
+      res.header("Access-Control-Allow-Origin", host);
+      res.header("Access-Control-Allow-Methods", "GET,PUT,POST");
+      res.header("Access-Control-Allow-Credentials", "true");
+      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    }
+  });
+  next();
+});
+/*
+var whitelist = ['http://localhost:3000', 'http://example2.com'];
+var corsOptions = {
+  origin: function(origin, callback){
+    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(null, originIsWhitelisted);
+  }
+};
+app.use(cors(corsOptions));
+*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public/'));
