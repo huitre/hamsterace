@@ -58,7 +58,7 @@ exports.full = function (req, res) {
 exports.post = function (req, res) {
   if (!req.user) 
     return res.status(500).send('user.not.logged.in');
-  Feed.addPost(req.user, req.params.content,
+  Feed.addPost(req.user, req.body.content,
     function (err, post) {
       if (err) {
         console.log(err);
@@ -71,7 +71,7 @@ exports.post = function (req, res) {
 exports.comment = function (req, res) {
   if (!req.user) 
     return res.status(500).send('user.not.logged.in');
-  Feed.addComment(req.user, req.params.content, req.params.postid,
+  Feed.addComment(req.user, req.body.content, req.params.postid,
     function (err, post) {
       if (err) {
         console.log(err);

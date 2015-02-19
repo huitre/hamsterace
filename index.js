@@ -25,8 +25,7 @@ var express = require('express'),
     FB = require('passport-facebook'),
     LocalStrategy = require('passport-local'),
     GoogleStrategy = require('passport-google'),
-    passportMidlleWare = require('./application/middleware/passport')(passport, config),
-    cors = require('cors');
+    passportMidlleWare = require('./application/middleware/passport')(passport, config);
 
 var FakeDatas = require('./install/fakeData');
 

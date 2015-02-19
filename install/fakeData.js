@@ -65,6 +65,10 @@ var FakeData = (function () {
           PersonId: 1
         })
         Db.Post.create({
+          content : {text: "Je suis Josephine ange gardien de la paix !"},
+          PersonId: 1
+        })
+        Db.Post.create({
           content: {text : "Hey mate cette video, ca dechire !", video : "http://img-9gag-ftw.9cache.com/photo/aGV3m17_460sv.mp4"},
           PersonId: 3
         }).then(function (post) {
