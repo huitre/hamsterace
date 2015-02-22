@@ -77,6 +77,11 @@ var FakeData = (function () {
             PersonId: 1,
             PostId: post.id
           })
+          Db.Comment.create({
+            content: {text: "Ouais, mais le mieux c'est quand il le mange xD !"},
+            PersonId: 2,
+            PostId: post.id
+          })
         })
 
         Db.PeopleFriend.create({

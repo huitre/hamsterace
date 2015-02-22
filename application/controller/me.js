@@ -4,12 +4,15 @@ var Feed = require('../bo/feed'),
     console = require('console-plus');
 
 exports.index = function (req, res) {
-  res.send(req.user);
+    if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  var result = {};
 }
 
-exports.stats = function () {
+exports.stats = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
+  var result = {};
   Stats.get(req.user.id, 'daily', 'wheel').then(function (stats) {
     result.stats = stats;
     res.send(result);
@@ -20,14 +23,14 @@ exports.stats = function () {
 
 exports.feed = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
   
+  var result = {};
   Feed.getFeed(req.user, function (err, feed) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
     }
-    result = {};
     result.feed = feed.post;
     res.send(result);
   });
@@ -35,7 +38,8 @@ exports.feed = function (req, res) {
 
 exports.full = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
+  var result = {};
   Feed.getFeed(req.user, function (err, feed) {
     if (err) {
       console.log(err);
@@ -57,7 +61,7 @@ exports.full = function (req, res) {
 
 exports.post = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
   Feed.addPost(req.user, req.body.content,
     function (err, post) {
       if (err) {
@@ -70,7 +74,7 @@ exports.post = function (req, res) {
 
 exports.comment = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
   Feed.addComment(req.user, req.body.content, req.params.postid,
     function (err, post) {
       if (err) {
