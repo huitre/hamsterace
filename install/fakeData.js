@@ -4,6 +4,45 @@ var Db = require('../application/models'),
 
 var FakeData = (function () {
 
+  this.populateStats = function (id) {
+    var r = function (s, l) {
+        var a = s || new Date(),
+            eventDatas = [];
+
+        a = Moment(a);
+
+        for (var i = l; --i > 0;) {
+          a.add(Utils.range(2000, 15000), 's');
+          eventDatas.push({
+            type: 'lapsStart',
+            DeviceId: id,
+            createdAt : a
+          });
+
+          for (var j = Utils.range(5, 20); --j > 0;) {
+            a.add(Utils.range(50, 80), 's');
+            eventDatas.push({
+                type: 'laps',
+                content : Utils.range(90, 120),
+                createdAt : a.toISOString(),
+                DeviceId : id
+              })
+          }
+          eventDatas.push({
+            type: 'lapsStop',
+            DeviceId: id,
+            createdAt : a
+          });
+        }
+        return { datas : eventDatas, date : a }
+      }
+
+      // populate events
+      var d = new Date();
+      b = r(d, Utils.range(10, 30));
+      Db.Event.bulkCreate(b.datas);
+  }
+
   this.populate = function () {
 
 
@@ -123,7 +162,7 @@ var FakeData = (function () {
             a = Moment(a);
 
             for (var i = l; --i > 0;) {
-              a.add(Utils.range(200, 1500), 's');
+              a.add(Utils.range(2000, 15000), 's');
               eventDatas.push({
                 type: 'lapsStart',
                 DeviceId: device.id,
@@ -150,7 +189,7 @@ var FakeData = (function () {
 
           // populate events
           var d = new Date();
-          b = r(d, Utils.range(50, 250));
+          b = r(d, Utils.range(10, 30));
           Db.Event.bulkCreate(b.datas);
         })
         

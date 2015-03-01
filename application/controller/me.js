@@ -7,13 +7,16 @@ exports.index = function (req, res) {
     if (!req.user) 
     return res.status(403).send('user.not.logged.in');
   var result = {};
+  res.send(req.user);
 }
 
 exports.stats = function (req, res) {
   if (!req.user) 
     return res.status(403).send('user.not.logged.in');
-  var result = {};
-  Stats.get(req.user.id, 'daily', 'wheel').then(function (stats) {
+  var result = {},
+      type = req.params.type || 'daily';
+  console.log(req.params);
+  Stats.get(req.user.id, type, 'wheel').then(function (stats) {
     result.stats = stats;
     res.send(result);
   }).catch(function (e){

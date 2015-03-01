@@ -84,6 +84,7 @@ exports.init = function init (router) {
   router.get('/me', Me.index);
   router.get('/me/feed', Me.feed);
   router.get('/me/stats', Me.stats);
+  router.get('/me/stats/:type', Me.stats);
 	router.get('/me/link', Me.link);
 	router.get('/me/devices', Me.devices);
 

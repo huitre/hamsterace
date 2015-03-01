@@ -70,16 +70,7 @@ app.use(function(req, res, next) {
   });
   next();
 });
-/*
-var whitelist = ['http://localhost:3000', 'http://example2.com'];
-var corsOptions = {
-  origin: function(origin, callback){
-    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(null, originIsWhitelisted);
-  }
-};
-app.use(cors(corsOptions));
-*/
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public/'));
@@ -114,10 +105,10 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 
-sequelize.sequelize.sync({force : true}).done(function() {
+sequelize.sequelize.sync({force : false}).done(function() {
 
   // populate
-  FakeDatas.populate();
+  //FakeDatas.populateStats();
 
   // database setted up
   // launching server

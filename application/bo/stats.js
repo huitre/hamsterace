@@ -5,79 +5,16 @@
 var crypto = require('crypto'),
     Moment = require('moment'),
     Promise = require("bluebird"),
-    //console = require('console-plus'),
+    console = require('console-plus'),
     Device = require('../bo/device')
     Db = require('../models');
 
 var StatsModel = function () {};
 
-StatsModel.prototype.get = function (User, time, type) {
-
-  var getEventStartAndStop = function (type) {
-    // TODO : add different events type
-    return [
-      'lapsStart',
-      'laps',
-      'lapsStop'
-    ]
-  },
-  /*
-   * No more useful for the moment
-   *
-  checkEventIntegrity = function (datas) {
-    var e = getEventStartAndStop(),
-        prev = e.start,
-        safe = [];
-
-    if (datas.length > 2) {
-      for(var i = 0, m = datas.length - 2, j = datas[i].dataValues; i < m;) {
-        if (j.type == e.normal) {
-          safe.push(j);
-          i++;
-        }
-        else if (j.type == e.start && datas[i+1].dataValues.type == e.stop) {
-          safe.push(j);
-          safe.push(datas[i+1].dataValues);
-          i += 2
-        } else
-          i++;
-      }
-    } else if (datas.length == 2){
-      if (datas[0].dataValues.type == e.start && datas[1].dataValues.type == e.stop) {
-        safe.push(datas[0].dataValues);
-        safe.push(datas[1].dataValues);
-      }
-    }    
-    return safe;
-  },*/
-
-  computeDatas = function (datas) {
-    //datas = checkEventIntegrity(datas);
-    return new Promise(function (fulfill, reject){
-      var result = {}
-
-      switch (type) {
-        case 'wheel':
-          result.distance = {}
-          result.distance.datas = getDistance(datas);
-          result.distance.averageDistance = getAverageDistance(result.distance.datas);
-          result.distance.maxDistance = getMaxDistance(result.distance.datas);
-          result.distance.units = 'km';
-          result.speed = {}
-          result.speed.datas = getSpeed(result.distance.datas);
-          result.speed.maxSpeed = getMaxSpeed(result.speed.datas);
-          result.speed.averageSpeed = getAverageSpeed(result.speed.datas);
-          result.speed.units = 'km/h';
-        break;
-      }
-      fulfill(result);
-    })
-  },
-
-  getDistance = function (datas) {
+StatsModel.prototype.getDistance = function (data) {
     var distance = [], a, vm;
-    for(var i = 0, m = datas.length - 2; i < m; i++) {
-      a = datas[i];
+    for(var i = 0, m = data.length; i < m; ++i) {
+      a = data[i];
       if (a.content) {
         vm = (a.content * 2 * 3.1415926 * (17/100/1000));
         distance.push({
@@ -87,73 +24,153 @@ StatsModel.prototype.get = function (User, time, type) {
       }
     }
     return distance;
-  },
-  getAverageDistance = function (datas) {
-    var sum = 0;
-    datas.map(function (vm) {
-      sum += vm.distance;
-    });
-    return sum / (datas.length - 1);
-  },
-  getMaxDistance = function (datas) {
-    var max = 0;
-    for(var i = 0, m = datas.length - 1; i < m; i++) {
-      if (datas[i].distance > max)
-        max = datas[i].distance;
-    }
-    return max;
-  },
-  getSpeed = function (datas) {
-    var a, t1, t2, d1, d2, vm, vmList = [], j;
-    for(var i = 0, m = datas.length - 2; i < m; i++) {
-      j = datas[i];
-      a = datas[i + 1];
-      t1 = j.createdAt;
-      t2 = a.createdAt;
-      vm = a.distance / ((t2 - t1) / (60 * 60 * 1000));
-      if (vm > 1.0)
-        vmList.push({speed : vm, time : t2});
-    }
-    return vmList;
-  },
-
-  getMaxSpeed = function (datas) {
-    var max = 0;
-    for(var i = 0, m = datas.length - 1; i < m; i++) {
-      if (datas[i].speed > max)
-        max = datas[i].speed;
-    }
-    return max;
-  },
-
-  getAverageSpeed = function (datas) {
-    var sum = 0;
-    datas.map(function (vm) {
-      sum += vm.speed;
-    });
-    return sum / (datas.length - 1);
-  },
-  getRotation = function () {
-
-  },
-  getAverageRotation = function () {
-
-  },
-  getMaxRotation = function () {
-
   }
+
+StatsModel.prototype.getAverageDistance = function (data) {
+  var sum = 0;
+  data.map(function (vm) {
+    sum += vm.distance;
+  });
+  return sum / (data.length - 1);
+}
+
+StatsModel.prototype.getMaxDistance = function (data) {
+  var max = 0;
+  for(var i = 0, m = data.length - 1; i < m; ++i) {
+    if (data[i].distance > max)
+      max = data[i].distance;
+  }
+  return max;
+}
+
+StatsModel.prototype.getSpeed = function (data) {
+  var a, t1, t2, d1, d2, vm = 1.0, vmList = [], j;
+  for(var i = 0, m = data.length - 2; i < m; ++i) {
+    j = data[i];
+    a = data[i + 1];
+    t1 = j.createdAt;
+    t2 = a.createdAt;
+    vm = a.distance / ((t2 - t1) / (60 * 60 * 1000));
+    if (vm > 1.0)
+      vmList.push({speed : vm, time : t2});
+  }
+  return vmList;
+}
+
+StatsModel.prototype.getMaxSpeed = function (data) {
+  var max = 0;
+  for(var i = 0, m = data.length - 1; i < m; ++i) {
+    if (data[i].speed > max)
+      max = data[i].speed;
+  }
+  return max;
+}
+
+StatsModel.prototype.getAverageSpeed = function (data) {
+  var sum = 0;
+  data.map(function (vm) {
+    sum += vm.speed;
+  });
+  return sum / (data.length - 1);
+}
+
+
+StatsModel.prototype.get = function (User, time, type) {
+  var self = this,
+  
+  compute = null,
+  
+  getEventStartAndStop = function (type) {
+    // TODO : add different events type
+    return [
+      'lapsStart',
+      'laps',
+      'lapsStop'
+    ]
+  },
+
+  aggregateByTimestamp = function (data, time) {
+    var aggregated = {}, a = null, t, c;
+    if (time == 'monthly') {
+      c = function (a) {
+        return new Date(a.createdAt).getDate();
+      }
+    }
+    else {
+      c = function (a) {
+        return new Date(a.createdAt).getMonth();
+      }
+    }
+    for(var i = 0, m = data.length - 1; i < m; ++i) {
+      a = data[i];
+      t = new Date(a.createdAt).getDate();
+      if (!aggregated[t])
+        aggregated[t] = [];
+      aggregated[t].push(a);
+    }
+    return aggregated;
+  },
+
+  calculate = function (data) {
+    var result = {}
+    switch (type) {
+      case 'wheel':
+        result.distance = {}
+        result.distance.data = self.getDistance(data);
+        //result.distance.averageDistance = self.getAverageDistance(result.distance.data);
+        //result.distance.maxDistance = self.getMaxDistance(result.distance.data);
+        result.distance.units = 'km';
+        result.speed = {}
+        result.speed.data = self.getSpeed(result.distance.data);
+        //result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
+        //result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);
+        result.speed.units = 'km/h';
+      break;
+    }
+    return result;
+  }
+
+  computeDaily = function (data) {
+    return new Promise(function (fulfill, reject){
+      fulfill(data);
+      fulfill(calculate(data));
+    })
+  },
+
+  computeMonthly = function (data, type) {
+    return new Promise(function (fulfill, reject){
+      data = aggregateByTimestamp(data, 'monthly');
+      
+      var sum = 0, a = null, newData = [], c = [];
+
+      for(var i in data) {
+        sum = 0;
+        for(var j = 0, m2 = data[i].length - 1; j < m2; ++j) {
+          sum += data[i][j].content;
+        }
+        c.push({
+            createdAt : data[i][0].createdAt,
+            type : "laps",
+            content: sum
+          });
+      }
+      fulfill(calculate(c));
+    })
+  };
 
   switch (time) {
     case 'daily':
       time = {}
       time.start = Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
+      compute = computeDaily;
     break;
 
     case 'monthly':
       time = {}
       time.start = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
+      compute = computeMonthly;
     break;
     
     case 'daily':
@@ -173,17 +190,18 @@ StatsModel.prototype.get = function (User, time, type) {
                   gt : time.start,
                   lt : time.end
                 },
-                type : getEventStartAndStop()
+                type : getEventStartAndStop(),
+                DeviceId : res.id
               },
               order: '"createdAt" ASC',
               limit: 1000
-            }, {raw: true}).spread(function () {
-              return computeDatas(arguments).then(function (result) {
+            }, {raw: true}).spread(function (data) {
+              return compute(arguments).then(function (result) {
                 fulfill(result)
               })
             }).catch(function (e) {
-              console.log(e)
-              reject(e)
+              console.log(e, e.stack);
+              reject(e.stack)
             })
           }
         });
