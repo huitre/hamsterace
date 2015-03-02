@@ -117,13 +117,13 @@ StatsModel.prototype.get = function (User, time, type) {
       case 'wheel':
         result.distance = {}
         result.distance.data = self.getDistance(data);
-        //result.distance.averageDistance = self.getAverageDistance(result.distance.data);
-        //result.distance.maxDistance = self.getMaxDistance(result.distance.data);
+        result.distance.averageDistance = self.getAverageDistance(result.distance.data);
+        result.distance.maxDistance = self.getMaxDistance(result.distance.data);
         result.distance.units = 'km';
         result.speed = {}
         result.speed.data = self.getSpeed(result.distance.data);
-        //result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
-        //result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);
+        result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
+        result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);
         result.speed.units = 'km/h';
       break;
     }
@@ -132,7 +132,6 @@ StatsModel.prototype.get = function (User, time, type) {
 
   computeDaily = function (data) {
     return new Promise(function (fulfill, reject){
-      fulfill(data);
       fulfill(calculate(data));
     })
   },

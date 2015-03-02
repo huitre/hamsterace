@@ -5,6 +5,7 @@ var Db = require('../application/models'),
 var FakeData = (function () {
 
   this.populateStats = function (id) {
+    id = id || 1;
     var r = function (s, l) {
         var a = s || new Date(),
             eventDatas = [];
