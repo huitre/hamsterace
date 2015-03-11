@@ -13,12 +13,12 @@ exports.index = function (req, res) {
 exports.stats = function (req, res) {
   if (!req.user) 
     return res.status(403).send('user.not.logged.in');
-  var result = {},
-      type = req.params.type || 'daily';
+  var type = req.params.type || 'daily';
   console.log(req.params);
   Stats.get(req.user.id, type, 'wheel').then(function (stats) {
-    result.stats = stats;
-    res.send(result);
+    var content = {};
+    content.stats = stats;
+    res.send(content);
   }).catch(function (e){
     res.status(500).send('Unable.to.get.statistics');
   });

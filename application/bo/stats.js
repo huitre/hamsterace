@@ -117,20 +117,20 @@ StatsModel.prototype.get = function (User, time, type) {
       case 'wheel':
         result.distance = {}
         result.distance.data = self.getDistance(data);
-        result.distance.averageDistance = self.getAverageDistance(result.distance.data);
-        result.distance.maxDistance = self.getMaxDistance(result.distance.data);
+        /*result.distance.averageDistance = self.getAverageDistance(result.distance.data);
+        result.distance.maxDistance = self.getMaxDistance(result.distance.data);*/
         result.distance.units = 'km';
         result.speed = {}
         result.speed.data = self.getSpeed(result.distance.data);
-        result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
-        result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);
+        /*result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
+        result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);*/
         result.speed.units = 'km/h';
       break;
     }
     return result;
   }
 
-  computeDaily = function (data) {
+  computeDaily = function (data, type) {
     return new Promise(function (fulfill, reject){
       fulfill(calculate(data));
     })
@@ -139,23 +139,48 @@ StatsModel.prototype.get = function (User, time, type) {
   computeMonthly = function (data, type) {
     return new Promise(function (fulfill, reject){
       data = aggregateByTimestamp(data, 'monthly');
+      console.log(data);
       
       var sum = 0, a = null, newData = [], c = [];
 
+      var stats = {}
+
+      stats.distance = {}
+      stats.distance.data = [];
+      stats.distance.units = 'km';
+      
+
       for(var i in data) {
-        sum = 0;
-        for(var j = 0, m2 = data[i].length - 1; j < m2; ++j) {
-          sum += data[i][j].content;
-        }
-        c.push({
-            createdAt : data[i][0].createdAt,
-            type : "laps",
-            content: sum
-          });
+        stats.distance.data.push({
+          createdAt : data[i][0].createdAt,
+          content : self.getAverageDistance(self.getDistance(data[i]))
+        });
       }
-      fulfill(calculate(c));
+
+      fulfill(stats);
+    })
+  },
+
+  computeWeekly = function (data, type) {
+    return new Promise(function (fulfill, reject){
+      data = aggregateByTimestamp(data, 'weekly');
+      console.log(data);
+      
+      var stats = {}
+
+      stats.distance = {}
+      stats.distance.data = [];
+      stats.distance.units = 'km';
+      
+
+      for(var i in data) {
+        stats.distance.data.push(self.getDistance(data[i]));
+      }
+      fulfill(stats);
     })
   };
+
+
 
   switch (time) {
     case 'daily':
@@ -163,6 +188,13 @@ StatsModel.prototype.get = function (User, time, type) {
       time.start = Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
       compute = computeDaily;
+    break;
+
+    case 'weekly':
+      time = {}
+      time.start = Moment().subtract(7, 'days').hours(0).minutes(0).seconds(0).format();
+      time.end = Moment().add(1, 'days').format();
+      compute = computeWeekly;
     break;
 
     case 'monthly':
