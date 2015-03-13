@@ -90,20 +90,21 @@ StatsModel.prototype.get = function (User, time, type) {
   },
 
   aggregateByTimestamp = function (data, time) {
-    var aggregated = {}, a = null, t, c;
+    var aggregated = {}, a = null, t, c, x;
     if (time == 'monthly') {
       c = function (a) {
         return new Date(a.createdAt).getDate();
       }
     }
-    else {
+    else if (time == 'weekly') {
       c = function (a) {
-        return new Date(a.createdAt).getMonth();
+        x = new Date(a.createdAt);
+        return x.getHours() + x.getDate();
       }
     }
     for(var i = 0, m = data.length - 1; i < m; ++i) {
       a = data[i];
-      t = new Date(a.createdAt).getDate();
+      t = c(a);
       if (!aggregated[t])
         aggregated[t] = [];
       aggregated[t].push(a);
@@ -139,7 +140,6 @@ StatsModel.prototype.get = function (User, time, type) {
   computeMonthly = function (data, type) {
     return new Promise(function (fulfill, reject){
       data = aggregateByTimestamp(data, 'monthly');
-      console.log(data);
       
       var sum = 0, a = null, newData = [], c = [];
 
@@ -164,7 +164,6 @@ StatsModel.prototype.get = function (User, time, type) {
   computeWeekly = function (data, type) {
     return new Promise(function (fulfill, reject){
       data = aggregateByTimestamp(data, 'weekly');
-      console.log(data);
       
       var stats = {}
 
@@ -172,10 +171,13 @@ StatsModel.prototype.get = function (User, time, type) {
       stats.distance.data = [];
       stats.distance.units = 'km';
       
-
       for(var i in data) {
-        stats.distance.data.push(self.getDistance(data[i]));
+        stats.distance.data.push({
+          createdAt : data[i][0].createdAt,
+          content : self.getAverageDistance(self.getDistance(data[i]))
+        });
       }
+
       fulfill(stats);
     })
   };
