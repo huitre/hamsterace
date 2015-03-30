@@ -75,6 +75,19 @@ exports.post = function (req, res) {
     });
 }
 
+exports.post.delete = function () {
+ if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  Feed.deletePost(req.user, req.body.content,
+    function (err, post) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+      return res.send(post);
+    }); 
+}
+
 exports.comment = function (req, res) {
   if (!req.user) 
     return res.status(403).send('user.not.logged.in');

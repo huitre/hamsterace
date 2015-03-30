@@ -19,12 +19,12 @@ var FakeData = (function () {
             DeviceId: id,
             createdAt : a.toISOString()
           });
-
-          for (var j = Utils.range(5, 60); --j > 0;) {
-            a.add(60, 's');
+          a.add(60 * 5, 's');
+          for (var j = Utils.range(1, 5); --j > 0;) {
+            a.add(60 * 5, 's');
             eventDatas.push({
                 type: 'laps',
-                content : Utils.range(10, 90),
+                content : Utils.range(50 * 5, 90 * 5),
                 createdAt : a.toISOString(),
                 DeviceId : id
               })
@@ -36,14 +36,13 @@ var FakeData = (function () {
           });
           a.add(Utils.range(100, 15000), 's');
         }
-        console.log(eventDatas);
         return { datas : eventDatas, date : a }
       }
 
       // populate events
       var d = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
       for (var x = 0; x < 30; ++x) {
-        b = r(d, Utils.range(8, 8));
+        b = r(d, Utils.range(8, 80));
         Db.Event.bulkCreate(b.datas);
         d = Moment(d).add(1, 'days').format();
       }
