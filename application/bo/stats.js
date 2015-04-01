@@ -17,7 +17,39 @@ var StatsModel = function () {
       'monthly' : 24 * 60 * 60 * 1000, // 1day
       'yearly' : 30 * 24 * 60 * 60 * 1000 // 1month
     }
+
+  this.perimeter = 2 * 3.1415926 * 17;
 };
+
+StatsModel.prototype.getTotalSummary = function (UserOrId) {
+  var self = this;
+
+  return new Promise(function (fulfill, reject){
+      var queryTotalSummary = function (id) {
+        Db.Event.sum('content', {
+          where : {
+            type : self.getEventStartAndStop(),
+            DeviceId : id
+          }
+        }, {raw: true})
+        .then(function (res) {
+          fulfill(res * self.perimeter)
+        }).catch(function (e) {
+          console.log(e, e.stack);
+          reject(e.stack)
+        })
+      }
+      if (typeof UserOrId == "object") {
+       Device.find(User, function (err, res){
+        console.log(err, res)
+          if (err)
+            return reject(err);
+          queryTotalSummary(res.id)
+        });
+     } else
+      queryTotalSummary(UserOrId)
+    });
+}
 
 StatsModel.prototype.getDistance = function (data, ticks) {
     var distance = [], a, b, vm, last = null;
@@ -26,7 +58,7 @@ StatsModel.prototype.getDistance = function (data, ticks) {
       if (!a.content) {
         a.content = 0;
       }
-      vm = (a.content * 2 * 3.1415926 * 17);
+      vm = (a.content * this.perimeter);
       b = {
         createdAt: new Date(a.createdAt),
         content : vm
@@ -146,6 +178,8 @@ StatsModel.prototype.computeGroups = function (data, units, ticks) {
       return 0;
     })      
 
+    stats.summary = this.getSummary(stats.distance.data);
+
     return stats
 },
 
@@ -172,18 +206,18 @@ StatsModel.prototype.aggregateByTimestamp = function (data, time) {
   return aggregated;
 },
 
+StatsModel.prototype.getEventStartAndStop = function (type) {
+  // TODO : add different events type
+  return [
+    'lapsStart',
+    'laps',
+    'lapsStop'
+  ]
+},
+
 StatsModel.prototype.get = function (User, timeval, type) {
   var self = this,
       compute = null
-  
-  getEventStartAndStop = function (type) {
-    // TODO : add different events type
-    return [
-      'lapsStart',
-      'laps',
-      'lapsStop'
-    ]
-  }
 
   switch (timeval) {
     case 'hourly':
@@ -232,11 +266,11 @@ StatsModel.prototype.get = function (User, timeval, type) {
                   gt : time.start,
                   lt : time.end
                 },
-                type : getEventStartAndStop(),
+                type : self.getEventStartAndStop(),
                 DeviceId : res.id
               },
               order: '"createdAt" ASC',
-              limit: 1000
+              limit: 5000
             }, {raw: true}).spread(function (data) {
               return compute(arguments).then(function (result) {
                 fulfill(result)
