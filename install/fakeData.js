@@ -159,43 +159,22 @@ var FakeData = (function () {
             PersonId: 1,
             DeviceId: device.id
           })
+          
+          self.populateStats(device.id);
+        })
 
-          /*var r = function (s, l) {
-            var a = s || new Date(),
-                eventDatas = [];
-
-            a = Moment(a);
-
-            for (var i = l; --i > 0;) {
-              a.add(Utils.range(2000, 15000), 's');
-              eventDatas.push({
-                type: 'lapsStart',
-                DeviceId: device.id,
-                createdAt : a
-              });
-
-              for (var j = Utils.range(5, 20); --j > 0;) {
-                a.add(Utils.range(50, 80), 's');
-                eventDatas.push({
-                    type: 'laps',
-                    content : Utils.range(90, 120),
-                    createdAt : a.toISOString(),
-                    DeviceId : device.id
-                  })
-              }
-              eventDatas.push({
-                type: 'lapsStop',
-                DeviceId: device.id,
-                createdAt : a
-              });
-            }
-            return { datas : eventDatas, date : a }
-          }
-
-          // populate events
-          var d = new Date();
-          b = r(d, Utils.range(10, 30));
-          Db.Event.bulkCreate(b.datas);*/
+        Db.Device.create({
+          apiKey: 4242,
+          userKey: 'azerty',
+          privateKey: 'keyboardcat'
+        }).then(function (device) {
+          // then attach device to Person
+          Db.RegisteredDevice.create({
+            hash: 'thisisafakehashfortesting',
+            PersonId: 2,
+            DeviceId: device.id
+          })
+          
           self.populateStats(device.id);
         })
         

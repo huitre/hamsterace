@@ -5,9 +5,10 @@ var Promise = require("bluebird"),
 
 StatsController.getStats = function (req, res, time) {
   if (req.params.id && Stats.isValidType(req.params.type)) {
-    Stats.get(req.params.id, 'daily', req.params.type).then(function (datas) {
+    Stats.get(req.params.id, time, req.params.type).then(function (datas) {
       res.send(datas)
     }).catch(function (e) {
+      console.log(e)
       res.status(500).send(e)
     })
   } else {
@@ -28,7 +29,7 @@ StatsController.summary = function (req, res) {
 }
 
 exports.summary = function (req, res) {
-
+  StatsController.summary(req, res)
 }
 
 exports.find = function (req, res) {
@@ -39,7 +40,19 @@ exports.daily = function (req, res) {
   StatsController.getStats(req, res, 'daily');
 }
 
+exports.weekly = function (req, res) {
+  StatsController.getStats(req, res, 'weekly');
+}
+
 exports.monthly = function (req, res) {
   StatsController.getStats(req, res, 'monthly');
+}
+
+exports.archive = function (req, res) {
+  Stats.archive().then(function () {
+    res.send(arguments)
+  }).catch(function () {
+    res.status(500).send(arguments)
+  })
 }
 

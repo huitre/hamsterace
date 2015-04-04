@@ -6,7 +6,8 @@ var crypto = require('crypto'),
     Moment = require('moment'),
     Promise = require("bluebird"),
     console = require('console-plus'),
-    Device = require('../bo/device')
+    Device = require('../bo/device'),
+    _ = require('underscore'),
     Db = require('../models');
 
 var StatsModel = function () {
@@ -21,6 +22,16 @@ var StatsModel = function () {
   this.perimeter = 2 * 3.1415926 * 17;
 };
 
+/*
+ * This method returns for the last hour, day, week, month :
+ * - total running distance
+ * - total activity time
+ * - % of activy
+ * - max speed
+ *
+ * @params object or int
+ * @return object
+ */
 StatsModel.prototype.getTotalSummary = function (UserOrId) {
   var self = this;
 
@@ -51,6 +62,11 @@ StatsModel.prototype.getTotalSummary = function (UserOrId) {
     });
 }
 
+
+/*
+ * 
+ * @return int
+ */
 StatsModel.prototype.getDistance = function (data, ticks) {
     var distance = [], a, b, vm, last = null;
     for(var i = 0, m = data.length; i < m; ++i) {
@@ -60,26 +76,26 @@ StatsModel.prototype.getDistance = function (data, ticks) {
       }
       vm = (a.content * this.perimeter);
       b = {
-        createdAt: new Date(a.createdAt),
+        createdAt : new Date(a.createdAt),
         content : vm
       }
       
       if (last && b.createdAt.getTime() - last.createdAt.getTime() > ticks) {
         distance.push({
-          createdAt: new Date(last.createdAt.getTime() + ticks),
-          distance: 0
+          createdAt : new Date(last.createdAt.getTime() + ticks),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(last.createdAt.getTime() + ticks + 1),
-          distance: 0
+          createdAt : new Date(last.createdAt.getTime() + ticks + 1),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(b.createdAt.getTime() - ticks),
-          distance: 0
+          createdAt : new Date(b.createdAt.getTime() - ticks),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(b.createdAt.getTime() - ticks + 1),
-          distance: 0
+          createdAt : new Date(b.createdAt.getTime() - ticks + 1),
+          distance : 0
         })
       }
       distance.push(b);
@@ -97,7 +113,7 @@ StatsModel.prototype.getSummary = function (data) {
       max = vm.content
     sum += vm.content;
   });
-  return {average : sum / (data.length - 1), sum : sum, max: max};
+  return {average : Math.round(sum / (data.length - 1)), sum : Math.round(sum), max: Math.round(max)};
 }
 
 StatsModel.prototype.getAverage = function (data) {
@@ -105,7 +121,7 @@ StatsModel.prototype.getAverage = function (data) {
   for(var i = 0, m = data.length - 1; i < m; ++i) {
     max += data[i].content;
   }
-  return max / m;
+  return Math.round(max / m);
 }
 
 StatsModel.prototype.getMax = function (data) {
@@ -154,7 +170,7 @@ StatsModel.prototype.calculate = function (data) {
   return result;
 }
 
-StatsModel.prototype.computeGroups = function (data, units, ticks) {
+StatsModel.prototype.computeGroups = function (data, units, ticks, sorted) {
     var stats = {}
 
     stats.distance = {}
@@ -162,6 +178,7 @@ StatsModel.prototype.computeGroups = function (data, units, ticks) {
     stats.distance.units = units;
     stats.distance.ticks = ticks;
     
+    sorted = sorted || true;
 
     for(var i in data) {
       stats.distance.data.push({
@@ -170,13 +187,15 @@ StatsModel.prototype.computeGroups = function (data, units, ticks) {
       });
     }
     
-    stats.distance.data.sort(function (a, b) {
-      if (a.createdAt > b.createdAt)
-        return 1;
-      else if (a.createdAt < b.createdAt)
-        return -1;
-      return 0;
-    })      
+    if (!sorted) {
+      stats.distance.data.sort(function (a, b) {
+        if (a.createdAt > b.createdAt)
+          return 1;
+        else if (a.createdAt < b.createdAt)
+          return -1;
+        return 0;
+      })
+    }
 
     stats.summary = this.getSummary(stats.distance.data);
 
@@ -215,59 +234,66 @@ StatsModel.prototype.getEventStartAndStop = function (type) {
   ]
 },
 
-StatsModel.prototype.get = function (User, timeval, type) {
+
+StatsModel.prototype.get = function (UserOrId, timeval, type) {
   var self = this,
-      compute = null
+      compute = null,
+      time = {}
 
   switch (timeval) {
     case 'hourly':
-      time = {}
       time.start = Moment().subtract(12, 'hours').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'hours').format();
     break;
 
     case 'daily':
-      time = {}
       time.start = Moment().subtract(1, 'days').format();
       time.end = Moment().add(1, 'days').format();
     break;
 
     case 'weekly':
-      time = {}
       time.start = Moment().subtract(7, 'days').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
-      compute = computeWeekly;
     break;
 
     case 'monthly':
-      time = {}
       time.start = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
     break;
   }
-
-  compute = function (raw, type) {
-    return new Promise(function (fulfill, reject){
-      data = self.aggregateByTimestamp(raw, timeval);
-      fulfill(self.computeGroups(data, 'km', timeval, self.ticks[timeval]));
-    })
-  }
-
+  
   return new Promise(function (fulfill, reject){
-        // get device for userID  
-        Device.find(User, function (err, res){
-          if (err)
-            reject(err);
-          else {
-            Db.Event.findAll({
-              attributes: ['createdAt', 'type', 'content'],
+    var methodName = 'get' + timeval.substring(0,1).toUpperCase() + timeval.substring(1)
+
+    if (typeof UserOrId == "object") {
+     Device.find(User, function (err, res){
+        if (err)
+          return reject(err);
+        self[methodName](fulfill, reject, res.id, time, timeval)
+      });
+    } else {
+      self[methodName](fulfill, reject, UserOrId, time, timeval)
+    }
+  })
+}
+
+StatsModel.prototype.getHourly = function (fulfill, reject, deviceId, time, timeval) {
+  var self = this,
+      compute = function (raw, type) {
+        return new Promise(function (fulfill, reject){
+          data = self.aggregateByTimestamp(raw, timeval);
+          fulfill(self.computeGroups(data, 'km', timeval, self.ticks[timeval]));
+        })
+      }
+
+  return Db.Event.findAll({
               where : {
                 createdAt : { 
                   gt : time.start,
                   lt : time.end
                 },
                 type : self.getEventStartAndStop(),
-                DeviceId : res.id
+                DeviceId : deviceId
               },
               order: '"createdAt" ASC',
               limit: 5000
@@ -279,14 +305,96 @@ StatsModel.prototype.get = function (User, timeval, type) {
               console.log(e, e.stack);
               reject(e.stack)
             })
-          }
-        });
-      });
-        
 }
+
+StatsModel.prototype.getDaily = StatsModel.prototype.getHourly;
+
+StatsModel.prototype.getWeekly = function (fulfill, reject, deviceId, time, timeval) {
+  var self = this,
+      TableName = 'Event' + timeval.substring(0,1).toUpperCase() + timeval.substring(1)
+
+  return Db[TableName].findAll({
+              where : {
+                createdAt : { 
+                  gt : time.start,
+                  lt : time.end
+                },
+                DeviceId : deviceId
+              },
+              order: '"createdAt" ASC',
+              limit: 5000
+            }, {raw: true}).spread(function (data) {
+              if (data) {
+                var result = {
+                  distance : data.timeval,
+                  summary : data.summary,
+                  activity : data.activity
+                }
+                fulfill(result);
+              }
+              fulfill({});
+            }).catch(function (e) {
+              console.log(e, e.stack);
+              reject(e.stack)
+            })
+}
+StatsModel.prototype.getMonthly = StatsModel.prototype.getWeekly
+StatsModel.prototype.getYearly = StatsModel.prototype.getWeekly
 
 StatsModel.prototype.isValidType = function (type) {
   return ['wheel'].indexOf(type) != -1;
+}
+
+StatsModel.prototype.archive = function () {
+  var time = {},
+      self = this;
+
+  time.start = Moment().subtract(12, 'hours').hours(0).minutes(0).seconds(0).format();
+  time.end = Moment().add(1, 'hours').format();
+  return new Promise(function (fulfill, reject) {
+          Db.Event.findAll({
+              where : {
+                createdAt : { 
+                  gt : time.start,
+                  lt : time.end
+                },
+                type : self.getEventStartAndStop()
+              },
+              order: '"id" ASC',
+              limit: 5000
+            }, {raw: true}).spread(function () {
+              var dataGroupedByDevice = _.groupBy(arguments, function (row) {
+                    return row.DeviceId
+                  }), sqlData = [];
+
+              _.map(dataGroupedByDevice, function (el, deviceId) {
+                el.sort(function (a, b) {
+                  if (a.id < b.id)
+                    return -1;
+                  else if (a.id > b.id)
+                    return 1;
+                  else 
+                    return 0;
+                })
+                el = self.computeGroups(self.aggregateByTimestamp(el, 'daily'), 'km', 'daily');
+                sqlData.push({
+                  timeval : JSON.stringify(el.distance.data),
+                  activity : JSON.stringify(el.activity),
+                  summary : JSON.stringify(el.summary),
+                  DeviceId : deviceId
+                })
+              })
+              Db.EventWeekly.bulkCreate(sqlData).then(function () {
+                fulfill(sqlData)
+              }).catch(function (e) {
+                console.log(e, e.stack);
+                reject(e.stack)
+              })
+            }).catch(function (e) {
+              console.log(e, e.stack);
+              reject(e.stack)
+            })
+          })
 }
 
 if (typeof module !== 'undefined') {

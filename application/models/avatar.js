@@ -2,8 +2,7 @@
 
 module.exports = function(Sequelize, DataTypes) {
   return Sequelize.define("Avatar", {
-    email : { type : DataTypes.STRING(50), unique: true},
-    hash: { type : DataTypes.STRING(32) }
+    length : { type : DataTypes.STRING(1) },
   },
   {
     associate: function (models) {
