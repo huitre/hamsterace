@@ -59,6 +59,17 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(function(req, res, next) {
+  config.Cors.forEach(function (host) {
+    if (req.headers.origin == host) {
+      res.header("Access-Control-Allow-Origin", host);
+      res.header("Access-Control-Allow-Methods", "GET,PUT,POST");
+      res.header("Access-Control-Allow-Credentials", "true");
+      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    }
+  });
+  next();
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -94,10 +105,10 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 
-sequelize.sequelize.sync({force : true}).done(function() {
+sequelize.sequelize.sync({force : false}).done(function() {
 
   // populate
-  FakeDatas.populate();
+  //FakeDatas.populateStats();
 
   // database setted up
   // launching server

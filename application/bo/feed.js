@@ -36,9 +36,28 @@ var FeedModel = (function () {
           PersonId: friendsId
         },
         order : '"Post"."updatedAt" DESC',
-        limit: 15,
+        limit: 30,
         include : [{
-          model: Db.Comment
+          model: Db.Comment,
+          include : {
+            model: Db.Person,
+            attributes : ['id'],
+            include : [{
+              model : Db.PersonDetails,
+              attributes : ['name', 'firstname']
+            }, {
+              model : Db.Image
+            }]
+          }
+        },{
+          model: Db.Person,
+          attributes : ['id'],
+          include : [{
+            model : Db.PersonDetails,
+            attributes : ['name', 'firstname']
+          },{
+            model : Db.Image
+          }]
         }]
       }).then(function (posts) {
         result = {
@@ -50,6 +69,88 @@ var FeedModel = (function () {
         done(e)
       })
     })
+  }
+
+  this.findOnePost = function (id, done) {
+    Db.Post.find({
+        where : {
+          id: id
+        },
+        include : [{
+          model: Db.Comment,
+          include : {
+            model: Db.Person,
+            attributes : ['id'],
+            include : [{
+              model : Db.PersonDetails,
+              attributes : ['name', 'firstname']
+            }, {
+              model : Db.Image
+            }]
+          }
+        },{
+          model: Db.Person,
+          attributes : ['id'],
+          include : [{
+            model : Db.PersonDetails,
+            attributes : ['name', 'firstname']
+          },{
+            model : Db.Image
+          }]
+        }]
+      }).then(function (post) {
+        done(null, post)
+      }).catch(done);
+  }
+
+  this.findOneComment = function (id, done) {
+    Db.Comment.find({
+      where : {
+        id : id
+      },  
+      include : {
+        model: Db.Person,
+        attributes : ['id'],
+        include : [{
+          model : Db.PersonDetails,
+          attributes : ['name', 'firstname']
+        }, {
+          model : Db.Image
+        }]
+      }
+    }).then(function (post) {
+      done(null, post)
+    }).catch(done);
+  }
+
+  this.addPost = function (User, content, done) {
+    var UserId, bo = this;
+    
+    UserId = User.id || User;
+    // TODO parse content toget pictures/links/video
+    Db.Post.create({
+      content : {text: content},
+      PersonId: UserId
+    }).then(function (post) {
+      bo.findOnePost(post.id, done);
+    }).catch(done);
+  }
+
+  this.addComment = function (User, content, postId, done) {
+    var publicy, UserId, bo = this;
+    
+    if (typeof User == "object")
+      publicy = false;
+    
+    UserId = User.id || User;
+
+    Db.Comment.create({
+      content: {text: content},
+      PersonId: UserId,
+      PostId: postId
+    }).then(function (comment) {
+      bo.findOneComment(comment.id, done);
+    }).catch(done);
   }
 
   return this;

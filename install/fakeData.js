@@ -4,6 +4,46 @@ var Db = require('../application/models'),
 
 var FakeData = (function () {
 
+  this.populateStats = function (id) {
+    id = id || 1;
+    var r = function (s, l) {
+        var a = s || new Date(),
+            eventDatas = [];
+
+        a = Moment(a);
+
+        for (var i = l; --i > 0;) {
+          a.add(Utils.range(2000, 15000), 's');
+          eventDatas.push({
+            type: 'lapsStart',
+            DeviceId: id,
+            createdAt : a
+          });
+
+          for (var j = Utils.range(5, 20); --j > 0;) {
+            a.add(Utils.range(50, 80), 's');
+            eventDatas.push({
+                type: 'laps',
+                content : Utils.range(90, 120),
+                createdAt : a.toISOString(),
+                DeviceId : id
+              })
+          }
+          eventDatas.push({
+            type: 'lapsStop',
+            DeviceId: id,
+            createdAt : a
+          });
+        }
+        return { datas : eventDatas, date : a }
+      }
+
+      // populate events
+      var d = new Date();
+      b = r(d, Utils.range(10, 30));
+      Db.Event.bulkCreate(b.datas);
+  }
+
   this.populate = function () {
 
 
@@ -65,12 +105,21 @@ var FakeData = (function () {
           PersonId: 1
         })
         Db.Post.create({
+          content : {text: "Je suis Josephine ange gardien de la paix !"},
+          PersonId: 1
+        })
+        Db.Post.create({
           content: {text : "Hey mate cette video, ca dechire !", video : "http://img-9gag-ftw.9cache.com/photo/aGV3m17_460sv.mp4"},
           PersonId: 3
         }).then(function (post) {
           Db.Comment.create({
             content: {text: "Effectivement, trop marrant quand il encule le chaton mort !"},
             PersonId: 1,
+            PostId: post.id
+          })
+          Db.Comment.create({
+            content: {text: "Ouais, mais le mieux c'est quand il le mange xD !"},
+            PersonId: 2,
             PostId: post.id
           })
         })
@@ -114,7 +163,7 @@ var FakeData = (function () {
             a = Moment(a);
 
             for (var i = l; --i > 0;) {
-              a.add(Utils.range(200, 1500), 's');
+              a.add(Utils.range(2000, 15000), 's');
               eventDatas.push({
                 type: 'lapsStart',
                 DeviceId: device.id,
@@ -141,7 +190,7 @@ var FakeData = (function () {
 
           // populate events
           var d = new Date();
-          b = r(d, Utils.range(50, 250));
+          b = r(d, Utils.range(10, 30));
           Db.Event.bulkCreate(b.datas);
         })
         

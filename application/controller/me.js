@@ -4,8 +4,45 @@ var Feed = require('../bo/feed'),
     console = require('console-plus');
 
 exports.index = function (req, res) {
+    if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  var result = {};
+  res.send(req.user);
+}
+
+exports.stats = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
+    return res.status(403).send('user.not.logged.in');
+  var result = {},
+      type = req.params.type || 'daily';
+  console.log(req.params);
+  Stats.get(req.user.id, type, 'wheel').then(function (stats) {
+    result.stats = stats;
+    res.send(result);
+  }).catch(function (e){
+    res.status(500).send('Unable.to.get.statistics');
+  });
+}
+
+exports.feed = function (req, res) {
+  if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  
+  var result = {};
+  Feed.getFeed(req.user, function (err, feed) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    result.feed = feed.post;
+    res.send(result);
+  });
+}
+
+exports.full = function (req, res) {
+  if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  var result = {};
   Feed.getFeed(req.user, function (err, feed) {
     if (err) {
       console.log(err);
@@ -25,20 +62,30 @@ exports.index = function (req, res) {
   });
 }
 
-exports.feed = function (req, res) {
+exports.post = function (req, res) {
   if (!req.user) 
-    return res.status(500).send('user.not.logged.in');
-  
-  Feed.getFeed(req.user, function (err, feed) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-    result = {};
-    result.feed = feed.post;
-    result.me = feed.profile.dataValues;
-    res.send(result);
-  });
+    return res.status(403).send('user.not.logged.in');
+  Feed.addPost(req.user, req.body.content,
+    function (err, post) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+      return res.send(post);
+    });
+}
+
+exports.comment = function (req, res) {
+  if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  Feed.addComment(req.user, req.body.content, req.params.postid,
+    function (err, post) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+      return res.send(post);
+    });
 }
 
 exports.link = function (req, res) {

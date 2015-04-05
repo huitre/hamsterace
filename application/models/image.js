@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods : {
       associate: function(models) {
         models.Image.belongsTo(models.AvatarDetail);
+        models.Image.belongsTo(models.Person);
       }
     }
   });
