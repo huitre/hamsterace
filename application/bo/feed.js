@@ -136,6 +136,19 @@ var FeedModel = (function () {
     }).catch(done);
   }
 
+  this.deletePost = function (User, postId, done) {
+    var UserId, bo = this;
+    
+    UserId = User.id || User;
+    
+    Db.Post.destroy({
+      PostId: postId,
+      PersonId: UserId
+    }).then(function (post) {
+      done(null, true)
+    }).catch(done);
+  }
+
   this.addComment = function (User, content, postId, done) {
     var publicy, UserId, bo = this;
     

@@ -105,9 +105,10 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 
-sequelize.sequelize.sync({force : false}).done(function() {
+sequelize.sequelize.sync({force : true}).done(function() {
 
   // populate
+  FakeDatas.populate();
   //FakeDatas.populateStats();
 
   // database setted up

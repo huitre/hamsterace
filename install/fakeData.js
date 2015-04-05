@@ -3,6 +3,7 @@ var Db = require('../application/models'),
     Moment = require('moment');
 
 var FakeData = (function () {
+  var self = this;
 
   this.populateStats = function (id) {
     id = id || 1;
@@ -13,18 +14,17 @@ var FakeData = (function () {
         a = Moment(a);
 
         for (var i = l; --i > 0;) {
-          a.add(Utils.range(2000, 15000), 's');
           eventDatas.push({
             type: 'lapsStart',
             DeviceId: id,
-            createdAt : a
+            createdAt : a.toISOString()
           });
-
-          for (var j = Utils.range(5, 20); --j > 0;) {
-            a.add(Utils.range(50, 80), 's');
+          a.add(60 * 5, 's');
+          for (var j = Utils.range(1, 5); --j > 0;) {
+            a.add(60 * 5, 's');
             eventDatas.push({
                 type: 'laps',
-                content : Utils.range(90, 120),
+                content : Utils.range(50 * 5, 90 * 5),
                 createdAt : a.toISOString(),
                 DeviceId : id
               })
@@ -32,16 +32,20 @@ var FakeData = (function () {
           eventDatas.push({
             type: 'lapsStop',
             DeviceId: id,
-            createdAt : a
+            createdAt : a.toISOString()
           });
+          a.add(Utils.range(100, 15000), 's');
         }
         return { datas : eventDatas, date : a }
       }
 
       // populate events
-      var d = new Date();
-      b = r(d, Utils.range(10, 30));
-      Db.Event.bulkCreate(b.datas);
+      var d = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
+      for (var x = 0; x < 30; ++x) {
+        b = r(d, Utils.range(8, 80));
+        Db.Event.bulkCreate(b.datas);
+        d = Moment(d).add(1, 'days').format();
+      }
   }
 
   this.populate = function () {
@@ -156,7 +160,7 @@ var FakeData = (function () {
             DeviceId: device.id
           })
 
-          var r = function (s, l) {
+          /*var r = function (s, l) {
             var a = s || new Date(),
                 eventDatas = [];
 
@@ -191,7 +195,8 @@ var FakeData = (function () {
           // populate events
           var d = new Date();
           b = r(d, Utils.range(10, 30));
-          Db.Event.bulkCreate(b.datas);
+          Db.Event.bulkCreate(b.datas);*/
+          self.populateStats(device.id);
         })
         
       });

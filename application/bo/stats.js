@@ -9,36 +9,110 @@ var crypto = require('crypto'),
     Device = require('../bo/device')
     Db = require('../models');
 
-var StatsModel = function () {};
+var StatsModel = function () {
+  this.ticks = { // in milliseconds
+      'hourly' : 60 * 15 * 1000, // 15mn
+      'daily' : 60 * 60 * 1000, // 1h
+      'weekly' : 24 * 60 * 60 * 1000, // 1day
+      'monthly' : 24 * 60 * 60 * 1000, // 1day
+      'yearly' : 30 * 24 * 60 * 60 * 1000 // 1month
+    }
 
-StatsModel.prototype.getDistance = function (data) {
-    var distance = [], a, vm;
+  this.perimeter = 2 * 3.1415926 * 17;
+};
+
+StatsModel.prototype.getTotalSummary = function (UserOrId) {
+  var self = this;
+
+  return new Promise(function (fulfill, reject){
+      var queryTotalSummary = function (id) {
+        Db.Event.sum('content', {
+          where : {
+            type : self.getEventStartAndStop(),
+            DeviceId : id
+          }
+        }, {raw: true})
+        .then(function (res) {
+          fulfill(res * self.perimeter)
+        }).catch(function (e) {
+          console.log(e, e.stack);
+          reject(e.stack)
+        })
+      }
+      if (typeof UserOrId == "object") {
+       Device.find(User, function (err, res){
+        console.log(err, res)
+          if (err)
+            return reject(err);
+          queryTotalSummary(res.id)
+        });
+     } else
+      queryTotalSummary(UserOrId)
+    });
+}
+
+StatsModel.prototype.getDistance = function (data, ticks) {
+    var distance = [], a, b, vm, last = null;
     for(var i = 0, m = data.length; i < m; ++i) {
       a = data[i];
-      if (a.content) {
-        vm = (a.content * 2 * 3.1415926 * (17/100/1000));
-        distance.push({
-          createdAt: new Date(a.createdAt),
-          distance : vm
-        });
+      if (!a.content) {
+        a.content = 0;
       }
+      vm = (a.content * this.perimeter);
+      b = {
+        createdAt: new Date(a.createdAt),
+        content : vm
+      }
+      
+      if (last && b.createdAt.getTime() - last.createdAt.getTime() > ticks) {
+        distance.push({
+          createdAt: new Date(last.createdAt.getTime() + ticks),
+          distance: 0
+        })
+        distance.push({
+          createdAt: new Date(last.createdAt.getTime() + ticks + 1),
+          distance: 0
+        })
+        distance.push({
+          createdAt: new Date(b.createdAt.getTime() - ticks),
+          distance: 0
+        })
+        distance.push({
+          createdAt: new Date(b.createdAt.getTime() - ticks + 1),
+          distance: 0
+        })
+      }
+      distance.push(b);
+      last = a;
     }
     return distance;
   }
 
-StatsModel.prototype.getAverageDistance = function (data) {
-  var sum = 0;
+StatsModel.prototype.getSummary = function (data) {
+  var sum = 0,
+      max = 0;
+
   data.map(function (vm) {
-    sum += vm.distance;
+    if (vm.content > max)
+      max = vm.content
+    sum += vm.content;
   });
-  return sum / (data.length - 1);
+  return {average : sum / (data.length - 1), sum : sum, max: max};
 }
 
-StatsModel.prototype.getMaxDistance = function (data) {
+StatsModel.prototype.getAverage = function (data) {
   var max = 0;
   for(var i = 0, m = data.length - 1; i < m; ++i) {
-    if (data[i].distance > max)
-      max = data[i].distance;
+    max += data[i].content;
+  }
+  return max / m;
+}
+
+StatsModel.prototype.getMax = function (data) {
+  var max = 0;
+  for(var i = 0, m = data.length - 1; i < m; ++i) {
+    if (data[i].content > max)
+      max = data[i].content;
   }
   return max;
 }
@@ -57,123 +131,126 @@ StatsModel.prototype.getSpeed = function (data) {
   return vmList;
 }
 
-StatsModel.prototype.getMaxSpeed = function (data) {
-  var max = 0;
-  for(var i = 0, m = data.length - 1; i < m; ++i) {
-    if (data[i].speed > max)
-      max = data[i].speed;
-  }
-  return max;
-}
 
-StatsModel.prototype.getAverageSpeed = function (data) {
-  var sum = 0;
-  data.map(function (vm) {
-    sum += vm.speed;
-  });
-  return sum / (data.length - 1);
-}
-
-
-StatsModel.prototype.get = function (User, time, type) {
-  var self = this,
-  
-  compute = null,
-  
-  getEventStartAndStop = function (type) {
-    // TODO : add different events type
-    return [
-      'lapsStart',
-      'laps',
-      'lapsStop'
-    ]
-  },
-
-  aggregateByTimestamp = function (data, time) {
-    var aggregated = {}, a = null, t, c;
-    if (time == 'monthly') {
-      c = function (a) {
-        return new Date(a.createdAt).getDate();
-      }
-    }
-    else {
-      c = function (a) {
-        return new Date(a.createdAt).getMonth();
-      }
-    }
-    for(var i = 0, m = data.length - 1; i < m; ++i) {
-      a = data[i];
-      t = new Date(a.createdAt).getDate();
-      if (!aggregated[t])
-        aggregated[t] = [];
-      aggregated[t].push(a);
-    }
-    return aggregated;
-  },
-
-  calculate = function (data) {
-    var result = {}
-    switch (type) {
-      case 'wheel':
-        result.distance = {}
-        result.distance.data = self.getDistance(data);
-        result.distance.averageDistance = self.getAverageDistance(result.distance.data);
-        result.distance.maxDistance = self.getMaxDistance(result.distance.data);
-        result.distance.units = 'km';
-        result.speed = {}
-        result.speed.data = self.getSpeed(result.distance.data);
-        result.speed.maxSpeed = self.getMaxSpeed(result.speed.data);
-        result.speed.averageSpeed = self.getAverageSpeed(result.speed.data);
-        result.speed.units = 'km/h';
-      break;
-    }
-    return result;
-  }
-
-  computeDaily = function (data) {
-    return new Promise(function (fulfill, reject){
-      fulfill(calculate(data));
-    })
-  },
-
-  computeMonthly = function (data, type) {
-    return new Promise(function (fulfill, reject){
-      data = aggregateByTimestamp(data, 'monthly');
+StatsModel.prototype.calculate = function (data) {
+  var result = {}
+  switch (type) {
+    case 'wheel':
+      result.speed = {}
+      result.summary = {}
+      result.distance = {}
       
-      var sum = 0, a = null, newData = [], c = [];
+      result.distance.data = this.getDistance(data);
+      result.distance.units = 'km';
+      
+      result.summary.distance = this.getSummary(result.distance.data);
+      result.summary.speed = this.getSummary(result.speed.data);
+      
+      result.speed.data = this.getSpeed(result.distance.data);
+      result.speed.units = 'km/h';
+      
+    break;
+  }
+  return result;
+}
 
-      for(var i in data) {
-        sum = 0;
-        for(var j = 0, m2 = data[i].length - 1; j < m2; ++j) {
-          sum += data[i][j].content;
-        }
-        c.push({
-            createdAt : data[i][0].createdAt,
-            type : "laps",
-            content: sum
-          });
-      }
-      fulfill(calculate(c));
-    })
-  };
+StatsModel.prototype.computeGroups = function (data, units, ticks) {
+    var stats = {}
 
-  switch (time) {
+    stats.distance = {}
+    stats.distance.data = [];
+    stats.distance.units = units;
+    stats.distance.ticks = ticks;
+    
+
+    for(var i in data) {
+      stats.distance.data.push({
+        createdAt : data[i][0].createdAt,
+        content : this.getAverage(this.getDistance(data[i])) || 0
+      });
+    }
+    
+    stats.distance.data.sort(function (a, b) {
+      if (a.createdAt > b.createdAt)
+        return 1;
+      else if (a.createdAt < b.createdAt)
+        return -1;
+      return 0;
+    })      
+
+    stats.summary = this.getSummary(stats.distance.data);
+
+    return stats
+},
+
+StatsModel.prototype.aggregateByTimestamp = function (data, time) {
+  var aggregated = {}, 
+      a = null, 
+      t, 
+      groupKey = {}, 
+      x, 
+      self = this;
+  
+  groupKey = function (a) {
+    var date = new Date(a.createdAt).getTime();
+    return date - (date % self.ticks[time])
+  }
+  
+  for(var i = 0, m = data.length - 1; i < m; ++i) {
+    a = data[i];
+    t = groupKey(a);
+    if (!aggregated[t])
+      aggregated[t] = [];
+    aggregated[t].push(a);
+  }
+  return aggregated;
+},
+
+StatsModel.prototype.getEventStartAndStop = function (type) {
+  // TODO : add different events type
+  return [
+    'lapsStart',
+    'laps',
+    'lapsStop'
+  ]
+},
+
+StatsModel.prototype.get = function (User, timeval, type) {
+  var self = this,
+      compute = null
+
+  switch (timeval) {
+    case 'hourly':
+      time = {}
+      time.start = Moment().subtract(12, 'hours').hours(0).minutes(0).seconds(0).format();
+      time.end = Moment().add(1, 'hours').format();
+    break;
+
     case 'daily':
       time = {}
-      time.start = Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format();
+      time.start = Moment().subtract(1, 'days').format();
       time.end = Moment().add(1, 'days').format();
-      compute = computeDaily;
+    break;
+
+    case 'weekly':
+      time = {}
+      time.start = Moment().subtract(7, 'days').hours(0).minutes(0).seconds(0).format();
+      time.end = Moment().add(1, 'days').format();
+      compute = computeWeekly;
     break;
 
     case 'monthly':
       time = {}
       time.start = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
-      compute = computeMonthly;
     break;
-    
-    case 'daily':
-    break;
+  }
+
+  compute = function (raw, type) {
+    return new Promise(function (fulfill, reject){
+      data = self.aggregateByTimestamp(raw, timeval);
+      fulfill(self.computeGroups(data, 'km', timeval, self.ticks[timeval]));
+    })
   }
 
   return new Promise(function (fulfill, reject){
@@ -189,11 +266,11 @@ StatsModel.prototype.get = function (User, time, type) {
                   gt : time.start,
                   lt : time.end
                 },
-                type : getEventStartAndStop(),
+                type : self.getEventStartAndStop(),
                 DeviceId : res.id
               },
               order: '"createdAt" ASC',
-              limit: 1000
+              limit: 5000
             }, {raw: true}).spread(function (data) {
               return compute(arguments).then(function (result) {
                 fulfill(result)

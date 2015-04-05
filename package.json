@@ -12,8 +12,6 @@
     "method-override": "^2.3.0",
     "morgan": "^1.4.1",
     "multer": "~0.1.6",
-    "pg": "~3.6.2",
-    "pg-query": "~0.10.1",
     "config": "~1.6.0",
     "mandrill-api": "~1.0.41",
     "passport": "~0.2.1",
@@ -26,7 +24,8 @@
     "console-plus": "~0.1.1",
     "bluebird": "~2.9.3",
     "moment": "~2.9.0",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "pg": "~4.3.0"
   },
   "devDependencies": {},
   "scripts": {
