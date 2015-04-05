@@ -6,7 +6,8 @@ var crypto = require('crypto'),
     Moment = require('moment'),
     Promise = require("bluebird"),
     console = require('console-plus'),
-    Device = require('../bo/device')
+    Device = require('../bo/device'),
+    _ = require('underscore'),
     Db = require('../models');
 
 var StatsModel = function () {
@@ -21,6 +22,16 @@ var StatsModel = function () {
   this.perimeter = 2 * 3.1415926 * 17;
 };
 
+/*
+ * This method returns for the last hour, day, week, month :
+ * - total running distance
+ * - total activity time
+ * - % of activy
+ * - max speed
+ *
+ * @params object or int
+ * @return object
+ */
 StatsModel.prototype.getTotalSummary = function (UserOrId) {
   var self = this;
 
@@ -28,7 +39,7 @@ StatsModel.prototype.getTotalSummary = function (UserOrId) {
       var queryTotalSummary = function (id) {
         Db.Event.sum('content', {
           where : {
-            type : self.getEventStartAndStop(),
+            type : self.getEventStartAndStop().toArray(),
             DeviceId : id
           }
         }, {raw: true})
@@ -51,6 +62,42 @@ StatsModel.prototype.getTotalSummary = function (UserOrId) {
     });
 }
 
+
+StatsModel.prototype.getTotalActivityTime = function (data) {
+  var start = 0,
+      stop = 0,
+      time = 0,
+      events = this.getEventStartAndStop().toObject(),
+      a;
+
+  for(var i = 0, m = data.length; i < m; ++i) {
+    a = data[i];
+    if (a.type == events.start) {
+      start = a.createdAt;
+    }
+    else if (a.type == events.stop) {
+      stop = a.createdAt;
+      if (start)
+        time = time + (stop - start)
+    }
+  }
+  return time;
+}
+
+StatsModel.prototype.getActivity = function (data, timeval) {
+  var time = this.getTimeVal(timeval),
+      activityTime = this.getTotalActivityTime(data);
+
+  return {
+      time : activityTime,
+      percent : (activityTime / (new Date(time.end) - new Date(time.start)) * 100)
+    }
+}
+
+/*
+ * 
+ * @return int
+ */
 StatsModel.prototype.getDistance = function (data, ticks) {
     var distance = [], a, b, vm, last = null;
     for(var i = 0, m = data.length; i < m; ++i) {
@@ -60,26 +107,26 @@ StatsModel.prototype.getDistance = function (data, ticks) {
       }
       vm = (a.content * this.perimeter);
       b = {
-        createdAt: new Date(a.createdAt),
+        createdAt : new Date(a.createdAt),
         content : vm
       }
       
       if (last && b.createdAt.getTime() - last.createdAt.getTime() > ticks) {
         distance.push({
-          createdAt: new Date(last.createdAt.getTime() + ticks),
-          distance: 0
+          createdAt : new Date(last.createdAt.getTime() + ticks),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(last.createdAt.getTime() + ticks + 1),
-          distance: 0
+          createdAt : new Date(last.createdAt.getTime() + ticks + 1),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(b.createdAt.getTime() - ticks),
-          distance: 0
+          createdAt : new Date(b.createdAt.getTime() - ticks),
+          distance : 0
         })
         distance.push({
-          createdAt: new Date(b.createdAt.getTime() - ticks + 1),
-          distance: 0
+          createdAt : new Date(b.createdAt.getTime() - ticks + 1),
+          distance : 0
         })
       }
       distance.push(b);
@@ -90,14 +137,15 @@ StatsModel.prototype.getDistance = function (data, ticks) {
 
 StatsModel.prototype.getSummary = function (data) {
   var sum = 0,
-      max = 0;
+      max = 0,
+      activity = 0;
 
   data.map(function (vm) {
     if (vm.content > max)
       max = vm.content
     sum += vm.content;
   });
-  return {average : sum / (data.length - 1), sum : sum, max: max};
+  return {average : Math.round(sum / (data.length - 1)), sum : Math.round(sum), max: Math.round(max)};
 }
 
 StatsModel.prototype.getAverage = function (data) {
@@ -105,7 +153,7 @@ StatsModel.prototype.getAverage = function (data) {
   for(var i = 0, m = data.length - 1; i < m; ++i) {
     max += data[i].content;
   }
-  return max / m;
+  return Math.round(max / m);
 }
 
 StatsModel.prototype.getMax = function (data) {
@@ -141,27 +189,26 @@ StatsModel.prototype.calculate = function (data) {
       result.distance = {}
       
       result.distance.data = this.getDistance(data);
-      result.distance.units = 'km';
       
       result.summary.distance = this.getSummary(result.distance.data);
       result.summary.speed = this.getSummary(result.speed.data);
       
       result.speed.data = this.getSpeed(result.distance.data);
-      result.speed.units = 'km/h';
       
     break;
   }
   return result;
 }
 
-StatsModel.prototype.computeGroups = function (data, units, ticks) {
+StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
     var stats = {}
 
     stats.distance = {}
     stats.distance.data = [];
-    stats.distance.units = units;
     stats.distance.ticks = ticks;
-    
+    stats.activity = [];
+
+    sorted = sorted || true;
 
     for(var i in data) {
       stats.distance.data.push({
@@ -170,13 +217,15 @@ StatsModel.prototype.computeGroups = function (data, units, ticks) {
       });
     }
     
-    stats.distance.data.sort(function (a, b) {
-      if (a.createdAt > b.createdAt)
-        return 1;
-      else if (a.createdAt < b.createdAt)
-        return -1;
-      return 0;
-    })      
+    if (!sorted) {
+      stats.distance.data.sort(function (a, b) {
+        if (a.createdAt > b.createdAt)
+          return 1;
+        else if (a.createdAt < b.createdAt)
+          return -1;
+        return 0;
+      })
+    }
 
     stats.summary = this.getSummary(stats.distance.data);
 
@@ -207,70 +256,94 @@ StatsModel.prototype.aggregateByTimestamp = function (data, time) {
 },
 
 StatsModel.prototype.getEventStartAndStop = function (type) {
-  // TODO : add different events type
-  return [
+  this.events = [
     'lapsStart',
     'laps',
     'lapsStop'
   ]
+  this.toArray = function () {
+    return this.events
+  }
+
+  this.toObject = function () {
+    return {
+      start : 'lapsStart',
+      current : 'laps',
+      stop : 'lapsStop'
+    }
+  }
+  return this
 },
 
-StatsModel.prototype.get = function (User, timeval, type) {
-  var self = this,
-      compute = null
+StatsModel.prototype.getTimeVal = function (timeval) {
+  var time = {}
 
   switch (timeval) {
     case 'hourly':
-      time = {}
       time.start = Moment().subtract(12, 'hours').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'hours').format();
     break;
 
     case 'daily':
-      time = {}
       time.start = Moment().subtract(1, 'days').format();
       time.end = Moment().add(1, 'days').format();
     break;
 
     case 'weekly':
-      time = {}
       time.start = Moment().subtract(7, 'days').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
-      compute = computeWeekly;
     break;
 
     case 'monthly':
-      time = {}
       time.start = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
       time.end = Moment().add(1, 'days').format();
     break;
   }
+  return time;
+}
 
-  compute = function (raw, type) {
-    return new Promise(function (fulfill, reject){
-      data = self.aggregateByTimestamp(raw, timeval);
-      fulfill(self.computeGroups(data, 'km', timeval, self.ticks[timeval]));
-    })
-  }
-
+StatsModel.prototype.get = function (UserOrId, timeval, type) {
+  var self = this,
+      time = this.getTimeVal(timeval);
+  
   return new Promise(function (fulfill, reject){
-        // get device for userID  
-        Device.find(User, function (err, res){
-          if (err)
-            reject(err);
-          else {
-            Db.Event.findAll({
-              attributes: ['createdAt', 'type', 'content'],
+    var methodName = 'get' + timeval.substring(0,1).toUpperCase() + timeval.substring(1)
+
+    if (typeof UserOrId == "object") {
+     Device.find(User, function (err, res){
+        if (err)
+          return reject(err);
+        self[methodName](fulfill, reject, res.id, time, timeval)
+      });
+    } else {
+      self[methodName](fulfill, reject, UserOrId, time, timeval)
+    }
+  })
+}
+
+StatsModel.prototype.getHourly = function (fulfill, reject, deviceId, time, timeval) {
+  var self = this,
+      compute = function (raw, type) {
+        return new Promise(function (fulfill, reject){
+          var data = self.aggregateByTimestamp(raw, timeval),
+              computeData = self.computeGroups(data, timeval, self.ticks[timeval]);
+          computeData.activity = self.getActivity(raw, timeval)
+
+          fulfill(computeData);
+        })
+      }
+
+  return Db.Event.findAll({
               where : {
                 createdAt : { 
                   gt : time.start,
                   lt : time.end
                 },
-                type : self.getEventStartAndStop(),
-                DeviceId : res.id
+                type : self.getEventStartAndStop().toArray(),
+                DeviceId : deviceId
               },
-              order: '"createdAt" ASC',
-              limit: 5000
+              order: [['createdAt', 'ASC']],
+              limit: 50000
             }, {raw: true}).spread(function (data) {
               return compute(arguments).then(function (result) {
                 fulfill(result)
@@ -279,14 +352,94 @@ StatsModel.prototype.get = function (User, timeval, type) {
               console.log(e, e.stack);
               reject(e.stack)
             })
-          }
-        });
-      });
-        
 }
+
+StatsModel.prototype.getDaily = StatsModel.prototype.getHourly;
+
+StatsModel.prototype.getWeekly = function (fulfill, reject, deviceId, time, timeval) {
+  var self = this,
+      TableName = 'Event' + timeval.substring(0,1).toUpperCase() + timeval.substring(1)
+
+  return Db[TableName].findAll({
+              where : {
+                createdAt : { 
+                  gt : time.start,
+                  lt : time.end
+                },
+                DeviceId : deviceId
+              },
+              order: [['id', 'ASC']],
+              limit: 5000
+            }, {raw: true}).spread(function (data) {
+              if (data) {
+                var result = {
+                  distance : data.timeval,
+                  summary : data.summary,
+                  activity : data.activity
+                }
+                fulfill(result);
+              }
+              fulfill({});
+            }).catch(function (e) {
+              console.log(e, e.stack);
+              reject(e.stack)
+            })
+}
+StatsModel.prototype.getMonthly = StatsModel.prototype.getWeekly
+StatsModel.prototype.getYearly = StatsModel.prototype.getWeekly
 
 StatsModel.prototype.isValidType = function (type) {
   return ['wheel'].indexOf(type) != -1;
+}
+
+StatsModel.prototype.archive = function () {
+  var time = this.getTimeVal('daily'),
+      self = this;
+
+  return new Promise(function (fulfill, reject) {
+          Db.Event.findAll({
+              where : {
+                createdAt : { 
+                  gt : time.start,
+                  lt : time.end
+                },
+                type : self.getEventStartAndStop().toArray()
+              },
+              order: [['id', 'ASC']],
+              limit: 5000
+            }, {raw: true}).spread(function () {
+              var dataGroupedByDevice = _.groupBy(arguments, function (row) {
+                    return row.DeviceId
+                  }), sqlData = [];
+
+              _.map(dataGroupedByDevice, function (el, deviceId) {
+                el.sort(function (a, b) {
+                  if (a.id < b.id)
+                    return -1;
+                  else if (a.id > b.id)
+                    return 1;
+                  else 
+                    return 0;
+                })
+                el = self.computeGroups(self.aggregateByTimestamp(el, 'daily'), 'daily');
+                sqlData.push({
+                  timeval : JSON.stringify(el.distance.data),
+                  activity : JSON.stringify(el.activity),
+                  summary : JSON.stringify(el.summary),
+                  DeviceId : deviceId
+                })
+              })
+              Db.EventWeekly.bulkCreate(sqlData).then(function () {
+                fulfill(sqlData)
+              }).catch(function (e) {
+                console.log(e, e.stack);
+                reject(e.stack)
+              })
+            }).catch(function (e) {
+              console.log(e, e.stack);
+              reject(e.stack)
+            })
+          })
 }
 
 if (typeof module !== 'undefined') {

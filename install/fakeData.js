@@ -7,6 +7,10 @@ var FakeData = (function () {
 
   this.populateStats = function (id) {
     id = id || 1;
+    /*
+     * @params Date s Start date to populate data
+     * @params int l number of events
+     */
     var r = function (s, l) {
         var a = s || new Date(),
             eventDatas = [];
@@ -34,15 +38,18 @@ var FakeData = (function () {
             DeviceId: id,
             createdAt : a.toISOString()
           });
-          a.add(Utils.range(100, 15000), 's');
+          // we shift the date for 2-30minutes before next event
+          a.add(Utils.range(2, 30 * 60), 's');
         }
         return { datas : eventDatas, date : a }
       }
 
       // populate events
-      var d = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
-      for (var x = 0; x < 30; ++x) {
-        b = r(d, Utils.range(8, 80));
+      //var d = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
+      var d = Moment().subtract(1, 'weeks').hours(0).minutes(0).seconds(0).format();
+      //for (var x = 0; x < 30; ++x) {
+      for (var x = 0; x < 7; ++x) {
+        b = r(d, Utils.range(1, 2 * 60));
         Db.Event.bulkCreate(b.datas);
         d = Moment(d).add(1, 'days').format();
       }
@@ -159,43 +166,22 @@ var FakeData = (function () {
             PersonId: 1,
             DeviceId: device.id
           })
+          
+          self.populateStats(device.id);
+        })
 
-          /*var r = function (s, l) {
-            var a = s || new Date(),
-                eventDatas = [];
-
-            a = Moment(a);
-
-            for (var i = l; --i > 0;) {
-              a.add(Utils.range(2000, 15000), 's');
-              eventDatas.push({
-                type: 'lapsStart',
-                DeviceId: device.id,
-                createdAt : a
-              });
-
-              for (var j = Utils.range(5, 20); --j > 0;) {
-                a.add(Utils.range(50, 80), 's');
-                eventDatas.push({
-                    type: 'laps',
-                    content : Utils.range(90, 120),
-                    createdAt : a.toISOString(),
-                    DeviceId : device.id
-                  })
-              }
-              eventDatas.push({
-                type: 'lapsStop',
-                DeviceId: device.id,
-                createdAt : a
-              });
-            }
-            return { datas : eventDatas, date : a }
-          }
-
-          // populate events
-          var d = new Date();
-          b = r(d, Utils.range(10, 30));
-          Db.Event.bulkCreate(b.datas);*/
+        Db.Device.create({
+          apiKey: 4242,
+          userKey: 'azerty',
+          privateKey: 'keyboardcat'
+        }).then(function (device) {
+          // then attach device to Person
+          Db.RegisteredDevice.create({
+            hash: 'thisisafakehashfortesting',
+            PersonId: 2,
+            DeviceId: device.id
+          })
+          
           self.populateStats(device.id);
         })
         
