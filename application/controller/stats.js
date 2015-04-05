@@ -36,6 +36,10 @@ exports.find = function (req, res) {
   res.send(req);
 }
 
+exports.hourly = function (req, res) {
+  StatsController.getStats(req, res, 'hourly');
+}
+
 exports.daily = function (req, res) {
   StatsController.getStats(req, res, 'daily');
 }

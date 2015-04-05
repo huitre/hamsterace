@@ -20,12 +20,13 @@
     "express-session": "~1.9.1",
     "passport-google-oauth": "~0.1.5",
     "passport-google": "~0.3.0",
-    "sequelize": "~2.0.0-rc7",
+    "sequelize": "~2.0.5",
     "console-plus": "~0.1.1",
     "bluebird": "~2.9.3",
     "moment": "~2.9.0",
     "underscore": "~1.7.0",
-    "pg": "~4.3.0"
+    "pg": "~4.3.0",
+    "pg-hstore": "~2.3.2"
   },
   "devDependencies": {},
   "scripts": {
