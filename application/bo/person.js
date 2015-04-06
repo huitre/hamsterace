@@ -8,20 +8,6 @@ var Db = require('../models'),
 
 var PersonModel = (function () {
 
-  // not used anymore ?
-  /*this.isValidUserPassword = function (params, done) {
-    var md5 = crypto.createHash('md5');
-
-    params.password = md5.update(params.password).digest('hex');
-    bo.findQuery(" p.hash = $1 and p.email = $2", [params.password, params.userEmail], 
-      function (err, row, result) {
-        console.log(err, row, result);
-        if (err) return done(new Error(err));
-        if (row.length < 0) return done(new Error({'message': 'user.not.found'}));
-        return done(null,populate(row[0]));
-      });
-  }*/
-
   this.authFindOrCreate = function (profile, done) {
     var where = {},
         md5 = crypto.createHash('md5');
@@ -55,13 +41,15 @@ var PersonModel = (function () {
       }
       return done(null, User);
     }).catch(function (err) {
-      console.log(err);
       return done(err, false);
     });
   }
 
+  /*
+   * @return Promise
+   */
   this.getOne = function (id, done) {
-    Db.Person.find({ 
+    return Db.Person.find({ 
       where : {
         id : id
       },
@@ -69,15 +57,14 @@ var PersonModel = (function () {
       include : [{
         model: Db.PersonDetails 
       }]
-    }).then( function (user) {
-      done(null, user)
-    }).catch(function (err) {
-      done(err)
     })
   }
 
+  /*
+   * @return Promise
+   */
   this.getFriends = function (UserId, done) {
-    Db.PeopleFriend.findAll({
+    return Db.PeopleFriend.findAll({
       where : {PersonId: UserId, confirmed: true},
       include : [{
         model: Db.Person,
@@ -89,13 +76,54 @@ var PersonModel = (function () {
     })
   }
 
-  this.getFriendsIdList = function (UserId, done) {
-    Db.PeopleFriend.findAll({
+  /*
+   * @return Promise
+   */
+  this.getFriendsIdList = function (UserId) {
+    return Db.PeopleFriend.findAll({
       where : {PersonId: UserId, confirmed: true},
-    }).then(function (friends) {
-      done(friends);
     })
   }
+
+  /*
+   * @return Promise
+   */
+  this.findByName = function (name) {
+    return Db.PersonDetails.findAll({
+      where : {
+        $or : [
+          {name : { ilike : '%' + name + '%' }},
+          {firstname : { ilike : '%' + name + '%'}}
+        ]
+      }
+    })
+  }
+
+  /*
+   * @return Promise
+   */
+  this.request = function (id) {
+    return Db.PeopleFriend.findOrCreate({
+      where : {
+        FriendId : id
+      }
+    })
+  }
+
+  /*
+   * @return Promise
+   */
+  this.accept = function (id) {
+    return Db.PeopleFriend.find({
+      where : {
+        FriendId : id
+      }
+    }).then(function (friend) {
+      friend.confirmed = true;
+      friend.save()
+    })
+  }
+
   return this;
 })()
 

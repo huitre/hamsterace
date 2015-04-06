@@ -1,11 +1,11 @@
 exports.init = function init (router) {   
-	// controllers 
+  // controllers 
   var Device = require('../controller/device'),
-  		Me = require('../controller/me'),
-  		Users = require('../controller/users'),
-  		Rankings = require('../controller/rankings'),
-  		Team = require('../controller/teams'),
-  		Stats = require('../controller/stats'),
+      Me = require('../controller/me'),
+      Users = require('../controller/users'),
+      Rankings = require('../controller/rankings'),
+      Team = require('../controller/teams'),
+      Stats = require('../controller/stats'),
       Auth = require('../controller/auth'),
       Passport = require('passport'),
       // config
@@ -54,7 +54,7 @@ exports.init = function init (router) {
    */
 
   // get requests
-	router.get('/device', Device.index);
+  router.get('/device', Device.index);
   router.get('/device/activate/:token/:email', Device.activate);
   router.get('/device/events', Device.events.get);
   if (Config.env == "Developpment")
@@ -64,7 +64,6 @@ exports.init = function init (router) {
   router.post('/device/events', Device.events.post);
   router.post('/device/register', Device.register);
   
-
   /*
    * Users routes
    */
@@ -72,11 +71,12 @@ exports.init = function init (router) {
   // get requests
   router.get('/users/:id', Users.index);
   router.get('/users/:id/friends', Users.friends);
-	router.get('/users/:id/followers', Users.followers);
-	router.get('/users/:id/badges', Users.badges);
-	router.get('/users/:id/wall', Users.wall);
-
-	/*
+  router.get('/users/:id/followers', Users.followers);
+  router.get('/users/:id/badges', Users.badges);
+  router.get('/users/:id/wall', Users.wall);
+  router.get('/users/find/:name', Users.find);
+  router.get('/users/request/:id', Users.request)
+  /*
    * Me routes
    */
 
@@ -85,9 +85,10 @@ exports.init = function init (router) {
   router.get('/me/feed', Me.feed);
   router.get('/me/stats', Me.stats);
   router.get('/me/stats/:type', Me.stats);
-	router.get('/me/link', Me.link);
-	router.get('/me/devices', Me.devices);
-
+  router.get('/me/link', Me.link);
+  router.get('/me/devices', Me.devices);
+  router.get('/me/request', Me.request)
+  
   // post request
   router.post('/me/auth', Me.auth);
   router.post('/me/feed/post', Me.post);
@@ -99,21 +100,23 @@ exports.init = function init (router) {
 
   //delete
   router.delete('/me/feed/comment/:id', Me.comment);
-	/*
+
+  /*
    * Rankings routes
-   */	
+   */ 
 
   // post request
   router.post('/rankings', Rankings.find);
 
   /*
    * Stats routes
-   */	
+   */ 
 
   // get request
   router.get('/stats/:id/monthly/:type', Stats.monthly)
   router.get('/stats/:id/weekly/:type', Stats.weekly)
   router.get('/stats/:id/daily/:type', Stats.daily)
+  router.get('/stats/:id/hourly/:type', Stats.hourly)
   router.get('/stats/:id/summary', Stats.summary)
   router.get('/stats/archive', Stats.archive)
   
@@ -127,11 +130,14 @@ exports.init = function init (router) {
   // get requests
   router.get('/user/:id', Users.index);
   router.get('/user/:id/friends', Users.friends);
-	router.get('/user/:id/followers', Users.followers);
-	router.get('/user/:id/badges', Users.badges);
-	router.get('/user/:id/feed', Users.wall);
+  router.get('/user/:id/followers', Users.followers);
+  router.get('/user/:id/badges', Users.badges);
+  router.get('/user/:id/feed', Users.wall);
+  router.get('/user/:id/details', Users.details);
+  router.get('/user/:id/request', Users.details);
+  router.get('/user/:id/accept', Users.details);
 
-	/*
+  /*
    * Users routes
    */
 
@@ -139,8 +145,8 @@ exports.init = function init (router) {
   router.get('/team', Team.index);
   router.get('/team/:id', Team.find);
   router.get('/team/:id/members', Team.members);
-	router.get('/team/:id/stats', Team.stats);
-	router.get('/team/:id/badges', Team.badges);
-	router.get('/team/:id/wall', Team.wall);
+  router.get('/team/:id/stats', Team.stats);
+  router.get('/team/:id/badges', Team.badges);
+  router.get('/team/:id/wall', Team.wall);
 
 };

@@ -85,15 +85,14 @@ var DeviceModel = (function () {
       };
   }
 
+  /*
+   * @return Promise
+   */
   this.find = function (User, done) {
-    Db.RegisteredDevice.find({
+    return Db.RegisteredDevice.find({
       where: {
         PersonId : User
       }
-    }).then(function (Device) {
-      return done(null, Device)
-    }).catch(function (e) {
-      return done(e)
     })
   }
   return this;
