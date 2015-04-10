@@ -20,12 +20,14 @@ var FeedModel = (function () {
   this.getFeed = function (User, done) {
     var publicy, UserId;
     
-    if (typeof User == "object")
+    if (typeof User == "object") {
       publicy = false;
-    
-    UserId = User.id || User;
+      UserId = User.id
+    } else {
+      UserId = User;
+    }
 
-    Person.getFriendsIdList(UserId, function (friends) {
+    Person.getFriendsIdList(UserId).then(function (friends) {
       var friendsId = []
       friends.map(function (friend) {
         friendsId.push(friend.FriendId);
@@ -61,9 +63,10 @@ var FeedModel = (function () {
         }]
       }).then(function (posts) {
         result = {
-          profile : User,
           post : posts
         }
+        if (!publicy)
+          result.profile = User;
         done(null, result);
       }).catch (function (e) {
         done(e)

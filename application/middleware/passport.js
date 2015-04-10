@@ -17,10 +17,10 @@ module.exports = function (passport, config) {
 
   passport.deserializeUser(function(user, done) {
     if (user.id) {
-      Person.getOne(user.id, function (err, User) {
-        if (err)
-          return done(err, false, {'error' : "Can't deserialize user"}); 
+      Person.getOne(user.id).then(function (User) {
         done(null, User)
+      }).catch(function (err) {
+        return done(err, false, {'error' : "Can't deserialize user"}); 
       })
     }
   });

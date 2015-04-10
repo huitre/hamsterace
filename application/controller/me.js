@@ -39,29 +39,6 @@ exports.feed = function (req, res) {
   });
 }
 
-exports.full = function (req, res) {
-  if (!req.user) 
-    return res.status(403).send('user.not.logged.in');
-  var result = {};
-  Feed.getFeed(req.user, function (err, feed) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-    result.feed = feed.post;
-    result.me = {
-      user : feed.profile.datavalues,
-      details : feed.profile.PersonDetails.datavalues
-    };
-    Stats.get(req.user.id, 'daily', 'wheel').then(function (stats) {
-      result.stats = stats;
-      res.send(result);
-    }).catch(function (e){
-      res.status(500).send('Unable.to.get.statistics');
-    });
-  });
-}
-
 exports.post = function (req, res) {
   if (!req.user) 
     return res.status(403).send('user.not.logged.in');
@@ -102,13 +79,15 @@ exports.comment = function (req, res) {
 }
 
 exports.link = function (req, res) {
-	res.send('this is link');
+  res.send('this is link');
 }
 
 exports.devices = function (req, res) {
-	res.send('this is devices');
+  res.send('this is devices');
 }
 
 exports.auth = function (req, res) {
-	res.send(req);
+  res.send(req);
 }
+
+exports.request = function (req, res) {}

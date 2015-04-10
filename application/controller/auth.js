@@ -18,7 +18,7 @@ var AuthController = (function () {
       return res.status(500).send({'error': 'Email or password cannot be empty'});
     }
     Passport.authenticate('local',{
-      successRedirect : "/me/feed",
+      successRedirect : "/",
       failureRedirect : "/",
     })(req, res, next)
   }

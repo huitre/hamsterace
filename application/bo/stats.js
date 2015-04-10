@@ -32,34 +32,31 @@ var StatsModel = function () {
  * @params object or int
  * @return object
  */
-StatsModel.prototype.getTotalSummary = function (UserOrId) {
-  var self = this;
+StatsModel.prototype.getTotalSummary = function (UserId) {
+  var time = this.getTimeVal('daily'),
+      self = this;
 
-  return new Promise(function (fulfill, reject){
-      var queryTotalSummary = function (id) {
-        Db.Event.sum('content', {
-          where : {
-            type : self.getEventStartAndStop().toArray(),
-            DeviceId : id
-          }
-        }, {raw: true})
-        .then(function (res) {
-          fulfill(res * self.perimeter)
-        }).catch(function (e) {
-          console.log(e, e.stack);
-          reject(e.stack)
-        })
-      }
-      if (typeof UserOrId == "object") {
-       Device.find(User, function (err, res){
-        console.log(err, res)
-          if (err)
-            return reject(err);
-          queryTotalSummary(res.id)
-        });
-     } else
-      queryTotalSummary(UserOrId)
-    });
+  return new Promise(function (fulfill, reject) {
+          Device.find(UserId).then(function (device) {
+            Db.Event.findAll({
+                where : {
+                  DeviceId : device.DeviceId,
+                  createdAt : { 
+                    gt : time.start,
+                    lt : time.end
+                  },
+                  type : self.getEventStartAndStop().toArray()
+                },
+                order: [['id', 'ASC']],
+                limit: 5000
+              }, {raw: true}).spread(function () {
+                fulfill(self.computeGroups(self.aggregateByTimestamp(arguments, 'daily'), 'daily'));
+              }).catch(function (e) {
+                console.log(e, e.stack);
+                reject(e.stack)
+              })
+            })
+          })
 }
 
 
@@ -310,10 +307,10 @@ StatsModel.prototype.get = function (UserOrId, timeval, type) {
     var methodName = 'get' + timeval.substring(0,1).toUpperCase() + timeval.substring(1)
 
     if (typeof UserOrId == "object") {
-     Device.find(User, function (err, res){
-        if (err)
-          return reject(err);
+     Device.find(User).then(function (err, res){
         self[methodName](fulfill, reject, res.id, time, timeval)
+      }).catch(function (e) {
+        return reject(err);
       });
     } else {
       self[methodName](fulfill, reject, UserOrId, time, timeval)
