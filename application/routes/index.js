@@ -64,18 +64,8 @@ exports.init = function init (router) {
   router.post('/device/events', Device.events.post);
   router.post('/device/register', Device.register);
   
-  /*
-   * Users routes
-   */
+  
 
-  // get requests
-  router.get('/users/:id', Users.index);
-  router.get('/users/:id/friends', Users.friends);
-  router.get('/users/:id/followers', Users.followers);
-  router.get('/users/:id/badges', Users.badges);
-  router.get('/users/:id/wall', Users.wall);
-  router.get('/users/find/:name', Users.find);
-  router.get('/users/request/:id', Users.request)
   /*
    * Me routes
    */
@@ -128,14 +118,17 @@ exports.init = function init (router) {
    */
 
   // get requests
-  router.get('/user/:id', Users.index);
-  router.get('/user/:id/friends', Users.friends);
-  router.get('/user/:id/followers', Users.followers);
-  router.get('/user/:id/badges', Users.badges);
-  router.get('/user/:id/feed', Users.wall);
-  router.get('/user/:id/details', Users.details);
-  router.get('/user/:id/request', Users.details);
-  router.get('/user/:id/accept', Users.details);
+  router.get('/user/:id([0-9]+)', Users.index);
+  router.get('/user/:id([0-9]+)/friends', Users.friends);
+  router.get('/user/:id([0-9]+)/followers', Users.followers);
+  router.get('/user/:id([0-9]+)/badges', Users.badges);
+  router.get('/user/:id([0-9]+)/wall', Users.wall);
+  router.get('/user/find/:name', Users.find);
+  router.get('/user/request', Users.request.get)
+
+  // post request
+  router.post('/user/request', Users.request.post)
+  router.post('/user/accept/', Users.accept)
 
   /*
    * Users routes

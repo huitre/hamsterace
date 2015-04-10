@@ -4,6 +4,7 @@
  */
 var Db = require('../models'),
     crypto = require('crypto'),
+    Promise = require("bluebird"),
     console = require('console-plus');
 
 var PersonModel = (function () {
@@ -99,28 +100,59 @@ var PersonModel = (function () {
     })
   }
 
+  this.request = {}
+
   /*
    * @return Promise
    */
-  this.request = function (id) {
-    return Db.PeopleFriend.findOrCreate({
-      where : {
-        FriendId : id
-      }
+  this.request.get = function (userId) {
+    return Db.PeopleFriend.findAll({
+      where : {PersonId: userId, confirmed: false},
+      include : [{
+        model: Db.Person,
+        attributes : ['email'],
+        include : [Db.PersonDetails]
+      }]
     })
   }
 
   /*
    * @return Promise
    */
-  this.accept = function (id) {
-    return Db.PeopleFriend.find({
+  this.request.post = function (userId, friendId) {
+    return Db.PeopleFriend.findOrCreate({
       where : {
-        FriendId : id
+        FriendId : friendId,
+        PersonId : userId
+      },
+      defaults : {
+        type : 'hamster',
+        FriendId : friendId,
+        PersonId : userId,
+        confirmed : false
       }
-    }).then(function (friend) {
-      friend.confirmed = true;
-      friend.save()
+    })
+  }
+
+
+  /*
+   * @return Promise
+   */
+  this.accept = function (userId, friendId) {
+    return new Promise(function (fulfill, reject) {
+        Db.PeopleFriend.find({
+        where : {
+          FriendId : friendId,
+          PersonId : userId
+        }
+      }).then(function (friend) {
+        friend.confirmed = true;
+        friend.save().then(function () {
+          fulfill({confirmed : true})
+        })
+      }).catch(function (e) {
+        reject(new Error({msg : 'not found'}))
+      })
     })
   }
 

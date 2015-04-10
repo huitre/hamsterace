@@ -5,7 +5,7 @@ var Feed = require('../bo/feed'),
 
 exports.index = function (req, res) {
   if (req.params && req.params.id) {
-    Person.getOne(req.params.id).then(function (result) {
+    Person.getOne(parseInt(req.params.id)).then(function (result) {
       res.send(result);
     }).catch(function (err) {
       return res.status(500).send(err)
@@ -59,27 +59,37 @@ exports.find = function (req, res) {
   }
 }
 
-exports.request = function (req, res) {
-  if (req.params && req.params.id && req.user) {
-    Person.request(req.params.id).then(function (result) {
+exports.request = {}
+
+exports.request.post = function (req, res) {
+  if (req.params && req.body.id && req.user) {
+    Person.request.post(req.user.id, req.body.id).then(function (result) {
       res.send(result);
     }).catch(function (err) {
       return res.status(500).send(err)
     })
   } else {
-    res.status(500).send({});
+    res.status(500).send(new Error({params : req.params, msg : 'missing parameters'}));
   }
 }
 
+exports.request.get = function (req, res) {
+  Person.request.get(req.user.id).spread(function () {
+    res.send(arguments);
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
+}
+
 exports.accept = function (req, res) {
- if (req.params && req.params.id && req.user) {
-    Person.accept(req.params.id).then(function (result) {
+ if (req.params && req.body.id && req.user) {
+    Person.accept(req.user.id, req.body.id).then(function (result) {
       res.send(result);
     }).catch(function (err) {
       return res.status(500).send(err)
     })
   } else {
-    res.send({});
+    res.send(new Error({params : req.params, msg : 'missing parameters'}));
   } 
 }
 
