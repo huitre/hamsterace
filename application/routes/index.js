@@ -109,6 +109,7 @@ exports.init = function init (router) {
   router.get('/stats/:id/hourly/:type', Stats.hourly)
   router.get('/stats/:id/summary', Stats.summary)
   router.get('/stats/archive', Stats.archive)
+  router.get('/stats/archive/monthly', Stats.archive.monthly)
   
   // post request
   router.post('/stats', Stats.find);

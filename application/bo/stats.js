@@ -187,27 +187,30 @@ StatsModel.prototype.getSpeed = function (data) {
 }
 
 
-StatsModel.prototype.calculate = function (data) {
+StatsModel.prototype.calculate = function (data, calcDistance) {
   var result = {}
-  switch (type) {
-    case 'wheel':
-      result.speed = {}
-      result.summary = {}
-      result.distance = {}
-      
-      result.distance.data = this.getDistance(data);
-      
-      result.summary.distance = this.getSummary(result.distance.data);
-      result.summary.speed = this.getSummary(result.speed.data);
-      
-      result.speed.data = this.getSpeed(result.distance.data);
-      
-    break;
-  }
+  
+    calcDistance = calcDistance || false;
+
+    result.speed = {}
+    result.summary = {}
+    result.distance = {}
+    
+    result.distance.data = calcDistance ? this.getDistance(data) : data;
+    
+    result.summary.distance = this.getSummary(result.distance.data);
+    
+    result.speed.data = this.getSpeed(result.distance.data);
+    result.summary.speed = this.getSummary(result.speed.data);
+
   return result;
 }
 
-StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
+/*
+ * Takes an array of object with two attributes (createdAt and content)
+ * This array 
+ */
+StatsModel.prototype.computeGroups = function (data, ticks, hasDistance) {
     var stats = {}
 
     stats.distance = {}
@@ -215,15 +218,15 @@ StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
     stats.distance.ticks = ticks;
     stats.activity = [];
 
-    sorted = sorted || true;
+    hasDistance = hasDistance || false;
 
     for(var i in data) {
       stats.distance.data.push({
-        createdAt : data[i][0].createdAt,
-        content : Math.round(this.sum(this.getDistance(data[i]))) || 0
+        createdAt : data[i][Math.round(data[i].length / 2)].createdAt,
+        content : Math.round(this.sum(hasDistance ? data[i] : this.getDistance(data[i]))) || 0
       });
     }
-    
+    /*
     if (!sorted) {
       stats.distance.data.sort(function (a, b) {
         if (a.createdAt > b.createdAt)
@@ -232,7 +235,7 @@ StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
           return -1;
         return 0;
       })
-    }
+    }*/
 
     stats.summary = this.getSummary(stats.distance.data);
 
@@ -330,6 +333,7 @@ StatsModel.prototype.getTimeVal = function (timeval) {
 
     case 'daily':
       time.start = Moment().hours(0).minutes(0).seconds(0).format();
+      //time.end = Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format();
     break;
 
     case 'weekly':
@@ -445,6 +449,66 @@ StatsModel.prototype.isValidType = function (type) {
   return ['wheel'].indexOf(type) != -1;
 }
 
+StatsModel.prototype.archiveMonthly = function () {
+  var self = this,
+      time = this.getTimeVal('weekly');
+
+  return new Promise(function (fulfill, reject) {
+    Db.EventWeekly.findAll({
+      where : {
+        createdAt : { 
+          gte : time.start,
+          lte : time.end
+        }
+      },
+      order: [['id', 'ASC']],
+      limit: 5000
+    }, {raw: true}).spread(function () {
+      var dataGroupedByDevice = _.groupBy(arguments, function (row) {
+              return row.DeviceId
+            }), 
+            timeval = 'daily',
+            sqlData = [];
+
+      _.map(dataGroupedByDevice, function (raw, deviceId) {
+          var data = []
+
+          raw.sort(function (a, b) {
+            if (a.id < b.id)
+              return -1;
+            else if (a.id > b.id)
+              return 1;
+            else 
+              return 0;
+          })
+          _.map(raw, function (weekData, weekId) {
+           data.push(JSON.parse(weekData.timeval))
+          })
+          var computeData = self.computeGroups(data, timeval, true);
+          
+          computeData.activity = self.getActivity(raw, timeval);
+                
+          sqlData.push({
+            timeval : JSON.stringify(computeData.distance.data),
+            activity : JSON.stringify(computeData.activity),
+            summary : JSON.stringify(computeData.summary),
+            DeviceId : deviceId,
+            raw : data
+          })
+        })
+      Db.Eventmonthly.bulkCreate(sqlData).then(function (data) {
+        fulfill(sqlData);
+      }).catch(function (e) {reject(e)})
+    });
+  });
+}
+
+StatsModel.prototype.archiveYearly = function () {
+  return new Promise(function (fulfill, reject) {
+
+  });
+}
+
 StatsModel.prototype.archive = function () {
   var time = this.getTimeVal('daily'),
       self = this;
@@ -478,7 +542,7 @@ StatsModel.prototype.archive = function () {
                 })
 
                 var data = self.aggregateActivityByTimestamp(self.aggregateByActivity(raw), timeval),
-                    computeData = self.computeGroups(data, timeval, self.ticks[timeval]);
+                    computeData = self.computeGroups(data, timeval);
                     computeData.activity = self.getActivity(raw, timeval);
                 
                 sqlData.push({
@@ -489,7 +553,19 @@ StatsModel.prototype.archive = function () {
                 })
               })
               Db.EventWeekly.bulkCreate(sqlData).then(function () {
-                fulfill(sqlData)
+                var a = Moment();
+                // TODO : locale pour avoir lundi == 0
+                if (a.weekday() == 0) 
+                  self.archiveMonthly().then(function (data) {
+                    if (a.date() == 1)
+                      self.archiveYearly().then(function (data) {
+                        fulfill(data)
+                      })
+                    else
+                      fulfill(data)
+                  })
+                else
+                  fulfill(sqlData)
               }).catch(function (e) {
                 console.log(e, e.stack);
                 reject(e.stack)
