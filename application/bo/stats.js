@@ -492,11 +492,10 @@ StatsModel.prototype.archiveMonthly = function () {
             timeval : JSON.stringify(computeData.distance.data),
             activity : JSON.stringify(computeData.activity),
             summary : JSON.stringify(computeData.summary),
-            DeviceId : deviceId,
-            raw : data
+            DeviceId : deviceId
           })
         })
-      Db.Eventmonthly.bulkCreate(sqlData).then(function (data) {
+      Db.EventMonthly.bulkCreate(sqlData).then(function (data) {
         fulfill(sqlData);
       }).catch(function (e) {reject(e)})
     });
