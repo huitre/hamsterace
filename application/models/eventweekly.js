@@ -3,7 +3,7 @@
 module.exports = function(Sequelize, DataTypes) {
   return Sequelize.define("EventWeekly", {
     timeval : {type : DataTypes.JSON},
-    activity : {type : DataTypes.STRING(3)},
+    activity : {type : DataTypes.JSON},
     summary : {type : DataTypes.JSON}
   },
   {

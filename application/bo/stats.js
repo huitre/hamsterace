@@ -108,7 +108,7 @@ StatsModel.prototype.getDistance = function (data, ticks) {
         content : vm
       }
       
-      if (last && b.createdAt.getTime() - last.createdAt.getTime() > ticks) {
+      /*if (last && b.createdAt.getTime() - last.createdAt.getTime() > ticks) {
         distance.push({
           createdAt : new Date(last.createdAt.getTime() + ticks),
           distance : 0
@@ -125,7 +125,7 @@ StatsModel.prototype.getDistance = function (data, ticks) {
           createdAt : new Date(b.createdAt.getTime() - ticks + 1),
           distance : 0
         })
-      }
+      }*/
       distance.push(b);
       last = a;
     }
@@ -151,6 +151,16 @@ StatsModel.prototype.getAverage = function (data) {
     max += data[i].content;
   }
   return Math.round(max / m);
+}
+
+StatsModel.prototype.sum = function (data) {
+  var sum = 0;
+
+  data.map(function (vm) {
+    sum += vm.content;
+  });
+
+  return sum;
 }
 
 StatsModel.prototype.getMax = function (data) {
@@ -210,7 +220,7 @@ StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
     for(var i in data) {
       stats.distance.data.push({
         createdAt : data[i][0].createdAt,
-        content : this.getAverage(this.getDistance(data[i])) || 0
+        content : Math.round(this.sum(this.getDistance(data[i]))) || 0
       });
     }
     
@@ -228,6 +238,17 @@ StatsModel.prototype.computeGroups = function (data, ticks, sorted) {
 
     return stats
 },
+
+StatsModel.prototype.aggregateActivityByTimestamp = function (data, time) {
+  var aggregated = tmp = [];
+
+  for(var i = 0, m = data.length - 1; i < m; ++i) {
+    tmp = this.aggregateByTimestamp(data[i], time)
+    for (var j in tmp)
+      aggregated.push(_.flatten(tmp[j]))
+  }
+  return aggregated;
+}
 
 StatsModel.prototype.aggregateByTimestamp = function (data, time) {
   var aggregated = {}, 
@@ -251,6 +272,33 @@ StatsModel.prototype.aggregateByTimestamp = function (data, time) {
   }
   return aggregated;
 },
+
+StatsModel.prototype.aggregateByActivity = function (raw) {
+  var events = this.getEventStartAndStop().toObject(),
+      iterator = {},
+      data = [],
+      j = 0,
+      start = false, stop = false;
+
+  data[j] = [];
+  for(var i = 0, m = raw.length - 1; i < m; ++i) {
+    iterator = raw[i];
+    if (iterator.type == events.start) {
+      start = true;
+    } else if (iterator.type == events.stop) {
+      stop = true;
+    }
+    data[j].push(iterator)
+    if (start && stop) {
+      j += 1;
+      start = false;
+      stop = false;
+      data[j] = [];
+    }
+  }
+
+  return data;
+}
 
 StatsModel.prototype.getEventStartAndStop = function (type) {
   this.events = [
@@ -277,28 +325,30 @@ StatsModel.prototype.getTimeVal = function (timeval) {
 
   switch (timeval) {
     case 'hourly':
-      time.start = Moment().subtract(12, 'hours').hours(0).minutes(0).seconds(0).format();
-      time.end = Moment().add(1, 'hours').format();
+      time.start = Moment().subtract(1, 'hours').format();
     break;
 
     case 'daily':
-      time.start = Moment().subtract(1, 'days').format();
-      time.end = Moment().add(1, 'days').format();
+      time.start = Moment().hours(0).minutes(0).seconds(0).format();
     break;
 
     case 'weekly':
       time.start = Moment().subtract(7, 'days').hours(0).minutes(0).seconds(0).format();
-      time.end = Moment().add(1, 'days').format();
     break;
 
     case 'monthly':
       time.start = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
-      time.end = Moment().add(1, 'days').format();
     break;
   }
+
+  time.end = Moment().format();
+
   return time;
 }
 
+/*
+ * @return Promise
+ */
 StatsModel.prototype.get = function (UserOrId, timeval, type) {
   var self = this,
       time = this.getTimeVal(timeval);
@@ -318,13 +368,19 @@ StatsModel.prototype.get = function (UserOrId, timeval, type) {
   })
 }
 
+
+/*
+ * @return Promise
+ */
 StatsModel.prototype.getHourly = function (fulfill, reject, deviceId, time, timeval) {
   var self = this,
       compute = function (raw, type) {
         return new Promise(function (fulfill, reject){
-          var data = self.aggregateByTimestamp(raw, timeval),
+          var data = self.aggregateActivityByTimestamp(self.aggregateByActivity(raw), timeval),
               computeData = self.computeGroups(data, timeval, self.ticks[timeval]);
-          computeData.activity = self.getActivity(raw, timeval)
+          computeData.activity = self.getActivity(raw, timeval);
+          /*computeData.groupedActivity = self.aggregateByActivity(raw);
+          computeData.grouped = data;*/
 
           fulfill(computeData);
         })
@@ -333,13 +389,13 @@ StatsModel.prototype.getHourly = function (fulfill, reject, deviceId, time, time
   return Db.Event.findAll({
               where : {
                 createdAt : { 
-                  gt : time.start,
-                  lt : time.end
+                  gte : time.start,
+                  lte : time.end
                 },
                 type : self.getEventStartAndStop().toArray(),
                 DeviceId : deviceId
               },
-              order: [['createdAt', 'ASC']],
+              order: [['id', 'ASC']],
               limit: 50000
             }, {raw: true}).spread(function (data) {
               return compute(arguments).then(function (result) {
@@ -360,8 +416,8 @@ StatsModel.prototype.getWeekly = function (fulfill, reject, deviceId, time, time
   return Db[TableName].findAll({
               where : {
                 createdAt : { 
-                  gt : time.start,
-                  lt : time.end
+                  gte : time.start,
+                  lte : time.end
                 },
                 DeviceId : deviceId
               },
@@ -407,10 +463,12 @@ StatsModel.prototype.archive = function () {
             }, {raw: true}).spread(function () {
               var dataGroupedByDevice = _.groupBy(arguments, function (row) {
                     return row.DeviceId
-                  }), sqlData = [];
+                  }), 
+                  timeval = 'daily',
+                  sqlData = [];
 
-              _.map(dataGroupedByDevice, function (el, deviceId) {
-                el.sort(function (a, b) {
+              _.map(dataGroupedByDevice, function (raw, deviceId) {
+                raw.sort(function (a, b) {
                   if (a.id < b.id)
                     return -1;
                   else if (a.id > b.id)
@@ -418,11 +476,15 @@ StatsModel.prototype.archive = function () {
                   else 
                     return 0;
                 })
-                el = self.computeGroups(self.aggregateByTimestamp(el, 'daily'), 'daily');
+
+                var data = self.aggregateActivityByTimestamp(self.aggregateByActivity(raw), timeval),
+                    computeData = self.computeGroups(data, timeval, self.ticks[timeval]);
+                    computeData.activity = self.getActivity(raw, timeval);
+                
                 sqlData.push({
-                  timeval : JSON.stringify(el.distance.data),
-                  activity : JSON.stringify(el.activity),
-                  summary : JSON.stringify(el.summary),
+                  timeval : JSON.stringify(computeData.distance.data),
+                  activity : JSON.stringify(computeData.activity),
+                  summary : JSON.stringify(computeData.summary),
                   DeviceId : deviceId
                 })
               })
