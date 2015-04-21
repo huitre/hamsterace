@@ -72,8 +72,6 @@ var PersonModel = (function () {
         attributes : ['email'],
         include : [Db.PersonDetails]
       }]
-    }).then(function (friends) {
-      done(friends);
     })
   }
 

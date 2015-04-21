@@ -11,6 +11,7 @@ module.exports = function(sequelize, DataTypes) {
   {
     associate: function (models) {
       models.Device.hasMany(models.RegisteredDevice);
+      models.Device.hasMany(models.EventWeekly) 
     }
   });
 };

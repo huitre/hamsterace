@@ -8,7 +8,7 @@ module.exports = function(Sequelize, DataTypes) {
   },
   {
     associate: function (models) {
-     models.Device.hasMany(models.EventWeekly) 
+     models.EventWeekly.belongsTo(models.Device) 
     }
   });
 }

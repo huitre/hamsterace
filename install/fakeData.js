@@ -5,6 +5,25 @@ var Db = require('../application/models'),
 var FakeData = (function () {
   var self = this;
 
+  this.populateDevice = function () {
+    // populate device
+    for (var i = 1; i < 30; ++i) {
+      Db.Device.create({
+        apiKey: 4242,
+        userKey: 'azerty',
+        privateKey: 'keyboardcat'
+      }).then(function (device) {
+        // then attach device to Person
+        Db.RegisteredDevice.create({
+          hash: 'thisisafakehashfortesting',
+          PersonId: device.id,
+          DeviceId: device.id
+        })
+        //self.populateStats(device.id);
+      })    
+    }
+  }
+
 
   this.incrementStats = function () {
     var d = Moment().hours(0).minutes(0).seconds(0).format();
@@ -1028,20 +1047,22 @@ var FakeData = (function () {
         
         // populate device
         for (var i = 1; i < 10; ++i) {
-          Db.Device.create({
-            apiKey: 4242,
-            userKey: 'azerty',
-            privateKey: 'keyboardcat'
-          }).then(function (device) {
-            // then attach device to Person
-            Db.RegisteredDevice.create({
-              hash: 'thisisafakehashfortesting',
-              PersonId: i,
-              DeviceId: device.id
+          (function () {
+            Db.Device.create({
+              apiKey: 4242,
+              userKey: 'azerty',
+              privateKey: 'keyboardcat'
+            }).then(function (device) {
+              // then attach device to Person
+              Db.RegisteredDevice.create({
+                hash: 'thisisafakehashfortesting',
+                PersonId: i,
+                DeviceId: device.id
+              })
+              
+              self.populateStats(device.id);
             })
-            
-            self.populateStats(device.id);
-          })
+          })()
         }
 
 

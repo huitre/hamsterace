@@ -95,8 +95,14 @@ exports.init = function init (router) {
    * Rankings routes
    */ 
 
+  // get request
+  router.get('/ranking/friends', Rankings.friends);
+  router.get('/ranking/distance', Rankings.distance);
+  router.get('/ranking/speed', Rankings.speed);
+  router.get('/ranking/activity', Rankings.activity);
+
   // post request
-  router.post('/rankings', Rankings.find);
+  router.post('/ranking', Rankings.find);
 
   /*
    * Stats routes

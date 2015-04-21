@@ -110,7 +110,8 @@ sequelize.sequelize.sync({force : false}).done(function() {
   // populate
   //FakeDatas.populate();
   //FakeDatas.populateStats();
-  FakeDatas.incrementStats();
+  //FakeDatas.populateDevice();
+  //FakeDatas.incrementStats();
 
   // database setted up
   // launching server
