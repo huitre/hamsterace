@@ -47,6 +47,14 @@ exports.wall = function (req, res) {
   }
 }
 
+exports.all = function (req, res) {
+  Person.getAll().then(function (result) {
+    res.send(result);
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
+}
+
 exports.find = function (req, res) {
   if (req.params && req.params.name && req.params.name.length > 2) {
     Person.findByName(req.params.name).then(function (result) {

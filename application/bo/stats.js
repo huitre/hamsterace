@@ -221,10 +221,14 @@ StatsModel.prototype.computeGroups = function (data, ticks, hasDistance) {
     hasDistance = hasDistance || false;
 
     for(var i in data) {
-      stats.distance.data.push({
-        createdAt : data[i][Math.round(data[i].length / 2)].createdAt,
-        content : Math.round(this.sum(hasDistance ? data[i] : this.getDistance(data[i]))) || 0
-      });
+      try {
+        stats.distance.data.push({
+          createdAt : data[i][Math.round(data[i].length / 2)].createdAt,
+          content : Math.round(this.sum(hasDistance ? data[i] : this.getDistance(data[i]))) || 0
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }
     /*
     if (!sorted) {
@@ -545,9 +549,9 @@ StatsModel.prototype.archive = function () {
                     computeData.activity = self.getActivity(raw, timeval);
                 
                 sqlData.push({
-                  timeval : JSON.stringify(computeData.distance.data),
-                  activity : JSON.stringify(computeData.activity),
-                  summary : JSON.stringify(computeData.summary),
+                  timeval : computeData.distance.data,
+                  activity : computeData.activity,
+                  summary : computeData.summary,
                   DeviceId : deviceId
                 })
               })

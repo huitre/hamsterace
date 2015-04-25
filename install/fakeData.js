@@ -26,19 +26,22 @@ var FakeData = (function () {
 
 
   this.incrementStats = function () {
-    var d = Moment().hours(0).minutes(0).seconds(0).format();
-    Db.Event.max('updatedAt').then(function (updatedAt) {    
+    var d = Moment().hours(0).minutes(0).seconds(0),
+        self = this;
+
+    Db.Event.max('updatedAt').then(function (updatedAt) {
       if (new Date(updatedAt) < d) {
-        Db.Events.findAll({ attributes : ['DeviceId']}, {raw: true}).spread(function () {
-          for (var i = arguments.length - 1; i > -1; --i)
-            this.populateStats(arguments[i].DeviceId)
+        Db.Event.findAll({attributes : ['DeviceId'], group : ['DeviceId']}, {raw: true}).then(function (rows) {
+          for (var i = rows.length - 1; i > -1; --i) {
+            self.populateStats(rows[i].DeviceId, Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format())
+          }
         })
       }
       
     })
   }
 
-  this.populateStats = function (id) {
+  this.populateStats = function (id, date) {
     id = id || 1;
     /*
      * @params Date s Start date to populate data
@@ -79,7 +82,7 @@ var FakeData = (function () {
 
       // populate events
       //var d = Moment().subtract(1, 'months').hours(0).minutes(0).seconds(0).format();
-      var d = Moment().subtract(1, 'weeks').hours(0).minutes(0).seconds(0).format();
+      var d = date || Moment().subtract(1, 'weeks').hours(0).minutes(0).seconds(0).format();
       //for (var x = 0; x < 31; ++x) {
       for (var x = 0; x < 7; ++x) {
         b = r(d, Utils.range(1, 2 * 60));
@@ -577,8 +580,8 @@ var FakeData = (function () {
           },
           {
             "PersonId": 1,
-            "FriendId": 24,
-            "confirmed": false
+            "FriendId": 4,
+            "confirmed": true
           },
           {
             "PersonId": 35,
@@ -592,8 +595,8 @@ var FakeData = (function () {
           },
           {
             "PersonId": 8,
-            "FriendId": 35,
-            "confirmed": false
+            "FriendId": 1,
+            "confirmed": true
           },
           {
             "PersonId": 15,
@@ -602,8 +605,8 @@ var FakeData = (function () {
           },
           {
             "PersonId": 1,
-            "FriendId": 22,
-            "confirmed": false
+            "FriendId": 9,
+            "confirmed": true
           },
           {
             "PersonId": 19,
