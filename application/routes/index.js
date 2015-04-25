@@ -95,8 +95,17 @@ exports.init = function init (router) {
    * Rankings routes
    */ 
 
+  // get request
+  router.get('/ranking/friends', Rankings.friends);
+  router.get('/ranking/distance', Rankings.distance);
+  router.get('/ranking/distance/max', Rankings.distance.max);
+  router.get('/ranking/distance/average', Rankings.distance.average);
+  router.get('/ranking/speed', Rankings.speed);
+  router.get('/ranking/activity', Rankings.activity);
+  
+
   // post request
-  router.post('/rankings', Rankings.find);
+  router.post('/ranking', Rankings.find);
 
   /*
    * Stats routes
@@ -109,6 +118,7 @@ exports.init = function init (router) {
   router.get('/stats/:id/hourly/:type', Stats.hourly)
   router.get('/stats/:id/summary', Stats.summary)
   router.get('/stats/archive', Stats.archive)
+  router.get('/stats/archive/monthly', Stats.archive.monthly)
   
   // post request
   router.post('/stats', Stats.find);
@@ -118,6 +128,7 @@ exports.init = function init (router) {
    */
 
   // get requests
+  router.get('/user', Users.all);
   router.get('/user/:id([0-9]+)', Users.index);
   router.get('/user/:id([0-9]+)/friends', Users.friends);
   router.get('/user/:id([0-9]+)/followers', Users.followers);

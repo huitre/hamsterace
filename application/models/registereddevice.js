@@ -7,6 +7,7 @@ module.exports = function(sequelize, DataTypes) {
   {
     associate: function (models) {
       models.RegisteredDevice.belongsTo(models.Person);
+      models.RegisteredDevice.belongsTo(models.Device);
     }  
   });
 };

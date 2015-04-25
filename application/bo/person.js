@@ -45,6 +45,17 @@ var PersonModel = (function () {
       return done(err, false);
     });
   }
+  
+  /*
+   * @return Promise
+   */
+  this.getAll = function (id, done) {
+    return Db.Person.findAll({
+          attributes: ['Person.*', 'PeopleFriends.*', [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
+          include: [Db.PeopleFriend],
+          group : ['Person.id', 'PeopleFriends.id']
+        })
+  }
 
   /*
    * @return Promise
@@ -69,11 +80,12 @@ var PersonModel = (function () {
       where : {PersonId: UserId, confirmed: true},
       include : [{
         model: Db.Person,
-        attributes : ['email'],
-        include : [Db.PersonDetails]
+        as : 'Friend',
+        attributes : ['id'],
+        include : [{ 
+          model : Db.PersonDetails
+        }]
       }]
-    }).then(function (friends) {
-      done(friends);
     })
   }
 

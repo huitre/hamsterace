@@ -60,3 +60,10 @@ exports.archive = function (req, res) {
   })
 }
 
+exports.archive.monthly = function (req, res) {
+  Stats.archiveMonthly().then(function () {
+    res.send(arguments)
+  }).catch(function () {
+    res.status(500).send(arguments)
+  })
+}

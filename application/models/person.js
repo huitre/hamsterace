@@ -36,9 +36,7 @@ module.exports = function(Sequelize, DataTypes) {
       models.Person.hasOne(models.RegisteredDevice);
       models.Person.hasOne(models.Image);
       models.Person.hasMany(models.Post);
-    },
-    classMethods: {
-      
+      models.Person.hasMany(models.Person, {as : 'Friends', through : models.PeopleFriend});
     }
   });
 }
