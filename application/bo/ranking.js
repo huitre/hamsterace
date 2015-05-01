@@ -211,7 +211,9 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
 
 /*
  * Bit tricky here, the order is done by the full alias name of the include cascade
- * then, cast to perform the correct order
+ * then, cast json to perform the correct order.
+ * Had to use raw format cause can't cast and using model include as the same type
+ * This can cause future bugs if name models change
  */
 RankingModel.prototype.friendsDistance = function (UserId) {
   return this.getFriendRanking(UserId, "CAST(\"Friend.RegisteredDevice.Device.EventWeeklies\".\"summary\"->>'sum' as int) DESC")
