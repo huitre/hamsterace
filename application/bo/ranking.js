@@ -26,10 +26,6 @@ var RankingModel = function () {
 
 
 
-RankingModel.prototype.find = function (UserId) {
-}
-
-
 RankingModel.prototype.sortByMaxDistance = function (_rankings) {
   rankings = _rankings || this.rankings;
 
@@ -146,17 +142,21 @@ RankingModel.prototype.getRanking = function (order, limit) {
   })
 }
 
+
 /*
+ * 
  *
- * @params object or int
+ * @params object/int User ou id user
+ * @params string     
  * @return object
  */
-RankingModel.prototype.friends = function (UserId) {
+RankingModel.prototype.getFriendRanking = function (UserId, order) {
   var self = this,
       time = Moment().subtract(1, 'week').hours(0).minutes(0).seconds(0).format();
 
   return new Promise(function (fulfill, reject) {
     Db.PeopleFriend.findAll({
+      order : {raw : order},
       attributes : ['id', 'FriendId'],
       where : {PersonId: UserId, confirmed: true},
       include : [{
@@ -203,25 +203,35 @@ RankingModel.prototype.friends = function (UserId) {
           summary : row.Friend.RegisteredDevice.Device.EventWeeklies[0].summary,
         })
       })
-      
-      // on le sort car l'ORM ne gere pas 
-      // encore le ORDER avec le type json de postgre
-      self.sortByMaxDistance();
-      self.pushSort('max');
 
-      self.sortByDistance()
-      self.pushSort('sum');
-
-      self.sortByActivity()
-      self.pushSort('activity');
-
-
-
-      fulfill({sort : self.sort, rankings : self.rankings});
+      fulfill(self.rankings);
     }).catch(function (e) { reject(e) })
-
-  }).catch(function (e) { reject(e) })
+  })
 }
+
+/*
+ * Bit tricky here, the order is done by the full alias name of the include cascade
+ * then, cast to perform the correct order
+ */
+RankingModel.prototype.friendsDistance = function (UserId) {
+  return this.getFriendRanking(UserId, "CAST(\"Friend.RegisteredDevice.Device.EventWeeklies\".\"summary\"->>'sum' as int) DESC")
+}
+
+RankingModel.prototype.friendsMax = function (UserId) {
+  return this.getFriendRanking(UserId, "CAST(\"Friend.RegisteredDevice.Device.EventWeeklies\".\"summary\"->>'max' as int) DESC")
+}
+
+RankingModel.prototype.friendsAverage = function (UserId) {
+  return this.getFriendRanking(UserId, "CAST(\"Friend.RegisteredDevice.Device.EventWeeklies\".\"summary\"->>'average' as int) DESC")
+}
+
+RankingModel.prototype.friendsActivity = function (UserId) {
+  return this.getFriendRanking(UserId," CAST(\"Friend.RegisteredDevice.Device.EventWeeklies\".\"activity\"->>'percent' as float) DESC")
+}
+
+RankingModel.prototype.find = function (UserId) {
+}
+
 
 
 

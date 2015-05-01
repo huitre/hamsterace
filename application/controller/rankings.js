@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2014-10-23 21:43:42
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-04-25 19:25:38
+* @Last Modified time: 2015-04-27 21:55:08
 */
 
 var Promise = require("bluebird"),
@@ -11,11 +11,34 @@ var Promise = require("bluebird"),
     RankingController = {};
 
 exports.friends = function (req, res) {
-  if (!req.user) 
-    return res.status(403).send('user.not.logged.in');
-  req.user = req.user || {}
-  req.user.id = req.user.id;
-  Ranking.friends(req.user.id).then(function (datas) {
+  Ranking.friendsDistance(req.user.id).then(function (datas) {
+    res.send(datas)
+  }).catch(function (e) {
+    console.log(e)
+    res.status(500).send(e)
+  })
+}
+
+exports.friends.max = function (req, res) {
+  Ranking.friendsMax(req.user.id).then(function (datas) {
+    res.send(datas)
+  }).catch(function (e) {
+    console.log(e)
+    res.status(500).send(e)
+  })
+}
+
+exports.friends.average = function (req, res) {
+  Ranking.friendsAverage(req.user.id).then(function (datas) {
+    res.send(datas)
+  }).catch(function (e) {
+    console.log(e)
+    res.status(500).send(e)
+  })
+}
+
+exports.friends.activity = function (req, res) {
+  Ranking.friendsActivity(req.user.id).then(function (datas) {
     res.send(datas)
   }).catch(function (e) {
     console.log(e)

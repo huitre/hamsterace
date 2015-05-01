@@ -97,6 +97,9 @@ exports.init = function init (router) {
 
   // get request
   router.get('/ranking/friends', Rankings.friends);
+  router.get('/ranking/friends/max', Rankings.friends.max);
+  router.get('/ranking/friends/average', Rankings.friends.average);
+  router.get('/ranking/friends/activity', Rankings.friends.activity);
   router.get('/ranking/distance', Rankings.distance);
   router.get('/ranking/distance/max', Rankings.distance.max);
   router.get('/ranking/distance/average', Rankings.distance.average);
