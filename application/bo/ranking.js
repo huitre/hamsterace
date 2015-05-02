@@ -121,11 +121,12 @@ RankingModel.prototype.getRanking = function (order, limit) {
         }
       }
     }).then(function (rows) {
+      var rankings = [];
       rows.map(function (row) {
         var activity = {},
             summary = {}
         if (row.Device.RegisteredDevices.length) {
-          self.rankings.push({
+          rankings.push({
             person : {
               id : row.PersonId,
               firstname : row.Device.RegisteredDevices[0].Person.PersonDetails[0].firstname,
@@ -186,13 +187,13 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
         }]
       }]
     }).then(function (rows) {
-
+      var rankings = [];
       // on epure l'objet
       rows.map(function (row) {
         var activity = {},
             summary = {}
 
-        self.rankings.push({
+        rankings.push({
           friend : {
             id : row.FriendId,
             firstname : row.Friend.PersonDetails[0].firstname,
