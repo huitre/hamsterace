@@ -138,7 +138,7 @@ RankingModel.prototype.getRanking = function (order, limit) {
           })
         }
       })
-      fulfill(self.rankings)
+      fulfill(rankings)
     })
   })
 }
@@ -205,7 +205,7 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
         })
       })
 
-      fulfill(self.rankings);
+      fulfill(rankings);
     }).catch(function (e) { reject(e) })
   })
 }
