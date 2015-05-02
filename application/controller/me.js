@@ -1,5 +1,6 @@
 var Feed = require('../bo/feed'),
     Stats = require('../bo/stats'),
+    Person = require('../bo/person'),
     //Db = require('../models'),
     console = require('console-plus');
 
@@ -88,6 +89,18 @@ exports.devices = function (req, res) {
 
 exports.auth = function (req, res) {
   res.send(req);
+}
+
+exports.friends = function (req, res) {
+  if (req.user.id) {
+    Person.getFriends(req.user.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  }
 }
 
 exports.request = function (req, res) {}

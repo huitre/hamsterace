@@ -2,7 +2,7 @@
 * @Author: huitre
 * @Date:   2014-10-23 21:43:42
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-04-27 21:55:08
+* @Last Modified time: 2015-05-01 18:31:03
 */
 
 var Promise = require("bluebird"),
@@ -91,14 +91,10 @@ exports.activity = function (req, res) {
 }
 
 
-
 exports.speed = function (req, res) {
   res.send(req);
 }
 
-exports.activity = function (req, res) {
-  res.send(req);
-}
 
 exports.find = function (req, res) {
 	res.send(req);
