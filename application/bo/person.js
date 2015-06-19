@@ -83,8 +83,13 @@ var PersonModel = (function () {
           model: Db.Person,
           as : 'Friend',
           attributes : ['id'],
-          include : [{ 
-            model : Db.PersonDetails
+          include : [{
+            model : Db.PersonDetails,
+          }, {
+            model : Db.Avatar,
+            include : [{
+              model: Db.Image
+            }]
           }]
         }]
       }).then(function (rows) {
@@ -97,7 +102,8 @@ var PersonModel = (function () {
             age : row.Friend.PersonDetails[0].age,
             updatedAt : row.updatedAt,
             firstname : row.Friend.PersonDetails[0].firstname,
-            name : row.Friend.PersonDetails[0].name
+            name : row.Friend.PersonDetails[0].name,
+            avatar : row.Friend.Avatar.Image
           })
         })
         fulfill(friends)

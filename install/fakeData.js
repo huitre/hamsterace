@@ -5,6 +5,22 @@ var Db = require('../application/models'),
 var FakeData = (function () {
   var self = this;
 
+  this.populateAvatar = function () {
+    for (var i = 1; i < 30; ++i) {
+      Db.Image.create({
+        resource : "images/hamster.png",
+        size : {w: 300, h: 300},
+        type : "image/jpeg"
+      }).then(function (image) {
+        Db.Avatar.create({
+          length : 1,
+          PersonId: image.id,
+          ImageId: image.id
+        })
+      })
+    }
+  }
+
   this.populateDevice = function () {
     // populate device
     for (var i = 1; i < 30; ++i) {
@@ -19,11 +35,10 @@ var FakeData = (function () {
           PersonId: device.id,
           DeviceId: device.id
         })
-        //self.populateStats(device.id);
+        self.populateStats(device.id);
       })    
     }
   }
-
 
   this.incrementStats = function () {
     var d = Moment().hours(0).minutes(0).seconds(0),
@@ -265,253 +280,246 @@ var FakeData = (function () {
             "gender" : 'male',
             "age" : new Date('1984-11-11'),
             "PersonId" : 4
-          },{
+          },
+          {
             "type": "hamster",
-            "name": "Phasellus.elit@dignissim.ca",
-            "firstname": "Kyla",
-            "gender": "female",
-            "age": new Date('2014-08-31'),
+            "name": "Keaton",
+            "firstname": "Velma",
+            "gender": "male",
+            "age": "1238183104",
             "PersonId": 5
           },
           {
             "type": "hamster",
-            "name": "cursus.a.enim@vulputaterisusa.ca",
-            "firstname": "Virginia",
-            "gender": "male",
-            "age": new Date('2014-07-17'),
+            "name": "Rae",
+            "firstname": "Nina",
+            "gender": "female",
+            "age": "931397641",
             "PersonId": 6
           },
           {
             "type": "hamster",
-            "name": "elit@Donecsollicitudin.edu",
-            "firstname": "Morgan",
-            "gender": "male",
-            "age": new Date('2015-08-14'),
+            "name": "Rama",
+            "firstname": "Finn",
+            "gender": "female",
+            "age": "951569323",
             "PersonId": 7
           },
           {
             "type": "hamster",
-            "name": "lorem.vitae@loremut.edu",
-            "firstname": "Angelica",
+            "name": "Hermione",
+            "firstname": "Chelsea",
             "gender": "female",
-            "age": new Date('2015-12-31'),
+            "age": "1325215492",
             "PersonId": 8
           },
           {
             "type": "hamster",
-            "name": "Fusce@sedlibero.co.uk",
-            "firstname": "Paul",
-            "gender": "male",
-            "age": new Date('2015-08-01'),
+            "name": "Juliet",
+            "firstname": "Maya",
+            "gender": "female",
+            "age": "1128077462",
             "PersonId": 9
           },
           {
             "type": "hamster",
-            "name": "ac.feugiat@orci.com",
-            "firstname": "Juliet",
+            "name": "Illana",
+            "firstname": "Patience",
             "gender": "female",
-            "age": new Date('2014-10-30'),
+            "age": "1463113282",
             "PersonId": 10
           },
           {
             "type": "hamster",
-            "name": "nec.cursus.a@faucibusorci.org",
-            "firstname": "Raven",
-            "gender": "female",
-            "age": new Date('2016-02-17'),
+            "name": "Lilah",
+            "firstname": "Quemby",
+            "gender": "male",
+            "age": "1144038324",
             "PersonId": 11
           },
           {
             "type": "hamster",
-            "name": "enim.Etiam.gravida@arcuimperdiet.net",
-            "firstname": "Stella",
+            "name": "Gemma",
+            "firstname": "Harlan",
             "gender": "male",
-            "age": new Date('2015-12-19'),
+            "age": "1112760666",
             "PersonId": 12
           },
           {
             "type": "hamster",
-            "name": "sit@etrutrumeu.edu",
-            "firstname": "Ifeoma",
+            "name": "Alan",
+            "firstname": "Oliver",
             "gender": "male",
-            "age": new Date('2015-05-01'),
+            "age": "1276879552",
             "PersonId": 13
           },
           {
             "type": "hamster",
-            "name": "aliquet.vel@utaliquamiaculis.co.uk",
-            "firstname": "Emmanuel",
+            "name": "Jennifer",
+            "firstname": "Mia",
             "gender": "female",
-            "age": new Date('2015-07-13'),
+            "age": "1150214125",
             "PersonId": 14
           },
           {
             "type": "hamster",
-            "name": "enim.sit@faucibus.co.uk",
-            "firstname": "Hadley",
+            "name": "Dahlia",
+            "firstname": "Clio",
             "gender": "male",
-            "age": new Date('2014-06-03'),
+            "age": "840669700",
             "PersonId": 15
           },
           {
             "type": "hamster",
-            "name": "lorem.ac@egestasDuisac.net",
-            "firstname": "Naida",
-            "gender": "female",
-            "age": new Date('2015-05-01'),
+            "name": "Tallulah",
+            "firstname": "Aurelia",
+            "gender": "male",
+            "age": "1210431906",
             "PersonId": 16
           },
           {
             "type": "hamster",
-            "name": "mus.Proin@anunc.net",
-            "firstname": "Gwendolyn",
+            "name": "Abel",
+            "firstname": "Phillip",
             "gender": "female",
-            "age": new Date('2014-10-17'),
+            "age": "1118065874",
             "PersonId": 17
           },
           {
             "type": "hamster",
-            "name": "neque.venenatis.lacus@ullamcorperviverra.com",
-            "firstname": "Rana",
+            "name": "Ulric",
+            "firstname": "Lev",
             "gender": "female",
-            "age": new Date('2015-03-14'),
+            "age": "1347605951",
             "PersonId": 18
           },
           {
             "type": "hamster",
-            "name": "Donec.est.mauris@auctorveliteget.net",
-            "firstname": "Tatum",
-            "gender": "female",
-            "age": new Date('2015-01-06'),
+            "name": "Octavia",
+            "firstname": "Bryar",
+            "gender": "male",
+            "age": "1437791088",
             "PersonId": 19
           },
           {
             "type": "hamster",
-            "name": "purus.Maecenas.libero@etliberoProin.edu",
-            "firstname": "Summer",
+            "name": "Robert",
+            "firstname": "Iona",
             "gender": "male",
-            "age": new Date('2015-08-16'),
+            "age": "830990455",
             "PersonId": 20
           },
           {
             "type": "hamster",
-            "name": "neque.Nullam@estNunc.net",
-            "firstname": "Pearl",
+            "name": "Louis",
+            "firstname": "Hedy",
             "gender": "male",
-            "age": new Date('2014-10-29'),
+            "age": "1402504064",
             "PersonId": 21
           },
           {
             "type": "hamster",
-            "name": "ad.litora.torquent@feugiatLorem.org",
-            "firstname": "Hector",
-            "gender": "male",
-            "age": new Date('2014-07-01'),
+            "name": "Daquan",
+            "firstname": "Ivor",
+            "gender": "female",
+            "age": "866020107",
             "PersonId": 22
           },
           {
             "type": "hamster",
-            "name": "risus.Duis.a@magna.edu",
-            "firstname": "Chloe",
-            "gender": "male",
-            "age": new Date('2015-07-02'),
+            "name": "Alfonso",
+            "firstname": "Keiko",
+            "gender": "female",
+            "age": "1140983316",
             "PersonId": 23
           },
           {
             "type": "hamster",
-            "name": "interdum@sit.co.uk",
-            "firstname": "Zenaida",
+            "name": "Caleb",
+            "firstname": "Hayden",
             "gender": "female",
-            "age": new Date('2016-01-10'),
+            "age": "1148794476",
             "PersonId": 24
           },
           {
             "type": "hamster",
-            "name": "tincidunt.tempus.risus@loremluctusut.co.uk",
-            "firstname": "Eugenia",
-            "gender": "female",
-            "age": new Date('2015-01-21'),
+            "name": "Rebekah",
+            "firstname": "Minerva",
+            "gender": "male",
+            "age": "1393543167",
             "PersonId": 25
           },
           {
             "type": "hamster",
-            "name": "porta@diam.edu",
-            "firstname": "Chaim",
+            "name": "Dolan",
+            "firstname": "Clark",
             "gender": "female",
-            "age": new Date('2015-09-19'),
+            "age": "1063840047",
             "PersonId": 26
           },
           {
             "type": "hamster",
-            "name": "et@odio.ca",
-            "firstname": "Maxine",
-            "gender": "female",
-            "age": new Date('2015-03-21'),
+            "name": "Nadine",
+            "firstname": "Kirk",
+            "gender": "male",
+            "age": "1445563903",
             "PersonId": 27
           },
           {
             "type": "hamster",
-            "name": "lacus@commodoat.ca",
-            "firstname": "Leslie",
-            "gender": "female",
-            "age": new Date('2015-02-03'),
+            "name": "Blaze",
+            "firstname": "Noah",
+            "gender": "male",
+            "age": "1200228990",
             "PersonId": 28
           },
           {
             "type": "hamster",
-            "name": "sit.amet.diam@sedsapien.org",
-            "firstname": "Alana",
-            "gender": "male",
-            "age": new Date('2014-08-10'),
+            "name": "Teagan",
+            "firstname": "Chadwick",
+            "gender": "female",
+            "age": "1294106090",
             "PersonId": 29
           },
           {
             "type": "hamster",
-            "name": "pede.Praesent@ipsum.co.uk",
-            "firstname": "Francesca",
-            "gender": "female",
-            "age": new Date('2014-05-08'),
+            "name": "Autumn",
+            "firstname": "Anastasia",
+            "gender": "male",
+            "age": "865342507",
             "PersonId": 30
           },
           {
             "type": "hamster",
-            "name": "dictum.sapien.Aenean@erat.org",
-            "firstname": "Dakota",
-            "gender": "female",
-            "age": new Date('2015-04-16'),
+            "name": "Graiden",
+            "firstname": "Keith",
+            "gender": "male",
+            "age": "1003852927",
             "PersonId": 31
           },
           {
             "type": "hamster",
-            "name": "molestie.pharetra.nibh@ametmetusAliquam.org",
-            "firstname": "Hyacinth",
+            "name": "Magee",
+            "firstname": "Kai",
             "gender": "female",
-            "age": new Date('2014-08-28'),
+            "age": "980090151",
             "PersonId": 32
           },
           {
             "type": "hamster",
-            "name": "Quisque.porttitor@magnisdisparturient.edu",
-            "firstname": "Jamalia",
-            "gender": "male",
-            "age": new Date('2015-03-31'),
+            "name": "Liberty",
+            "firstname": "Finn",
+            "gender": "female",
+            "age": "1382671841",
             "PersonId": 33
           },
           {
             "type": "hamster",
-            "name": "urna.Ut@scelerisqueduiSuspendisse.edu",
-            "firstname": "Kirk",
-            "gender": "male",
-            "age": new Date('2016-01-09'),
+            "name": "Guinevere",
+            "firstname": "Ryan",
+            "gender": "female",
+            "age": "836634416",
             "PersonId": 34
-          },
-          {
-            "type": "hamster",
-            "name": "nulla@ultricessitamet.edu",
-            "firstname": "Wesley",
-            "gender": "male",
-            "age": new Date('2015-12-05'),
-            "PersonId": 35
           }];
       Db.PersonDetails.bulkCreate(DetailsData).then(function (Details) {
         Db.Post.create({
@@ -1047,7 +1055,7 @@ var FakeData = (function () {
 
         Db.PeopleFriend.bulkCreate(FriendsData)
 
-        
+        /*
         // populate device
         for (var i = 1; i < 10; ++i) {
           (function () {
@@ -1066,7 +1074,7 @@ var FakeData = (function () {
               self.populateStats(device.id);
             })
           })()
-        }
+        }*/
 
 
         

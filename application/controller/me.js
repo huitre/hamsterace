@@ -103,4 +103,16 @@ exports.friends = function (req, res) {
   }
 }
 
+exports.full = function (req, res) {
+  if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  var result = req.user;
+  Person.getFriends(req.user.id).then(function (friends) {
+    result.friends = friends;
+    res.send(result);
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
+}
+
 exports.request = function (req, res) {}

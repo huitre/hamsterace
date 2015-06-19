@@ -434,7 +434,10 @@ StatsModel.prototype.getWeekly = function (fulfill, reject, deviceId, time, time
             }, {raw: true}).spread(function (data) {
               if (data) {
                 var result = {
-                  distance : data.timeval,
+                  distance : {
+                    data : data.timeval,
+                    ticks : timeval
+                  },
                   summary : data.summary,
                   activity : data.activity
                 }
@@ -486,19 +489,20 @@ StatsModel.prototype.archiveMonthly = function () {
               return 0;
           })
           _.map(raw, function (weekData, weekId) {
-           data.push(JSON.parse(weekData.timeval))
+            data.push(weekData.timeval)
           })
           var computeData = self.computeGroups(data, timeval, true);
           
           computeData.activity = self.getActivity(raw, timeval);
                 
           sqlData.push({
-            timeval : JSON.stringify(computeData.distance.data),
-            activity : JSON.stringify(computeData.activity),
-            summary : JSON.stringify(computeData.summary),
+            timeval : computeData.distance.data,
+            activity : computeData.activity,
+            summary : computeData.summary,
             DeviceId : deviceId
           })
         })
+      
       Db.EventMonthly.bulkCreate(sqlData).then(function (data) {
         fulfill(sqlData);
       }).catch(function (e) {reject(e)})
