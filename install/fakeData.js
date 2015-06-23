@@ -220,31 +220,61 @@ var FakeData = (function () {
       },
       {
         "password": "Beau",
-        "email": "libero@nec.com"
+        "email": "liberewro@nec.com"
       },
       {
         "password": "Cullen",
-        "email": "facilisis@nuncinterdum.com"
+        "email": "farewcilisis@nuncinterdum.com"
       },
       {
         "password": "Aphrodite",
-        "email": "tristique@sedpede.org"
+        "email": "trrewistique@sedpede.org"
       },
       {
+        "password": "Colorado",
+        "email": "arewnte@ac.co.uk"
+      },
+      {
+        "password": "Keiko",
+        "email": "durewi@nonquam.ca"
+      },
+      {
+        "password": "Nicole",
+        "email": "iprewrsum.ac@ultricesVivamusrhoncus.net"
+      },
+      {
+        "password": "Charlotte",
+        "email": "rew.nisi@liberoIntegerin.com"
+      },{
         "password": "Colorado",
         "email": "ante@ac.co.uk"
       },
       {
         "password": "Keiko",
-        "email": "dui@nonquam.ca"
+        "email": "dfwui@nonquam.ca"
       },
       {
         "password": "Nicole",
-        "email": "ipsum.ac@ultricesVivamusrhoncus.net"
+        "email": "ipsumq.ac@ultricesVivamusrhoncus.net"
       },
       {
         "password": "Charlotte",
-        "email": "vulputate.nisi@liberoIntegerin.com"
+        "email": "vuleputate.nisi@liberoIntegerin.com"
+      },{
+        "password": "Colorado",
+        "email": "antew@ac.co.uk"
+      },
+      {
+        "password": "Keiko",
+        "email": "deui@nonquam.ca"
+      },
+      {
+        "password": "Nicole",
+        "email": "ipfsum.ac@ultricesVivamusrhoncus.net"
+      },
+      {
+        "password": "Charlotte",
+        "email": "vulputat2e.nisi@liberoIntegerin.com"
       }];
 
     Db.Person.bulkCreate(PersonData).then(function (Persons) {
@@ -254,7 +284,7 @@ var FakeData = (function () {
             "name" : 'Rabotin',
             "firstname" : 'Arthur',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 1
           },
           {
@@ -262,7 +292,7 @@ var FakeData = (function () {
             "name" : 'bahl',
             "firstname" : 'Trou2',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 2
           },
           {
@@ -270,7 +300,7 @@ var FakeData = (function () {
             "name" : 'bahl',
             "firstname" : 'Trou2',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 3
           },
           {
@@ -278,7 +308,7 @@ var FakeData = (function () {
             "name" : '34',
             "firstname" : 'Popol',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 4
           },
           {
@@ -286,7 +316,7 @@ var FakeData = (function () {
             "name": "Keaton",
             "firstname": "Velma",
             "gender": "male",
-            "age": "1238183104",
+            "age" : new Date(1238183104),
             "PersonId": 5
           },
           {
@@ -294,7 +324,7 @@ var FakeData = (function () {
             "name": "Rae",
             "firstname": "Nina",
             "gender": "female",
-            "age": "931397641",
+            "age" : new Date(931397641),
             "PersonId": 6
           },
           {
@@ -302,7 +332,7 @@ var FakeData = (function () {
             "name": "Rama",
             "firstname": "Finn",
             "gender": "female",
-            "age": "951569323",
+            "age" : new Date(951569323),
             "PersonId": 7
           },
           {
@@ -310,7 +340,7 @@ var FakeData = (function () {
             "name": "Hermione",
             "firstname": "Chelsea",
             "gender": "female",
-            "age": "1325215492",
+            "age" : new Date(1325215492),
             "PersonId": 8
           },
           {
@@ -318,7 +348,7 @@ var FakeData = (function () {
             "name": "Juliet",
             "firstname": "Maya",
             "gender": "female",
-            "age": "1128077462",
+            "age" : new Date(1128077462),
             "PersonId": 9
           },
           {
@@ -326,7 +356,7 @@ var FakeData = (function () {
             "name": "Illana",
             "firstname": "Patience",
             "gender": "female",
-            "age": "1463113282",
+            "age" : new Date(1463113282),
             "PersonId": 10
           },
           {
@@ -334,7 +364,7 @@ var FakeData = (function () {
             "name": "Lilah",
             "firstname": "Quemby",
             "gender": "male",
-            "age": "1144038324",
+            "age" : new Date(1144038324),
             "PersonId": 11
           },
           {
@@ -342,7 +372,7 @@ var FakeData = (function () {
             "name": "Gemma",
             "firstname": "Harlan",
             "gender": "male",
-            "age": "1112760666",
+            "age" : new Date(1112760666),
             "PersonId": 12
           },
           {
@@ -350,7 +380,7 @@ var FakeData = (function () {
             "name": "Alan",
             "firstname": "Oliver",
             "gender": "male",
-            "age": "1276879552",
+            "age" : new Date(1276879552),
             "PersonId": 13
           },
           {
@@ -358,7 +388,7 @@ var FakeData = (function () {
             "name": "Jennifer",
             "firstname": "Mia",
             "gender": "female",
-            "age": "1150214125",
+            "age" : new Date(1150214125),
             "PersonId": 14
           },
           {
@@ -366,7 +396,7 @@ var FakeData = (function () {
             "name": "Dahlia",
             "firstname": "Clio",
             "gender": "male",
-            "age": "840669700",
+            "age" : new Date(840669700),
             "PersonId": 15
           },
           {
@@ -374,7 +404,7 @@ var FakeData = (function () {
             "name": "Tallulah",
             "firstname": "Aurelia",
             "gender": "male",
-            "age": "1210431906",
+            "age" : new Date(1210431906),
             "PersonId": 16
           },
           {
@@ -382,7 +412,7 @@ var FakeData = (function () {
             "name": "Abel",
             "firstname": "Phillip",
             "gender": "female",
-            "age": "1118065874",
+            "age" : new Date(1118065874),
             "PersonId": 17
           },
           {
@@ -390,7 +420,7 @@ var FakeData = (function () {
             "name": "Ulric",
             "firstname": "Lev",
             "gender": "female",
-            "age": "1347605951",
+            "age" : new Date(1347605951),
             "PersonId": 18
           },
           {
@@ -398,7 +428,7 @@ var FakeData = (function () {
             "name": "Octavia",
             "firstname": "Bryar",
             "gender": "male",
-            "age": "1437791088",
+            "age" : new Date(1437791088),
             "PersonId": 19
           },
           {
@@ -406,7 +436,7 @@ var FakeData = (function () {
             "name": "Robert",
             "firstname": "Iona",
             "gender": "male",
-            "age": "830990455",
+            "age" : new Date(830990455),
             "PersonId": 20
           },
           {
@@ -414,7 +444,7 @@ var FakeData = (function () {
             "name": "Louis",
             "firstname": "Hedy",
             "gender": "male",
-            "age": "1402504064",
+            "age" : new Date(1402504064),
             "PersonId": 21
           },
           {
@@ -422,7 +452,7 @@ var FakeData = (function () {
             "name": "Daquan",
             "firstname": "Ivor",
             "gender": "female",
-            "age": "866020107",
+            "age" : new Date(866020107),
             "PersonId": 22
           },
           {
@@ -430,7 +460,7 @@ var FakeData = (function () {
             "name": "Alfonso",
             "firstname": "Keiko",
             "gender": "female",
-            "age": "1140983316",
+            "age" : new Date(1140983316),
             "PersonId": 23
           },
           {
@@ -438,7 +468,7 @@ var FakeData = (function () {
             "name": "Caleb",
             "firstname": "Hayden",
             "gender": "female",
-            "age": "1148794476",
+            "age" : new Date(1148794476),
             "PersonId": 24
           },
           {
@@ -446,7 +476,7 @@ var FakeData = (function () {
             "name": "Rebekah",
             "firstname": "Minerva",
             "gender": "male",
-            "age": "1393543167",
+            "age" : new Date(1393543167),
             "PersonId": 25
           },
           {
@@ -454,7 +484,7 @@ var FakeData = (function () {
             "name": "Dolan",
             "firstname": "Clark",
             "gender": "female",
-            "age": "1063840047",
+            "age" : new Date(1063840047),
             "PersonId": 26
           },
           {
@@ -462,7 +492,7 @@ var FakeData = (function () {
             "name": "Nadine",
             "firstname": "Kirk",
             "gender": "male",
-            "age": "1445563903",
+            "age" : new Date(1445563903),
             "PersonId": 27
           },
           {
@@ -470,7 +500,7 @@ var FakeData = (function () {
             "name": "Blaze",
             "firstname": "Noah",
             "gender": "male",
-            "age": "1200228990",
+            "age" : new Date(1200228990),
             "PersonId": 28
           },
           {
@@ -478,48 +508,24 @@ var FakeData = (function () {
             "name": "Teagan",
             "firstname": "Chadwick",
             "gender": "female",
-            "age": "1294106090",
+            "age" : new Date(1294106090),
             "PersonId": 29
           },
           {
             "type": "hamster",
-            "name": "Autumn",
-            "firstname": "Anastasia",
-            "gender": "male",
-            "age": "865342507",
+            "name": "Teagan",
+            "firstname": "Chadwick",
+            "gender": "female",
+            "age" : new Date(1294106090),
             "PersonId": 30
           },
           {
             "type": "hamster",
-            "name": "Graiden",
-            "firstname": "Keith",
-            "gender": "male",
-            "age": "1003852927",
+            "name": "Teagan",
+            "firstname": "Chadwick",
+            "gender": "female",
+            "age" : new Date(1294106090),
             "PersonId": 31
-          },
-          {
-            "type": "hamster",
-            "name": "Magee",
-            "firstname": "Kai",
-            "gender": "female",
-            "age": "980090151",
-            "PersonId": 32
-          },
-          {
-            "type": "hamster",
-            "name": "Liberty",
-            "firstname": "Finn",
-            "gender": "female",
-            "age": "1382671841",
-            "PersonId": 33
-          },
-          {
-            "type": "hamster",
-            "name": "Guinevere",
-            "firstname": "Ryan",
-            "gender": "female",
-            "age": "836634416",
-            "PersonId": 34
           }];
       Db.PersonDetails.bulkCreate(DetailsData).then(function (Details) {
         Db.Post.create({
@@ -551,11 +557,6 @@ var FakeData = (function () {
         })
 
         var FriendsData = [
-          {
-            "PersonId": 30,
-            "FriendId": 20,
-            "confirmed": false
-          },
           {
             "PersonId": 1,
             "FriendId": 6,
@@ -592,11 +593,6 @@ var FakeData = (function () {
             "confirmed": true
           },
           {
-            "PersonId": 35,
-            "FriendId": 32,
-            "confirmed": true
-          },
-          {
             "PersonId": 10,
             "FriendId": 16,
             "confirmed": false
@@ -608,475 +604,15 @@ var FakeData = (function () {
           },
           {
             "PersonId": 15,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 28,
-            "confirmed": true
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 27,
-            "confirmed": true
-          },
-          {
-            "PersonId": 24,
-            "FriendId": 28,
-            "confirmed": false
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 31,
-            "confirmed": true
-          },
-          {
-            "PersonId": 20,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 3,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 9,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 31,
-            "confirmed": true
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 23,
-            "confirmed": false
-          },
-          {
-            "PersonId": 35,
-            "FriendId": 13,
-            "confirmed": true
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 31,
-            "confirmed": false
-          },
-          {
-            "PersonId": 34,
             "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 4,
-            "FriendId": 33,
             "confirmed": false
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 8,
-            "confirmed": true
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 19,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 3,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 20,
-            "FriendId": 16,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 22,
-            "confirmed": false
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 16,
-            "confirmed": false
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 20,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 27,
-            "confirmed": true
-          },
-          {
-            "PersonId": 11,
-            "FriendId": 32,
-            "confirmed": false
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 4,
-            "confirmed": false
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 33,
-            "confirmed": true
-          },
-          {
-            "PersonId": 7,
-            "FriendId": 21,
-            "confirmed": true
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 35,
-            "confirmed": true
-          },
-          {
-            "PersonId": 25,
-            "FriendId": 30,
-            "confirmed": true
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 9,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 30,
-            "FriendId": 4,
-            "confirmed": true
-          },
-          {
-            "PersonId": 2,
-            "FriendId": 33,
-            "confirmed": false
-          },
-          {
-            "PersonId": 9,
-            "FriendId": 5,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 20,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 28,
-            "confirmed": false
-          },
-          {
-            "PersonId": 35,
-            "FriendId": 23,
-            "confirmed": true
-          },
-          {
-            "PersonId": 4,
-            "FriendId": 14,
-            "confirmed": true
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 31,
-            "confirmed": false
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 26,
-            "confirmed": true
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 24,
-            "confirmed": true
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 30,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 27,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 21,
-            "confirmed": true
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 18,
-            "confirmed": false
-          },
-          {
-            "PersonId": 16,
-            "FriendId": 20,
-            "confirmed": false
-          },
-          {
-            "PersonId": 13,
-            "FriendId": 25,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 8,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 25,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 23,
-            "confirmed": false
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 7,
-            "FriendId": 18,
-            "confirmed": true
-          },
-          {
-            "PersonId": 18,
-            "FriendId": 22,
-            "confirmed": true
-          },
-          {
-            "PersonId": 34,
-            "FriendId": 18,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 21,
-            "confirmed": false
-          },
-          {
-            "PersonId": 16,
-            "FriendId": 5,
-            "confirmed": false
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 13,
-            "confirmed": false
-          },
-          {
-            "PersonId": 22,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 11,
-            "FriendId": 8,
-            "confirmed": false
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 9,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 14,
-            "confirmed": true
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 33,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 5,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 22,
-            "confirmed": false
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 3,
-            "confirmed": false
-          },
-          {
-            "PersonId": 26,
-            "FriendId": 27,
-            "confirmed": false
-          },
-          {
-            "PersonId": 18,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 33,
-            "confirmed": true
-          },
-          {
-            "PersonId": 27,
-            "FriendId": 32,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 18,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 12,
-            "confirmed": true
-          },
-          {
-            "PersonId": 26,
-            "FriendId": 13,
-            "confirmed": false
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 35,
-            "confirmed": false
-          },
-          {
-            "PersonId": 28,
-            "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 28,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 22,
-            "FriendId": 23,
-            "confirmed": true
           }
         ]
 
-        Db.PeopleFriend.bulkCreate(FriendsData)
-
-        /*
-        // populate device
-        for (var i = 1; i < 10; ++i) {
-          (function () {
-            Db.Device.create({
-              apiKey: 4242,
-              userKey: 'azerty',
-              privateKey: 'keyboardcat'
-            }).then(function (device) {
-              // then attach device to Person
-              Db.RegisteredDevice.create({
-                hash: 'thisisafakehashfortesting',
-                PersonId: i,
-                DeviceId: device.id
-              })
-              
-              self.populateStats(device.id);
-            })
-          })()
-        }*/
-
-
+        Db.PeopleFriend.bulkCreate(FriendsData).then(function () {
+          self.populateDevice();
+          self.populateAvatar();
+        })
         
       });
     }).catch(function (err) {

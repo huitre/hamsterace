@@ -222,12 +222,17 @@ StatsModel.prototype.computeGroups = function (data, ticks, hasDistance) {
 
     for(var i in data) {
       try {
+        if (data[i].length) {
+          var createdAt = data[i][Math.round(data[i].length / 2)].createdAt;
+        } else {
+          var createdAt = data[i][0].createdAt;
+        }
         stats.distance.data.push({
-          createdAt : data[i][Math.round(data[i].length / 2)].createdAt,
+          createdAt :createdAt,
           content : Math.round(this.sum(hasDistance ? data[i] : this.getDistance(data[i]))) || 0
         });
       } catch (e) {
-        console.log(e);
+        console.log(data[i], e);
       }
     }
     /*
