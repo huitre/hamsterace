@@ -6,9 +6,16 @@ var FakeData = (function () {
   var self = this;
 
   this.populateAvatar = function () {
+    var imgs = [
+      'hamster-tennis-lm63l.jpg', 
+      'funny-hamster-cute-pink-hair.jpg',
+      'hamster-escape.jpg',
+      'hamster-1763.jpg',
+      'hamster.png'
+    ]
     for (var i = 1; i < 30; ++i) {
       Db.Image.create({
-        resource : "images/hamster.png",
+        resource : imgs[i % 5],
         size : {w: 300, h: 300},
         type : "image/jpeg"
       }).then(function (image) {
