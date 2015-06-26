@@ -563,13 +563,13 @@ var FakeData = (function () {
             "confirmed": true
           },
           {
-            "PersonId": 13,
-            "FriendId": 15,
+            "PersonId": 1,
+            "FriendId": 3,
             "confirmed": true
           },
           {
-            "PersonId": 8,
-            "FriendId": 17,
+            "PersonId": 1,
+            "FriendId": 2,
             "confirmed": true
           },
           {

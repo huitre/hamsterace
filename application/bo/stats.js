@@ -222,7 +222,8 @@ StatsModel.prototype.computeGroups = function (data, ticks, hasDistance) {
 
     for(var i in data) {
       try {
-        if (data[i].length) {
+        if (data[i].length > 1) {
+          // We're taking the pseudo median date for the series
           var createdAt = data[i][Math.round(data[i].length / 2)].createdAt;
         } else {
           var createdAt = data[i][0].createdAt;
@@ -233,6 +234,7 @@ StatsModel.prototype.computeGroups = function (data, ticks, hasDistance) {
         });
       } catch (e) {
         console.log(data[i], e);
+        debugger;
       }
     }
     /*
