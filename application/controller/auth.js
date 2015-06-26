@@ -17,10 +17,18 @@ var AuthController = (function () {
       || !req.body.email || req.body.email.trim() == "") {
       return res.status(500).send({'error': 'Email or password cannot be empty'});
     }
-    Passport.authenticate('local',{
-      successRedirect : "/",
-      failureRedirect : "/",
-    })(req, res, next)
+    Passport.authenticate('local', function(err, user, info) {
+      if (err)
+        return next(err);
+      if (!user) 
+        return res.status(500).send({ error : 'user not found' });
+      req.logIn(user, function(err) {
+        if (err) { 
+          return next(err); 
+        }
+        return res.send(user);
+      });
+    })(req, res, next);
   }
 
   this.login.google = function (req, res, next) {

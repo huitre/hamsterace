@@ -76,17 +76,41 @@ var PersonModel = (function () {
    * @return Promise
    */
   this.getFriends = function (UserId, done) {
-    return Db.PeopleFriend.findAll({
-      where : {PersonId: UserId, confirmed: true},
-      include : [{
-        model: Db.Person,
-        as : 'Friend',
-        attributes : ['id'],
-        include : [{ 
-          model : Db.PersonDetails
+    return new Promise(function (fulfill, reject){
+      Db.PeopleFriend.findAll({
+        where : {PersonId: UserId, confirmed: true},
+        include : [{
+          model: Db.Person,
+          as : 'Friend',
+          attributes : ['id'],
+          include : [{
+            model : Db.PersonDetails,
+          }, {
+            model : Db.Avatar,
+            include : [{
+              model: Db.Image
+            }]
+          }]
         }]
-      }]
-    })
+      }).then(function (rows) {
+        var friends = []
+        rows.map(function (row) {
+          friends.push({
+            id : row.FriendId,
+            type : row.type,
+            gender : row.Friend.PersonDetails[0].gender,
+            age : row.Friend.PersonDetails[0].age,
+            updatedAt : row.updatedAt,
+            firstname : row.Friend.PersonDetails[0].firstname,
+            name : row.Friend.PersonDetails[0].name,
+            avatar : row.Friend.Avatar.Image
+          })
+        })
+        fulfill(friends)
+      }).catch(function (e) {
+        reject(e)
+      })
+    }) 
   }
 
   /*

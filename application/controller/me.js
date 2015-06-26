@@ -1,5 +1,6 @@
 var Feed = require('../bo/feed'),
     Stats = require('../bo/stats'),
+    Person = require('../bo/person'),
     //Db = require('../models'),
     console = require('console-plus');
 
@@ -88,6 +89,30 @@ exports.devices = function (req, res) {
 
 exports.auth = function (req, res) {
   res.send(req);
+}
+
+exports.friends = function (req, res) {
+  if (req.user.id) {
+    Person.getFriends(req.user.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  }
+}
+
+exports.full = function (req, res) {
+  if (!req.user) 
+    return res.status(403).send('user.not.logged.in');
+  var result = req.user;
+  Person.getFriends(req.user.id).then(function (friends) {
+    result.friends = friends;
+    res.send(result);
+  }).catch(function (err) {
+    return res.status(500).send(err)
+  })
 }
 
 exports.request = function (req, res) {}

@@ -5,6 +5,29 @@ var Db = require('../application/models'),
 var FakeData = (function () {
   var self = this;
 
+  this.populateAvatar = function () {
+    var imgs = [
+      'hamster-tennis-lm63l.jpg', 
+      'funny-hamster-cute-pink-hair.jpg',
+      'hamster-escape.jpg',
+      'hamster-1763.jpg',
+      'hamster.png'
+    ]
+    for (var i = 1; i < 30; ++i) {
+      Db.Image.create({
+        resource : imgs[i % 5],
+        size : {w: 300, h: 300},
+        type : "image/jpeg"
+      }).then(function (image) {
+        Db.Avatar.create({
+          length : 1,
+          PersonId: image.id,
+          ImageId: image.id
+        })
+      })
+    }
+  }
+
   this.populateDevice = function () {
     // populate device
     for (var i = 1; i < 30; ++i) {
@@ -19,11 +42,10 @@ var FakeData = (function () {
           PersonId: device.id,
           DeviceId: device.id
         })
-        //self.populateStats(device.id);
+        self.populateStats(device.id);
       })    
     }
   }
-
 
   this.incrementStats = function () {
     var d = Moment().hours(0).minutes(0).seconds(0),
@@ -205,31 +227,61 @@ var FakeData = (function () {
       },
       {
         "password": "Beau",
-        "email": "libero@nec.com"
+        "email": "liberewro@nec.com"
       },
       {
         "password": "Cullen",
-        "email": "facilisis@nuncinterdum.com"
+        "email": "farewcilisis@nuncinterdum.com"
       },
       {
         "password": "Aphrodite",
-        "email": "tristique@sedpede.org"
+        "email": "trrewistique@sedpede.org"
       },
       {
+        "password": "Colorado",
+        "email": "arewnte@ac.co.uk"
+      },
+      {
+        "password": "Keiko",
+        "email": "durewi@nonquam.ca"
+      },
+      {
+        "password": "Nicole",
+        "email": "iprewrsum.ac@ultricesVivamusrhoncus.net"
+      },
+      {
+        "password": "Charlotte",
+        "email": "rew.nisi@liberoIntegerin.com"
+      },{
         "password": "Colorado",
         "email": "ante@ac.co.uk"
       },
       {
         "password": "Keiko",
-        "email": "dui@nonquam.ca"
+        "email": "dfwui@nonquam.ca"
       },
       {
         "password": "Nicole",
-        "email": "ipsum.ac@ultricesVivamusrhoncus.net"
+        "email": "ipsumq.ac@ultricesVivamusrhoncus.net"
       },
       {
         "password": "Charlotte",
-        "email": "vulputate.nisi@liberoIntegerin.com"
+        "email": "vuleputate.nisi@liberoIntegerin.com"
+      },{
+        "password": "Colorado",
+        "email": "antew@ac.co.uk"
+      },
+      {
+        "password": "Keiko",
+        "email": "deui@nonquam.ca"
+      },
+      {
+        "password": "Nicole",
+        "email": "ipfsum.ac@ultricesVivamusrhoncus.net"
+      },
+      {
+        "password": "Charlotte",
+        "email": "vulputat2e.nisi@liberoIntegerin.com"
       }];
 
     Db.Person.bulkCreate(PersonData).then(function (Persons) {
@@ -239,7 +291,7 @@ var FakeData = (function () {
             "name" : 'Rabotin',
             "firstname" : 'Arthur',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 1
           },
           {
@@ -247,7 +299,7 @@ var FakeData = (function () {
             "name" : 'bahl',
             "firstname" : 'Trou2',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 2
           },
           {
@@ -255,7 +307,7 @@ var FakeData = (function () {
             "name" : 'bahl',
             "firstname" : 'Trou2',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 3
           },
           {
@@ -263,255 +315,224 @@ var FakeData = (function () {
             "name" : '34',
             "firstname" : 'Popol',
             "gender" : 'male',
-            "age" : new Date('1984-11-11'),
+            "age" : new Date(1238183104),
             "PersonId" : 4
-          },{
+          },
+          {
             "type": "hamster",
-            "name": "Phasellus.elit@dignissim.ca",
-            "firstname": "Kyla",
-            "gender": "female",
-            "age": new Date('2014-08-31'),
+            "name": "Keaton",
+            "firstname": "Velma",
+            "gender": "male",
+            "age" : new Date(1238183104),
             "PersonId": 5
           },
           {
             "type": "hamster",
-            "name": "cursus.a.enim@vulputaterisusa.ca",
-            "firstname": "Virginia",
-            "gender": "male",
-            "age": new Date('2014-07-17'),
+            "name": "Rae",
+            "firstname": "Nina",
+            "gender": "female",
+            "age" : new Date(931397641),
             "PersonId": 6
           },
           {
             "type": "hamster",
-            "name": "elit@Donecsollicitudin.edu",
-            "firstname": "Morgan",
-            "gender": "male",
-            "age": new Date('2015-08-14'),
+            "name": "Rama",
+            "firstname": "Finn",
+            "gender": "female",
+            "age" : new Date(951569323),
             "PersonId": 7
           },
           {
             "type": "hamster",
-            "name": "lorem.vitae@loremut.edu",
-            "firstname": "Angelica",
+            "name": "Hermione",
+            "firstname": "Chelsea",
             "gender": "female",
-            "age": new Date('2015-12-31'),
+            "age" : new Date(1325215492),
             "PersonId": 8
           },
           {
             "type": "hamster",
-            "name": "Fusce@sedlibero.co.uk",
-            "firstname": "Paul",
-            "gender": "male",
-            "age": new Date('2015-08-01'),
+            "name": "Juliet",
+            "firstname": "Maya",
+            "gender": "female",
+            "age" : new Date(1128077462),
             "PersonId": 9
           },
           {
             "type": "hamster",
-            "name": "ac.feugiat@orci.com",
-            "firstname": "Juliet",
+            "name": "Illana",
+            "firstname": "Patience",
             "gender": "female",
-            "age": new Date('2014-10-30'),
+            "age" : new Date(1463113282),
             "PersonId": 10
           },
           {
             "type": "hamster",
-            "name": "nec.cursus.a@faucibusorci.org",
-            "firstname": "Raven",
-            "gender": "female",
-            "age": new Date('2016-02-17'),
+            "name": "Lilah",
+            "firstname": "Quemby",
+            "gender": "male",
+            "age" : new Date(1144038324),
             "PersonId": 11
           },
           {
             "type": "hamster",
-            "name": "enim.Etiam.gravida@arcuimperdiet.net",
-            "firstname": "Stella",
+            "name": "Gemma",
+            "firstname": "Harlan",
             "gender": "male",
-            "age": new Date('2015-12-19'),
+            "age" : new Date(1112760666),
             "PersonId": 12
           },
           {
             "type": "hamster",
-            "name": "sit@etrutrumeu.edu",
-            "firstname": "Ifeoma",
+            "name": "Alan",
+            "firstname": "Oliver",
             "gender": "male",
-            "age": new Date('2015-05-01'),
+            "age" : new Date(1276879552),
             "PersonId": 13
           },
           {
             "type": "hamster",
-            "name": "aliquet.vel@utaliquamiaculis.co.uk",
-            "firstname": "Emmanuel",
+            "name": "Jennifer",
+            "firstname": "Mia",
             "gender": "female",
-            "age": new Date('2015-07-13'),
+            "age" : new Date(1150214125),
             "PersonId": 14
           },
           {
             "type": "hamster",
-            "name": "enim.sit@faucibus.co.uk",
-            "firstname": "Hadley",
+            "name": "Dahlia",
+            "firstname": "Clio",
             "gender": "male",
-            "age": new Date('2014-06-03'),
+            "age" : new Date(840669700),
             "PersonId": 15
           },
           {
             "type": "hamster",
-            "name": "lorem.ac@egestasDuisac.net",
-            "firstname": "Naida",
-            "gender": "female",
-            "age": new Date('2015-05-01'),
+            "name": "Tallulah",
+            "firstname": "Aurelia",
+            "gender": "male",
+            "age" : new Date(1210431906),
             "PersonId": 16
           },
           {
             "type": "hamster",
-            "name": "mus.Proin@anunc.net",
-            "firstname": "Gwendolyn",
+            "name": "Abel",
+            "firstname": "Phillip",
             "gender": "female",
-            "age": new Date('2014-10-17'),
+            "age" : new Date(1118065874),
             "PersonId": 17
           },
           {
             "type": "hamster",
-            "name": "neque.venenatis.lacus@ullamcorperviverra.com",
-            "firstname": "Rana",
+            "name": "Ulric",
+            "firstname": "Lev",
             "gender": "female",
-            "age": new Date('2015-03-14'),
+            "age" : new Date(1347605951),
             "PersonId": 18
           },
           {
             "type": "hamster",
-            "name": "Donec.est.mauris@auctorveliteget.net",
-            "firstname": "Tatum",
-            "gender": "female",
-            "age": new Date('2015-01-06'),
+            "name": "Octavia",
+            "firstname": "Bryar",
+            "gender": "male",
+            "age" : new Date(1437791088),
             "PersonId": 19
           },
           {
             "type": "hamster",
-            "name": "purus.Maecenas.libero@etliberoProin.edu",
-            "firstname": "Summer",
+            "name": "Robert",
+            "firstname": "Iona",
             "gender": "male",
-            "age": new Date('2015-08-16'),
+            "age" : new Date(830990455),
             "PersonId": 20
           },
           {
             "type": "hamster",
-            "name": "neque.Nullam@estNunc.net",
-            "firstname": "Pearl",
+            "name": "Louis",
+            "firstname": "Hedy",
             "gender": "male",
-            "age": new Date('2014-10-29'),
+            "age" : new Date(1402504064),
             "PersonId": 21
           },
           {
             "type": "hamster",
-            "name": "ad.litora.torquent@feugiatLorem.org",
-            "firstname": "Hector",
-            "gender": "male",
-            "age": new Date('2014-07-01'),
+            "name": "Daquan",
+            "firstname": "Ivor",
+            "gender": "female",
+            "age" : new Date(866020107),
             "PersonId": 22
           },
           {
             "type": "hamster",
-            "name": "risus.Duis.a@magna.edu",
-            "firstname": "Chloe",
-            "gender": "male",
-            "age": new Date('2015-07-02'),
+            "name": "Alfonso",
+            "firstname": "Keiko",
+            "gender": "female",
+            "age" : new Date(1140983316),
             "PersonId": 23
           },
           {
             "type": "hamster",
-            "name": "interdum@sit.co.uk",
-            "firstname": "Zenaida",
+            "name": "Caleb",
+            "firstname": "Hayden",
             "gender": "female",
-            "age": new Date('2016-01-10'),
+            "age" : new Date(1148794476),
             "PersonId": 24
           },
           {
             "type": "hamster",
-            "name": "tincidunt.tempus.risus@loremluctusut.co.uk",
-            "firstname": "Eugenia",
-            "gender": "female",
-            "age": new Date('2015-01-21'),
+            "name": "Rebekah",
+            "firstname": "Minerva",
+            "gender": "male",
+            "age" : new Date(1393543167),
             "PersonId": 25
           },
           {
             "type": "hamster",
-            "name": "porta@diam.edu",
-            "firstname": "Chaim",
+            "name": "Dolan",
+            "firstname": "Clark",
             "gender": "female",
-            "age": new Date('2015-09-19'),
+            "age" : new Date(1063840047),
             "PersonId": 26
           },
           {
             "type": "hamster",
-            "name": "et@odio.ca",
-            "firstname": "Maxine",
-            "gender": "female",
-            "age": new Date('2015-03-21'),
+            "name": "Nadine",
+            "firstname": "Kirk",
+            "gender": "male",
+            "age" : new Date(1445563903),
             "PersonId": 27
           },
           {
             "type": "hamster",
-            "name": "lacus@commodoat.ca",
-            "firstname": "Leslie",
-            "gender": "female",
-            "age": new Date('2015-02-03'),
+            "name": "Blaze",
+            "firstname": "Noah",
+            "gender": "male",
+            "age" : new Date(1200228990),
             "PersonId": 28
           },
           {
             "type": "hamster",
-            "name": "sit.amet.diam@sedsapien.org",
-            "firstname": "Alana",
-            "gender": "male",
-            "age": new Date('2014-08-10'),
+            "name": "Teagan",
+            "firstname": "Chadwick",
+            "gender": "female",
+            "age" : new Date(1294106090),
             "PersonId": 29
           },
           {
             "type": "hamster",
-            "name": "pede.Praesent@ipsum.co.uk",
-            "firstname": "Francesca",
+            "name": "Teagan",
+            "firstname": "Chadwick",
             "gender": "female",
-            "age": new Date('2014-05-08'),
+            "age" : new Date(1294106090),
             "PersonId": 30
           },
           {
             "type": "hamster",
-            "name": "dictum.sapien.Aenean@erat.org",
-            "firstname": "Dakota",
+            "name": "Teagan",
+            "firstname": "Chadwick",
             "gender": "female",
-            "age": new Date('2015-04-16'),
+            "age" : new Date(1294106090),
             "PersonId": 31
-          },
-          {
-            "type": "hamster",
-            "name": "molestie.pharetra.nibh@ametmetusAliquam.org",
-            "firstname": "Hyacinth",
-            "gender": "female",
-            "age": new Date('2014-08-28'),
-            "PersonId": 32
-          },
-          {
-            "type": "hamster",
-            "name": "Quisque.porttitor@magnisdisparturient.edu",
-            "firstname": "Jamalia",
-            "gender": "male",
-            "age": new Date('2015-03-31'),
-            "PersonId": 33
-          },
-          {
-            "type": "hamster",
-            "name": "urna.Ut@scelerisqueduiSuspendisse.edu",
-            "firstname": "Kirk",
-            "gender": "male",
-            "age": new Date('2016-01-09'),
-            "PersonId": 34
-          },
-          {
-            "type": "hamster",
-            "name": "nulla@ultricessitamet.edu",
-            "firstname": "Wesley",
-            "gender": "male",
-            "age": new Date('2015-12-05'),
-            "PersonId": 35
           }];
       Db.PersonDetails.bulkCreate(DetailsData).then(function (Details) {
         Db.Post.create({
@@ -544,23 +565,18 @@ var FakeData = (function () {
 
         var FriendsData = [
           {
-            "PersonId": 30,
-            "FriendId": 20,
-            "confirmed": false
-          },
-          {
             "PersonId": 1,
             "FriendId": 6,
             "confirmed": true
           },
           {
-            "PersonId": 13,
-            "FriendId": 15,
+            "PersonId": 1,
+            "FriendId": 3,
             "confirmed": true
           },
           {
-            "PersonId": 8,
-            "FriendId": 17,
+            "PersonId": 1,
+            "FriendId": 2,
             "confirmed": true
           },
           {
@@ -584,11 +600,6 @@ var FakeData = (function () {
             "confirmed": true
           },
           {
-            "PersonId": 35,
-            "FriendId": 32,
-            "confirmed": true
-          },
-          {
             "PersonId": 10,
             "FriendId": 16,
             "confirmed": false
@@ -600,475 +611,15 @@ var FakeData = (function () {
           },
           {
             "PersonId": 15,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 28,
-            "confirmed": true
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 27,
-            "confirmed": true
-          },
-          {
-            "PersonId": 24,
-            "FriendId": 28,
-            "confirmed": false
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 31,
-            "confirmed": true
-          },
-          {
-            "PersonId": 20,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 3,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 9,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 31,
-            "confirmed": true
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 23,
-            "confirmed": false
-          },
-          {
-            "PersonId": 35,
-            "FriendId": 13,
-            "confirmed": true
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 31,
-            "confirmed": false
-          },
-          {
-            "PersonId": 34,
             "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 4,
-            "FriendId": 33,
             "confirmed": false
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 8,
-            "confirmed": true
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 19,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 3,
-            "confirmed": false
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 20,
-            "FriendId": 16,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 22,
-            "confirmed": false
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 16,
-            "confirmed": false
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 20,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 27,
-            "confirmed": true
-          },
-          {
-            "PersonId": 11,
-            "FriendId": 32,
-            "confirmed": false
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 4,
-            "confirmed": false
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 33,
-            "confirmed": true
-          },
-          {
-            "PersonId": 7,
-            "FriendId": 21,
-            "confirmed": true
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 35,
-            "confirmed": true
-          },
-          {
-            "PersonId": 25,
-            "FriendId": 30,
-            "confirmed": true
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 9,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 30,
-            "FriendId": 4,
-            "confirmed": true
-          },
-          {
-            "PersonId": 2,
-            "FriendId": 33,
-            "confirmed": false
-          },
-          {
-            "PersonId": 9,
-            "FriendId": 5,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 20,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 28,
-            "confirmed": false
-          },
-          {
-            "PersonId": 35,
-            "FriendId": 23,
-            "confirmed": true
-          },
-          {
-            "PersonId": 4,
-            "FriendId": 14,
-            "confirmed": true
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 31,
-            "confirmed": false
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 26,
-            "confirmed": true
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 24,
-            "confirmed": true
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 30,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 27,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 21,
-            "confirmed": true
-          },
-          {
-            "PersonId": 1,
-            "FriendId": 18,
-            "confirmed": false
-          },
-          {
-            "PersonId": 16,
-            "FriendId": 20,
-            "confirmed": false
-          },
-          {
-            "PersonId": 13,
-            "FriendId": 25,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 8,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 11,
-            "confirmed": false
-          },
-          {
-            "PersonId": 25,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 23,
-            "confirmed": false
-          },
-          {
-            "PersonId": 8,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 5,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 7,
-            "FriendId": 18,
-            "confirmed": true
-          },
-          {
-            "PersonId": 18,
-            "FriendId": 22,
-            "confirmed": true
-          },
-          {
-            "PersonId": 34,
-            "FriendId": 18,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 21,
-            "confirmed": false
-          },
-          {
-            "PersonId": 16,
-            "FriendId": 5,
-            "confirmed": false
-          },
-          {
-            "PersonId": 17,
-            "FriendId": 13,
-            "confirmed": false
-          },
-          {
-            "PersonId": 22,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 11,
-            "FriendId": 8,
-            "confirmed": false
-          },
-          {
-            "PersonId": 33,
-            "FriendId": 9,
-            "confirmed": false
-          },
-          {
-            "PersonId": 6,
-            "FriendId": 14,
-            "confirmed": true
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 19,
-            "FriendId": 33,
-            "confirmed": false
-          },
-          {
-            "PersonId": 14,
-            "FriendId": 5,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 22,
-            "confirmed": false
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 3,
-            "confirmed": false
-          },
-          {
-            "PersonId": 26,
-            "FriendId": 27,
-            "confirmed": false
-          },
-          {
-            "PersonId": 18,
-            "FriendId": 19,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 33,
-            "confirmed": true
-          },
-          {
-            "PersonId": 27,
-            "FriendId": 32,
-            "confirmed": true
-          },
-          {
-            "PersonId": 31,
-            "FriendId": 18,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 25,
-            "confirmed": false
-          },
-          {
-            "PersonId": 29,
-            "FriendId": 12,
-            "confirmed": true
-          },
-          {
-            "PersonId": 26,
-            "FriendId": 13,
-            "confirmed": false
-          },
-          {
-            "PersonId": 23,
-            "FriendId": 9,
-            "confirmed": true
-          },
-          {
-            "PersonId": 12,
-            "FriendId": 35,
-            "confirmed": false
-          },
-          {
-            "PersonId": 28,
-            "FriendId": 1,
-            "confirmed": true
-          },
-          {
-            "PersonId": 28,
-            "FriendId": 15,
-            "confirmed": true
-          },
-          {
-            "PersonId": 22,
-            "FriendId": 23,
-            "confirmed": true
           }
         ]
 
-        Db.PeopleFriend.bulkCreate(FriendsData)
-
-        
-        // populate device
-        for (var i = 1; i < 10; ++i) {
-          (function () {
-            Db.Device.create({
-              apiKey: 4242,
-              userKey: 'azerty',
-              privateKey: 'keyboardcat'
-            }).then(function (device) {
-              // then attach device to Person
-              Db.RegisteredDevice.create({
-                hash: 'thisisafakehashfortesting',
-                PersonId: i,
-                DeviceId: device.id
-              })
-              
-              self.populateStats(device.id);
-            })
-          })()
-        }
-
-
+        Db.PeopleFriend.bulkCreate(FriendsData).then(function () {
+          self.populateDevice();
+          self.populateAvatar();
+        })
         
       });
     }).catch(function (err) {

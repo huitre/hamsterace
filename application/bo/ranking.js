@@ -113,23 +113,32 @@ RankingModel.prototype.getRanking = function (order, limit) {
           include : {
             model : Db.Person,
             attributes : ['id'],
-            include : {
+            include : [{
               model : Db.PersonDetails,
               attributes : ['name', 'firstname', 'gender']
-            }
+            }, {
+              model : Db.Avatar,
+              attributes : ['id'],
+              include : [{
+                model: Db.Image,
+                attributes : ['resource']
+              }]
+            }]
           }
         }
       }
     }).then(function (rows) {
+      var rankings = [];
       rows.map(function (row) {
         var activity = {},
             summary = {}
         if (row.Device.RegisteredDevices.length) {
-          self.rankings.push({
+          rankings.push({
             person : {
               id : row.PersonId,
               firstname : row.Device.RegisteredDevices[0].Person.PersonDetails[0].firstname,
-              name : row.Device.RegisteredDevices[0].Person.PersonDetails[0].name
+              name : row.Device.RegisteredDevices[0].Person.PersonDetails[0].name,
+              avatar : row.Device.RegisteredDevices[0].Person.Avatar.Image.resource
             },
             deviceId : row.DeviceId,
             activity : row.activity,
@@ -137,7 +146,7 @@ RankingModel.prototype.getRanking = function (order, limit) {
           })
         }
       })
-      fulfill(self.rankings)
+      fulfill(rankings)
     })
   })
 }
@@ -157,7 +166,7 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
   return new Promise(function (fulfill, reject) {
     Db.PeopleFriend.findAll({
       order : {raw : order},
-      attributes : ['id', 'FriendId'],
+      attributes : ['FriendId'],
       where : {PersonId: UserId, confirmed: true},
       include : [{
         model: Db.Person,
@@ -166,6 +175,13 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
         include : [{
             attributes : ['firstname', 'name'],
             model : Db.PersonDetails
+          },{
+            model : Db.Avatar,
+            attributes : ['id'],
+            include : [{
+              model: Db.Image,
+              attributes : ['resource']
+            }]
           },{
           model : Db.RegisteredDevice,
           attributes : ['DeviceId'],
@@ -186,17 +202,18 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
         }]
       }]
     }).then(function (rows) {
-
+      var rankings = [];
       // on epure l'objet
       rows.map(function (row) {
         var activity = {},
             summary = {}
 
-        self.rankings.push({
+        rankings.push({
           friend : {
             id : row.FriendId,
             firstname : row.Friend.PersonDetails[0].firstname,
-            name : row.Friend.PersonDetails[0].name
+            name : row.Friend.PersonDetails[0].name,
+            avatar : row.Friend.Avatar.Image.resource
           },
           deviceId : row.Friend.RegisteredDevice.Device.id,
           activity : row.Friend.RegisteredDevice.Device.EventWeeklies[0].activity,
@@ -204,7 +221,7 @@ RankingModel.prototype.getFriendRanking = function (UserId, order) {
         })
       })
 
-      fulfill(self.rankings);
+      fulfill(rankings);
     }).catch(function (e) { reject(e) })
   })
 }

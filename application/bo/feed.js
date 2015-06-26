@@ -41,16 +41,20 @@ var FeedModel = (function () {
         limit: 30,
         include : [{
           model: Db.Comment,
-          include : {
+          include : [{
             model: Db.Person,
             attributes : ['id'],
             include : [{
               model : Db.PersonDetails,
-              attributes : ['name', 'firstname']
             }, {
-              model : Db.Image
+              model : Db.Avatar,
+              attributes : ['id'],
+              include : [{
+                model: Db.Image,
+                attributes : ['resource']
+              }]
             }]
-          }
+          }]
         },{
           model: Db.Person,
           attributes : ['id'],
@@ -58,7 +62,12 @@ var FeedModel = (function () {
             model : Db.PersonDetails,
             attributes : ['name', 'firstname']
           },{
-            model : Db.Image
+            model : Db.Avatar,
+            attributes : ['id'],
+            include : [{
+              model: Db.Image,
+              attributes : ['resource']
+            }]
           }]
         }]
       }).then(function (posts) {
@@ -88,7 +97,10 @@ var FeedModel = (function () {
               model : Db.PersonDetails,
               attributes : ['name', 'firstname']
             }, {
-              model : Db.Image
+              model : Db.Avatar,
+              include : [{
+                model: Db.Image
+              }]
             }]
           }
         },{
@@ -118,7 +130,10 @@ var FeedModel = (function () {
           model : Db.PersonDetails,
           attributes : ['name', 'firstname']
         }, {
-          model : Db.Image
+          model : Db.Avatar,
+          include : [{
+            model: Db.Image
+          }]
         }]
       }
     }).then(function (post) {

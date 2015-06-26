@@ -78,6 +78,7 @@ exports.init = function init (router) {
   router.get('/me/link', Me.link);
   router.get('/me/devices', Me.devices);
   router.get('/me/request', Me.request)
+  router.get('/me/friends', Me.friends)
   
   // post request
   router.post('/me/auth', Me.auth);
