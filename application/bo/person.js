@@ -8,6 +8,7 @@ var Db = require('../models'),
     console = require('console-plus');
 
 var PersonModel = (function () {
+  var self = this;
 
   this.authFindOrCreate = function (profile, done) {
     var where = {},
@@ -75,7 +76,7 @@ var PersonModel = (function () {
   /*
    * @return Promise
    */
-  this.getFriends = function (UserId, done) {
+  this.getFriends = function (UserId, confirmed) {
     return new Promise(function (fulfill, reject){
       Db.PeopleFriend.findAll({
         where : {PersonId: UserId, confirmed: true},
@@ -142,14 +143,7 @@ var PersonModel = (function () {
    * @return Promise
    */
   this.request.get = function (userId) {
-    return Db.PeopleFriend.findAll({
-      where : {PersonId: userId, confirmed: false},
-      include : [{
-        model: Db.Person,
-        attributes : ['email'],
-        include : [Db.PersonDetails]
-      }]
-    })
+    return self.getFriends(userId, false);
   }
 
   /*

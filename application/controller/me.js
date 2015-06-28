@@ -115,4 +115,14 @@ exports.full = function (req, res) {
   })
 }
 
-exports.request = function (req, res) {}
+exports.request = function (req, res) {
+  if (req.user.id) {
+    Person.request.get(req.user.id, false).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  }
+}
