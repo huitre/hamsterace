@@ -93,7 +93,7 @@ exports.auth = function (req, res) {
 
 exports.friends = function (req, res) {
   if (req.user.id) {
-    Person.getFriends(req.user.id).then(function (result) {
+    Person.getFriends(req.user.id, true).then(function (result) {
       res.send(result);
     }).catch(function (err) {
       return res.status(500).send(err)

@@ -15,7 +15,7 @@ var FakeData = (function () {
     ]
     for (var i = 1; i < 30; ++i) {
       Db.Image.create({
-        resource : imgs[i % 5],
+        resource : 'images/' + imgs[i % 5],
         size : {w: 300, h: 300},
         type : "image/jpeg"
       }).then(function (image) {
@@ -55,7 +55,7 @@ var FakeData = (function () {
       if (new Date(updatedAt) < d) {
         Db.Event.findAll({attributes : ['DeviceId'], group : ['DeviceId']}, {raw: true}).then(function (rows) {
           for (var i = rows.length - 1; i > -1; --i) {
-            self.populateStats(rows[i].DeviceId, Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format())
+            self.populateStats(rows[i].DeviceId, Moment().subtract(3, 'hours').hours(0).minutes(0).seconds(0).format())
           }
         })
       }

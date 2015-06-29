@@ -76,10 +76,11 @@ var PersonModel = (function () {
   /*
    * @return Promise
    */
-  this.getFriends = function (UserId, confirmed) {
+  this.getFriends = function (UserId, isFriend) {
+    console.log(isFriend)
     return new Promise(function (fulfill, reject){
       Db.PeopleFriend.findAll({
-        where : {PersonId: UserId, confirmed: true},
+        where : {PersonId: UserId, confirmed: isFriend + ''},
         include : [{
           model: Db.Person,
           as : 'Friend',
