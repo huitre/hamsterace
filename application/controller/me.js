@@ -103,21 +103,11 @@ exports.friends = function (req, res) {
   }
 }
 
-exports.full = function (req, res) {
-  if (!req.user) 
-    return res.status(403).send('user.not.logged.in');
-  var result = req.user;
-  Person.getFriends(req.user.id).then(function (friends) {
-    result.friends = friends;
-    res.send(result);
-  }).catch(function (err) {
-    return res.status(500).send(err)
-  })
-}
+exports.request = {}
 
-exports.request = function (req, res) {
+exports.request.get = function (req, res) {
   if (req.user.id) {
-    Person.request.get(req.user.id, false).then(function (result) {
+    Person.getFriends(req.user.id, false, false).then(function (result) {
       res.send(result);
     }).catch(function (err) {
       return res.status(500).send(err)
@@ -125,4 +115,52 @@ exports.request = function (req, res) {
   } else {
     res.status(500).send('Missing parameters id');
   }
+}
+
+exports.request.post = function (req, res) {
+  if (req.user.id) {
+    Person.request.post(req.user.id, req.params.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  }
+}
+
+exports.accept = function (req, res) {
+  if (req.user.id) {
+    Person.accept(req.user.id, req.params.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  } 
+}
+
+exports.refuse = function (req, res) {
+  if (req.user.id) {
+    Person.request.post(req.user.id, req.params.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  } 
+}
+
+exports.remove = function (req, res) {
+  if (req.user.id) {
+    Person.remove(req.user.id, req.params.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+  } else {
+    res.status(500).send('Missing parameters id');
+  } 
 }

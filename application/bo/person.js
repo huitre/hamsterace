@@ -10,6 +10,29 @@ var Db = require('../models'),
 var PersonModel = (function () {
   var self = this;
 
+  this.populateFriends = function (rows) {
+    var friends = [],
+        populate = function (row) {
+          friends.push({
+            id : row.FriendId,
+            type : row.type,
+            gender : row.Friend.PersonDetails[0].gender,
+            age : row.Friend.PersonDetails[0].age,
+            updatedAt : row.updatedAt,
+            firstname : row.Friend.PersonDetails[0].firstname,
+            name : row.Friend.PersonDetails[0].name,
+            avatar : row.Friend.Avatar.Image
+          });
+        }
+
+    if (rows.hasOwnProperty('length')) 
+      rows.map(populate)
+    else 
+      populate(rows)
+    
+    return friends;
+  }
+
   this.authFindOrCreate = function (profile, done) {
     var where = {},
         md5 = crypto.createHash('md5');
@@ -76,11 +99,11 @@ var PersonModel = (function () {
   /*
    * @return Promise
    */
-  this.getFriends = function (UserId, isFriend) {
-    console.log(isFriend)
+  this.getFriends = function (UserId, isFriend, refused) {
+    refused = refused || false;
     return new Promise(function (fulfill, reject){
       Db.PeopleFriend.findAll({
-        where : {PersonId: UserId, confirmed: isFriend + ''},
+        where : {PersonId: UserId, confirmed: isFriend, refused : refused},
         include : [{
           model: Db.Person,
           as : 'Friend',
@@ -95,19 +118,7 @@ var PersonModel = (function () {
           }]
         }]
       }).then(function (rows) {
-        var friends = []
-        rows.map(function (row) {
-          friends.push({
-            id : row.FriendId,
-            type : row.type,
-            gender : row.Friend.PersonDetails[0].gender,
-            age : row.Friend.PersonDetails[0].age,
-            updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails[0].firstname,
-            name : row.Friend.PersonDetails[0].name,
-            avatar : row.Friend.Avatar.Image
-          })
-        })
+        var friends = self.populateFriends(rows)
         fulfill(friends)
       }).catch(function (e) {
         reject(e)
@@ -144,7 +155,7 @@ var PersonModel = (function () {
    * @return Promise
    */
   this.request.get = function (userId) {
-    return self.getFriends(userId, false);
+    return self.getFriends(userId, false, false);
   }
 
   /*
@@ -160,32 +171,82 @@ var PersonModel = (function () {
         type : 'hamster',
         FriendId : friendId,
         PersonId : userId,
-        confirmed : false
+        confirmed : false,
+        refused : false
       }
     })
   }
-
 
   /*
    * @return Promise
    */
   this.accept = function (userId, friendId) {
     return new Promise(function (fulfill, reject) {
-        Db.PeopleFriend.find({
+      Db.PeopleFriend.find({
         where : {
           FriendId : friendId,
           PersonId : userId
-        }
+        },
+        include : [{
+          model: Db.Person,
+          as : 'Friend',
+          attributes : ['id'],
+          include : [{
+            model : Db.PersonDetails,
+          }, {
+            model : Db.Avatar,
+            include : [{
+              model: Db.Image
+            }]
+          }]
+        }]
       }).then(function (friend) {
         friend.confirmed = true;
-        friend.save().then(function () {
-          fulfill({confirmed : true})
+        friend.save().then(function (row) {
+          fulfill(self.populateFriends(row))
         })
       }).catch(function (e) {
         reject(new Error({msg : 'not found'}))
       })
     })
   }
+
+  this.remove = function (userId, friendId) {
+    return new Promise(function (fulfill, reject) {
+      Db.PeopleFriend.find({
+        where : {
+          FriendId : friendId,
+          PersonId : userId
+        }
+      }).then(function (friend) {
+        friend.destroy().then(function () {
+          fulfill({destroy : true})
+        })
+      }).catch(function (e) {
+        reject(new Error({msg : 'not found'}))
+      })
+    })
+  }
+
+  this.refuse = function (userId, friendId) {
+    return new Promise(function (fulfill, reject) {
+      Db.PeopleFriend.find({
+        where : {
+          FriendId : friendId,
+          PersonId : userId
+        }
+      }).then(function (friend) {
+        friend.confirmed = false;
+        friend.refused = true;
+        friend.save().then(function () {
+          fulfill({refused : true})
+        })
+      }).catch(function (e) {
+        reject(new Error({msg : 'not found'}))
+      })
+    })
+  }
+
 
   return this;
 })()

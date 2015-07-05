@@ -77,13 +77,17 @@ exports.init = function init (router) {
   router.get('/me/stats/:type', Me.stats);
   router.get('/me/link', Me.link);
   router.get('/me/devices', Me.devices);
-  router.get('/me/request', Me.request)
+  router.get('/me/request', Me.request.get)
   router.get('/me/friends', Me.friends)
   
   // post request
   router.post('/me/auth', Me.auth);
   router.post('/me/feed/post', Me.post);
   router.post('/me/feed/comment/:postid', Me.comment);
+  router.post('/me/request/:id', Me.request.post)
+  router.post('/me/accept/:id', Me.accept)
+  router.post('/me/refuse/:id', Me.refuse)
+  router.post('/me/remove/:id', Me.remove)
 
   // put request
   router.put('/me/feed/post', Me.post);
@@ -143,7 +147,7 @@ exports.init = function init (router) {
 
   // post request
   router.post('/user/request', Users.request.post)
-  router.post('/user/accept/', Users.accept)
+  router.post('/user/accept/:id', Users.accept)
 
   /*
    * Users routes

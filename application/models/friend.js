@@ -4,7 +4,8 @@ module.exports = function(Sequelize, DataTypes) {
   return Sequelize.define('PeopleFriend', 
   {
     type: { type : DataTypes.ENUM('hamster', 'owner', 'apps', 'page', 'guild') },
-    confirmed : { type : DataTypes.BOOLEAN }
+    confirmed : { type : DataTypes.BOOLEAN },
+    refused : { type : DataTypes.BOOLEAN }
   },
   {
     associate: function (models) {
