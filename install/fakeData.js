@@ -540,7 +540,7 @@ var FakeData = (function () {
           PersonId: 1
         })
         Db.Post.create({
-          content : {text: "Je roxx trop du poney !"},
+          content : {text: "Roue avec compte tour bluetooth !", video : "https://www.youtube.com/watch?v=U9BOo1QNOTk"},
           PersonId: 1
         })
         Db.Post.create({

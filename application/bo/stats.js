@@ -5,6 +5,7 @@
 var crypto = require('crypto'),
     Moment = require('moment'),
     Promise = require("bluebird"),
+    events = require('events'),
     console = require('console-plus'),
     Device = require('../bo/device'),
     _ = require('underscore'),
@@ -21,6 +22,9 @@ var StatsModel = function () {
 
   this.perimeter = 2 * 3.1415926 * 17;
 };
+
+
+StatsModel.prototype = Object.create(events.EventEmitter.prototype);
 
 /*
  * This method returns for the last hour, day, week, month :
