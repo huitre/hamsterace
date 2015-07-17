@@ -75,8 +75,8 @@ var PersonModel = (function () {
    */
   this.getAll = function (id, done) {
     return Db.Person.findAll({
-          attributes: ['Person.*', 'PeopleFriends.*', [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
-          include: [Db.PeopleFriend],
+          attributes : ['Person.*', 'PeopleFriends.*', [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
+          include : [Db.PeopleFriend],
           group : ['Person.id', 'PeopleFriends.id']
         })
   }
@@ -91,7 +91,7 @@ var PersonModel = (function () {
       },
       attributes : ['email', 'id'],
       include : [{
-        model: Db.PersonDetails 
+        model : Db.PersonDetails 
       }]
     })
   }
@@ -131,7 +131,7 @@ var PersonModel = (function () {
    */
   this.getFriendsIdList = function (UserId) {
     return Db.PeopleFriend.findAll({
-      where : {PersonId: UserId, confirmed: true},
+      where : {PersonId : UserId, confirmed : true},
     })
   }
 
