@@ -10,7 +10,7 @@ module.exports = function(Sequelize, DataTypes) {
   {
     associate: function (models) {
       models.PeopleFriend.belongsTo(models.Person);
-      models.Person.belongsToMany(models.Person, {as : 'Friend', through : models.PeopleFriend});
+      models.PeopleFriend.belongsTo(models.Person, {as : 'Friend'});
     }
   });
 }

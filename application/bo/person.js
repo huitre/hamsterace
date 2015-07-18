@@ -16,11 +16,11 @@ var PersonModel = (function () {
           friends.push({
             id : row.FriendId,
             type : row.type,
-            gender : row.Friend.PersonDetails[0].gender,
-            age : row.Friend.PersonDetails[0].age,
+            gender : row.Friend.PersonDetails.gender,
+            age : row.Friend.PersonDetails.age,
             updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails[0].firstname,
-            name : row.Friend.PersonDetails[0].name,
+            firstname : row.Friend.PersonDetails.firstname,
+            name : row.Friend.PersonDetails.name,
             avatar : row.Friend.Avatar.Image
           });
         }
@@ -99,11 +99,11 @@ var PersonModel = (function () {
   /*
    * @return Promise
    */
-  this.getFriends = function (UserId, isFriend, refused) {
+  this.getFriends = function (userId, isFriend, refused) {
     refused = refused || false;
     return new Promise(function (fulfill, reject){
       Db.PeopleFriend.findAll({
-        where : {PersonId: UserId, confirmed: isFriend, refused : refused},
+        where : {PersonId: userId, confirmed: isFriend, refused : refused},
         include : [{
           model: Db.Person,
           as : 'Friend',

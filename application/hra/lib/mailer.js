@@ -1,5 +1,5 @@
 var Mandrill = require('mandrill-api/mandrill'),
-    Utils = require('../hra/lib/utils'),
+    H = require('../hra/lib/utils'),
     // config
     Config = require('config');
 
@@ -100,7 +100,7 @@ var Mailer = (function () {
     };
     var async = false;
     var ip_pool = "Main Pool";
-    var send_at = Utils.DateUtils.toMandrillUTC(new Date());
+    var send_at = H.toMandrillUTC(new Date());
     mandrill_client.messages.send({"message": message, "async": async, "ip_pool": ip_pool, "send_at": send_at}, 
       onSuccess, 
       onFail

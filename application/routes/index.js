@@ -25,6 +25,10 @@ exports.init = function init (router) {
       res.render("index", { user : null});
   })
 
+  router.get('/test', function (req, res) {
+      res.render("test", { user : null});
+  })
+
   /*
    * Signup / Auth / Login / Logout
    */
@@ -156,9 +160,20 @@ exports.init = function init (router) {
   // get requests
   router.get('/team', Team.index);
   router.get('/team/:id', Team.find);
-  router.get('/team/:id/members', Team.members);
+  router.get('/team/:id/members', Team.members.get);
+  router.get('/team/:id/request', Team.members.post);
   router.get('/team/:id/stats', Team.stats);
   router.get('/team/:id/badges', Team.badges);
   router.get('/team/:id/wall', Team.wall);
+  router.get('/team/exists/:name', Team.wall);
 
+  // post requests
+  router.post('/team', Team.create);
+  router.post('/team/delete', Team.remove);
+  router.post('/team/:id', Team.find);
+  router.post('/team/:id/members', Team.members.post);
+  router.post('/team/:id/request', Team.members.post);
+  router.post('/team/:id/accept', Team.members.post);
+  
 };
+

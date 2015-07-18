@@ -1,6 +1,6 @@
-var DateUtils = (function () {
+var H = (function () {
 
-  var mUtc = function (date) {
+  this.mUtc = function (date) {
     return
     [
       [date.getFullYear(), date.getMonth(), date.getDate()].map(pad).join('-'),
@@ -12,13 +12,7 @@ var DateUtils = (function () {
     return n < 9 ? '0' + n : n;
   }
 
-  return {
-    toMandrillUTC: mUtc
-  }
-})()
 
-
-var RandomUtils = (function () {
   this.hash = function () {
     return new Date().getTime() * Math.floor((Math.random() * 100) + 1) + (new Date().getTime() + '');
   }
@@ -27,10 +21,33 @@ var RandomUtils = (function () {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  return this
+  this.paramsToObj = function (req, args) {
+    var obj = {}
+    if (req.hasOwnProperty('params')) {
+      for (var i in args) {
+        if (!req.params[args[i]])
+          throw new Error('parameters ' + args[i] + ' is missing');
+        obj[args[i]] = req.params[args[i]];
+      }
+    }
+    return obj;
+  }
+
+  this.bodyToObj = function (req, args) {
+    var obj = {}
+    if (req.hasOwnProperty('body')) {
+      for (var i in args) {
+        if (!req.body[args[i]])
+          throw new Error('parameters ' + args[i] + ' is missing');
+        obj[args[i]] = req.body[args[i]];
+      }
+    }
+    return obj;
+  }
+
+  return this;
 })()
 
 if (typeof module !== 'undefined') {
-  module.exports.DateUtils = DateUtils
-  module.exports.RandomUtils = RandomUtils
+  module.exports = H
 }

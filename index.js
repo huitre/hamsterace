@@ -81,10 +81,30 @@ app.use(session({ secret: config.Session.secret }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(function (req, res, next) {
-  /*if (!req.user && 
-      req.url !== '/' &&
-      req.url !== '/login')
-    return res.redirect('/')*/
+  if (!req.user && 
+      Config.env == 'Developpment')
+    req.user = {
+      id: 1,
+      email: "toto@toto.com",
+      password: "d9bb4a8aad7b5e737beeee4813577d1f",
+      gid: null,
+      fbid: null,
+      createdAt: "2015-07-17T10:37:44.683Z",
+      updatedAt: "2015-07-17T10:37:44.683Z",
+      PersonDetails: [
+        {
+          id: 1,
+          type: "hamster",
+          name: "Rabotin",
+          firstname: "Arthur",
+          gender: "male",
+          age: "1970-01-15T07:56:23.104Z",
+          createdAt: "2015-07-17T10:37:44.758Z",
+          updatedAt: "2015-07-17T10:37:44.758Z",
+          PersonId: 1
+        }
+      ]
+    }
   next();
 })
 
@@ -128,7 +148,7 @@ var startServer = function(callback) {
 
 }
 
-var reset = true;
+var reset = false;
 
 if (reset)
   sequelize.sequelize.sync({force : true}).done(

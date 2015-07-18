@@ -1,5 +1,5 @@
 var Db = require('../application/models'),
-    Utils = require('../application/hra/lib/utils').RandomUtils,
+    Utils = require('../application/hra/lib/utils'),
     Moment = require('moment');
 
 var FakeData = (function () {
@@ -28,6 +28,11 @@ var FakeData = (function () {
     }
   }
 
+
+  this.populateTeams = function () {
+    
+  }
+
   this.populateDevice = function () {
     // populate device
     for (var i = 1; i < 10; ++i) {
@@ -53,7 +58,7 @@ var FakeData = (function () {
 
     Db.Event.max('updatedAt').then(function (updatedAt) {
       if (new Date(updatedAt) < d) {
-        Db.Event.findAll({attributes : ['DeviceId'], group : ['DeviceId']}, {raw: true}).then(function (rows) {
+        Db.Event.findAll({attributes : ['DeviceId'], group : ['DeviceId'], raw : true}).then(function (rows) {
           for (var i = rows.length - 1; i > -1; --i) {
             self.populateStats(rows[i].DeviceId, Moment().subtract(3, 'hours').hours(0).minutes(0).seconds(0).format())
           }
@@ -671,6 +676,7 @@ var FakeData = (function () {
         Db.PeopleFriend.bulkCreate(FriendsData).then(function () {
           self.populateDevice();
           self.populateAvatar();
+          self.populateTeams();
         })
         
       });
