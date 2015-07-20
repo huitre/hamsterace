@@ -150,9 +150,23 @@ FeedModel.prototype.addPost = function (User, content, done) {
   var UserId, bo = this;
   
   UserId = User.id || User;
+
+  Db.Post.findAll({
+    where: {
+      PersonId : UserId,
+    },
+    limit: 1
+  }).then(function (post) {
+    console.log(post);
+    if (!post)
+      this.emit('Feed.firstPost');
+  }).catch(function () {
+    console.log(arguments)
+  })
+
   // TODO parse content toget pictures/links/video
   Db.Post.create({
-    content : {text: content},
+    content: {text: content},
     PersonId: UserId
   }).then(function (post) {
     bo.findOnePost(post.id, done);

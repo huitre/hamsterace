@@ -1,8 +1,8 @@
 /* 
 * @Author: huitre
 * @Date:   2015-07-15 20:34:25
-* @Last Modified by:   huitre
-* @Last Modified time: 2015-07-15 21:00:18
+* @Last Modified by:   joffrey.gohin
+* @Last Modified time: 2015-07-16 17:52:02
 */
 
 /*
@@ -22,7 +22,15 @@ BadgesModel.prototype = Object.create(events.EventEmitter.prototype);
 /**
  *
  */
-BadgesModel.prototype.getBadges = function (User, done) { 
+BadgesModel.prototype.getBadges = function (UserId) {
+	return Db.Badge.findAll({
+		where: {
+			PersonId: UserId,
+			$or: {
+        state : ['unlocked', 'revealed']
+      }
+		}
+	})
 }
 
 /*
@@ -31,6 +39,7 @@ BadgesModel.prototype.getBadges = function (User, done) {
 BadgesModel.prototype.listen = function () {
   this.on('Stats.increase', this.checkForStatsBadges)
   this.on('Friends.add', this.checkFriendBadges)
+  this.on('Feed.firstPost', this.checkFeedFirstPostBadges)
 }
 
 BadgesModel.prototype.checkForStatsBadges = function () {
@@ -38,8 +47,16 @@ BadgesModel.prototype.checkForStatsBadges = function () {
 }
 
 BadgesModel.prototype.checkFriendBadges = function(event) {
-  debugger;
+
 };
+
+BadgesModel.prototype.checkFeedFirstPostBadges = function (event) {
+  console.log('YEAH FIRST POST !')
+}
+
+BadgesModel.prototype.addBadges = function (obj) {
+  return db.Badge.create(obj)
+}
 
 
 

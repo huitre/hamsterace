@@ -1,6 +1,7 @@
 var Feed = require('../bo/feed'),
     Person = require('../bo/person'),
     Stats = require('../bo/stats'),
+    Badges = require('../bo/badges'),
     console = require('console-plus');
 
 exports.index = function (req, res) {
@@ -32,7 +33,13 @@ exports.followers = function (req, res) {
 }
 
 exports.badges = function (req, res) {
-  res.send('this is badges');
+ if (req.params && req.params.id) {
+    Badges.getBadges(req.params.id).then(function (result) {
+      res.send(result);
+    }).catch(function (err) {
+      return res.status(500).send(err)
+    })
+ }
 }
 
 exports.wall = function (req, res) {
