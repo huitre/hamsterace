@@ -21,53 +21,53 @@ var TeamsModel = function () {}
 // inherit Event for Badges system
 TeamsModel.prototype = Object.create(events.EventEmitter.prototype);
 
-TeamModel.prototype.populateTeamMembers = function (rows) {
-    var friends = [],
-        populate = function (row) {
-          friends.push({
-            id : row.FriendId,
-            type : row.type,
-            gender : row.Friend.PersonDetails.gender,
-            age : row.Friend.PersonDetails.age,
-            updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails.firstname,
-            name : row.Friend.PersonDetails.name,
-            avatar : row.Friend.Avatar.Image
-          });
-        }
+TeamsModel.prototype.populateTeams = function (rows) {
+  var friends = [],
+      populate = function (row) {
+        friends.push({
+          id : row.FriendId,
+          type : row.type,
+          gender : row.Friend.PersonDetails.gender,
+          age : row.Friend.PersonDetails.age,
+          updatedAt : row.updatedAt,
+          firstname : row.Friend.PersonDetails.firstname,
+          name : row.Friend.PersonDetails.name,
+          avatar : row.Friend.Avatar.Image
+        });
+      }
 
-    if (rows.hasOwnProperty('length')) 
-      rows.map(populate)
-    else 
-      populate(rows)
-    
-    return friends;
-  }
+  if (rows.hasOwnProperty('length')) 
+    rows.map(populate)
+  else 
+    populate(rows)
+  
+  return friends;
 }
 
-TeamModel.prototype.populateTeamMembers = function (rows) {
-    var friends = [],
-        populate = function (row) {
-          friends.push({
-            id : row.FriendId,
-            type : row.type,
-            gender : row.Friend.PersonDetails.gender,
-            age : row.Friend.PersonDetails.age,
-            updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails.firstname,
-            name : row.Friend.PersonDetails.name,
-            avatar : row.Friend.Avatar.Image
-          });
-        }
 
-    if (rows.hasOwnProperty('length')) 
-      rows.map(populate)
-    else 
-      populate(rows)
-    
-    return friends;
-  }
+TeamsModel.prototype.populateTeamMembers = function (rows) {
+  var friends = [],
+      populate = function (row) {
+        friends.push({
+          id : row.FriendId,
+          type : row.type,
+          gender : row.Friend.PersonDetails.gender,
+          age : row.Friend.PersonDetails.age,
+          updatedAt : row.updatedAt,
+          firstname : row.Friend.PersonDetails.firstname,
+          name : row.Friend.PersonDetails.name,
+          avatar : row.Friend.Avatar.Image
+        });
+      }
+
+  if (rows.hasOwnProperty('length')) 
+    rows.map(populate)
+  else 
+    populate(rows)
+  
+  return friends;
 }
+
 
 /**
  * @params User Db.models.Person
