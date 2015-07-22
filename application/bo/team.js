@@ -158,7 +158,7 @@ TeamsModel.prototype.getTeams = function (offset, where) {
   var self = this;
 
   offset = offset || {from : 30, to : 0};
-  where = where || '1 = 1';
+  where = where || {};
 
   return new Promise (function (fullfill, reject) {
     Db.Team.findAll({

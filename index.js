@@ -148,7 +148,7 @@ var startServer = function(callback) {
 
 }
 
-var reset = true;
+var reset = false;
 
 if (reset)
   sequelize.sequelize.sync({force : true}).done(
