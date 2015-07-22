@@ -62,7 +62,7 @@ var PersonModel = (function () {
           name : profile.family_name || profile.lastName,
           firstname : profile.given_name || profile.firstName
         })
-        User.addPersonDetails(details);
+        User.setPersonDetail(details);
       }
       return done(null, User);
     }).catch(function (err) {
