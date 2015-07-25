@@ -62,4 +62,32 @@ block content
             input(type='text', name='teamId')
           p
             input(type='submit', value='delete team')
-  
+    fieldset
+      legend team update
+      form(action='/team/update/#{team.id}', method='post' target='_blank')
+        div
+          p
+            label name:
+            input(type='text', name='name', value='#{team.name}')
+            br
+            label slogan:
+            input(type='text', name='slogan', value='#{team.slogan}')
+          p
+            input(type='submit', value='update team')
+    fieldset
+      legend team members
+      form(action='/team/#{team.id}/request', method='post' target='_blank')
+        div
+          select(name='userId')
+            each user , i in users
+              option(value=user.id) user #{user.id}
+          input(type='submit', value='add member')
+    fieldset
+      legend team members
+      form(action='/team/#{team.id}/request/accept', method='post' target='_blank')
+        div
+          select(name='userId')
+            each request , i in requests
+              option(value=request.id) user #{request.id}
+          input(type='submit', value='add member')
+      

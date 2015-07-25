@@ -16,11 +16,11 @@ var PersonModel = (function () {
           friends.push({
             id : row.FriendId,
             type : row.type,
-            gender : row.Friend.PersonDetails.gender,
-            age : row.Friend.PersonDetails.age,
+            gender : row.Friend.PersonDetail.gender,
+            age : row.Friend.PersonDetail.age,
             updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails.firstname,
-            name : row.Friend.PersonDetails.name,
+            firstname : row.Friend.PersonDetail.firstname,
+            name : row.Friend.PersonDetail.name,
             avatar : row.Friend.Avatar.Image
           });
         }
@@ -53,10 +53,10 @@ var PersonModel = (function () {
     Db.Person.findOrCreate({
       where : where,
       include : [{
-        model: Db.PersonDetails 
+        model: Db.PersonDetails
       }]
     }).spread(function (User) {
-      if (!User.PersonDetails || User.PersonDetails.length < 1) {
+      if (!User.PersonDetail || User.PersonDetail.length < 1) {
         var details = Db.PersonDetails.build({
           type : 'owner',
           name : profile.family_name || profile.lastName,
@@ -75,11 +75,25 @@ var PersonModel = (function () {
    */
   this.getAll = function (id, done) {
     return Db.Person.findAll({
-          attributes : ['Person.*', 'PeopleFriends.*', [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
-          include : [Db.PeopleFriend],
-          group : ['Person.id', 'PeopleFriends.id']
+          attributes : [Db.sequelize.col('Person.id'), [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
+          include : [{
+            model : Db.PeopleFriend,
+            attributes : ['id']
+          }],
+          group : ['Person.id', 'PeopleFriends.id'],
+          raw : true
         })
   }
+
+  /*
+   * @return Promise
+   */
+  this.getFriendsIdList = function (UserId) {
+    return Db.PeopleFriend.findAll({
+      where : {PersonId : UserId, confirmed : true},
+    })
+  }
+
 
   /*
    * @return Promise

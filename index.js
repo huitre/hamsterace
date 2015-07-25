@@ -91,19 +91,17 @@ app.use(function (req, res, next) {
       fbid: null,
       createdAt: "2015-07-17T10:37:44.683Z",
       updatedAt: "2015-07-17T10:37:44.683Z",
-      PersonDetails: [
-        {
-          id: 1,
-          type: "hamster",
-          name: "Rabotin",
-          firstname: "Arthur",
-          gender: "male",
-          age: "1970-01-15T07:56:23.104Z",
-          createdAt: "2015-07-17T10:37:44.758Z",
-          updatedAt: "2015-07-17T10:37:44.758Z",
-          PersonId: 1
-        }
-      ]
+      PersonDetail: {
+        id: 1,
+        type: "hamster",
+        name: "Rabotin",
+        firstname: "Arthur",
+        gender: "male",
+        age: "1970-01-15T07:56:23.104Z",
+        createdAt: "2015-07-17T10:37:44.758Z",
+        updatedAt: "2015-07-17T10:37:44.758Z",
+        PersonId: 1
+      }
     }
   next();
 })

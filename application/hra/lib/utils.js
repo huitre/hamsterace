@@ -33,13 +33,17 @@ var H = (function () {
     return obj;
   }
 
-  this.bodyToObj = function (req, args) {
+  this.bodyToObj = function (req, args, unrequired) {
     var obj = {}
     if (req.hasOwnProperty('body')) {
       for (var i in args) {
         if (!req.body[args[i]])
           throw new Error('parameters ' + args[i] + ' is missing');
         obj[args[i]] = req.body[args[i]];
+      }
+      for (var i in unrequired) {
+        if (req.body[unrequired[i]])
+          obj[unrequired[i]] = req.body[unrequired[i]];
       }
     }
     return obj;

@@ -1,3 +1,5 @@
+"use strict"
+
 var Promise = require("bluebird"),
     Team = require('../bo/team'),
     H = require('../hra/lib/utils'),
@@ -26,6 +28,9 @@ exports.exists = function (req, res) {
 exports.find = function (req, res) {
   if (req.params.id) {
   	Team.getTeam(req.params.id).then(function (Team) {
+      if (Team) {
+        Team = Team.pop();
+      }
       res.send(Team)
     }).catch(function (e) {
       res.status(500).send(e);
@@ -49,7 +54,10 @@ exports.members.get = function (req, res) {
   }
 }
 
-exports.members.post = function (req, res) {
+/*
+ * Remove a TeamMember from a Team
+ */
+exports.members.remove = function (req, res) {
   if (req.params.id) {
     Team.removeTeamMembers(req.params.id).then(function (members) {
       res.send(members)
@@ -62,6 +70,10 @@ exports.members.post = function (req, res) {
 }
 
 exports.request = {}
+
+/*
+ * All invitation request for a Team
+ */
 exports.request.get  = function (req, res) {
   if (req.params.id) {
     Team.getRequestTeamMembers(req.params.id).then(function (members) {
@@ -74,9 +86,45 @@ exports.request.get  = function (req, res) {
   }
 }
 
+
+/*
+ * Request from a Person to join a Team
+ * Only Admin can accept
+ */
 exports.request.post = function (req, res) {
+  var userId,
+      body,
+      user;
+
   if (req.params.id) {
-    Team.getRequestTeamMembers(req.params.id).then(function (members) {
+    body = req.body || null
+    user = req.user || null
+    userId = body.userId || req.user.id
+
+    if (!userId)
+      return res.status(500).send('missing parameters id');
+        
+    Team.addRequestTeamMembers(req.params.id, userId).then(function (members) {
+      res.send(members)
+    }).catch(function (e) {
+      res.status(500).send(e);
+    })
+  } else {
+    res.status(500).send('missing parameters id');
+  }
+}
+
+/*
+ * Accept a request from a Person to join a Team
+ * Only Admin can accept
+ */
+exports.request.accept = function (req, res) {
+  var userId,
+      body,
+      user;
+
+  if (req.params.id && req.body.userId) {
+    Team.addTeamMember(req.params.id, req.body.userId).then(function (members) {
       res.send(members)
     }).catch(function (e) {
       res.status(500).send(e);
@@ -114,10 +162,14 @@ exports.wall = function (req, res) {
   res.send('this is wall');
 }
 
+/*
+ * Create a Team
+ * Add an Admin to a Team
+ */
 exports.create = function (req, res) {
   if (req.user && req.body) {
     try {
-      var team = H.bodyToObj(req, ['name', 'slogan', 'max', 'recruit', 'hidden']);
+      var team = H.bodyToObj(req, ['name', 'slogan', 'max'], ['recruit', 'hidden']);
     } catch (e) {
       res.status(500).send(arguments);
     }
@@ -131,9 +183,17 @@ exports.create = function (req, res) {
   }
 }
 
+/*
+ * Update a Team
+ */
 exports.update = function (req, res) {
-  if (req.params.id && req.body.team) {
-    Team.updateTeam(req.params.id, req.body.team).then(function (Team) {
+  if (req.params.id && req.body.team && req.user) {
+    try {
+      var team = H.bodyToObj(req, ['name', 'slogan', 'max'], ['recruit', 'hidden']);
+    } catch (e) {
+      res.status(500).send(arguments);
+    }
+    Team.updateTeam(req.user, req.params.id, team).then(function (Team) {
       res.send(Team)
     }).catch(function (e) {
       res.status(500).send(e);
