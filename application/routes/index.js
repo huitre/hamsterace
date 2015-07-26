@@ -33,12 +33,15 @@ exports.init = function init (router) {
     boperson.getAll().then(function (users) {
       boteam.getTeam(1).then(function (_team) {
         boteam.getRequestTeamMembers(1).then(function (_request) {
-          res.render("test", { 
-            user : req.user,
-            users : users,
-            team : _team.pop(),
-            requests : _request
-          });
+          boteam.getTeamMembers(1).then(function (_members) {
+            res.render("test", { 
+              user : req.user,
+              users : users,
+              team : _team.pop(),
+              requests : _request,
+              members : _members
+            });
+          })
         })
       })
     })
@@ -189,7 +192,7 @@ exports.init = function init (router) {
   router.post('/team/:id', Team.find);
   router.post('/team/:id/request', Team.request.post);
   router.post('/team/:id/request/accept', Team.request.accept)
-  router.get('/team/:id/members/remove', Team.members.remove);;
+  router.post('/team/:id/members/remove', Team.members.remove);;
   
 };
 

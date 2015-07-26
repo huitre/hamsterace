@@ -75,7 +75,7 @@ block content
           p
             input(type='submit', value='update team')
     fieldset
-      legend team members
+      legend request team members
       form(action='/team/#{team.id}/request', method='post' target='_blank')
         div
           select(name='userId')
@@ -83,11 +83,19 @@ block content
               option(value=user.id) user #{user.id}
           input(type='submit', value='add member')
     fieldset
-      legend team members
+      legend accept team members
       form(action='/team/#{team.id}/request/accept', method='post' target='_blank')
         div
           select(name='userId')
             each request , i in requests
               option(value=request.id) user #{request.id}
           input(type='submit', value='add member')
+    fieldset
+      legend remove team members
+      form(action='/team/#{team.id}/members/remove', method='post' target='_blank')
+        div
+          select(name='userId')
+            each request , i in members
+              option(value=request.id) user #{request.id}
+          input(type='submit', value='remove member')
       

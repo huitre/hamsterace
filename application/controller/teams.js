@@ -58,8 +58,8 @@ exports.members.get = function (req, res) {
  * Remove a TeamMember from a Team
  */
 exports.members.remove = function (req, res) {
-  if (req.params.id) {
-    Team.removeTeamMembers(req.params.id).then(function (members) {
+  if (req.params.id && req.body.userId) {
+    Team.removeTeamMembers(req.user, req.params.id, req.body.userId).then(function (members) {
       res.send(members)
     }).catch(function (e) {
       res.status(500).send(e);

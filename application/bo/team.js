@@ -52,13 +52,15 @@ TeamsModel.prototype.populateTeamMembers = function (rows) {
           members.push({
             id : row.Person.id,
             type : row.Person.type,
+            status : row.status,
+            confirmed : row.confirmed,
             gender : row.Person.PersonDetail.gender,
             age : row.Person.PersonDetail.age,
             updatedAt : row.Person.updatedAt,
             firstname : row.Person.PersonDetail.firstname,
             name : row.Person.PersonDetail.name,
             avatar : {
-              src : row.Person.Avatar.Image.resource
+              src : row.Person.Avatar ? row.Person.Avatar.Image.resource : null
             }
           });
         }
@@ -113,7 +115,7 @@ TeamsModel.prototype.updateTeam = function (User, team) {
       PersonId : User.id,
       TeamId : team.id
     }).then(function (TeamMember) {
-      if (!TeamMember || TeamMember.status != 'admin' || TeamMember.status != 'owner') {
+      if (!TeamMember || (TeamMember.status != 'admin' || TeamMember.status != 'owner')) {
         return reject('Not enough permission to delete team ' + team.teamId);
       }
       Db.Team.findById(team.teamId).then(function (Team) {
@@ -237,8 +239,18 @@ TeamsModel.prototype.getTeamByName = function (teamName) {
   })
 }
 
+TeamsModel.prototype.getTeamMember = function (userId, teamId) {
+  return Db.TeamMember.findOne({
+          where : {
+            PersonId : userId,
+            TeamId : teamId
+          }
+        })
+}
+
 TeamsModel.prototype.getTeamMembers = function (teamID, confirmed) {
-  var self = this;
+  var self = this,
+      confirmed = confirmed != null ? confirmed : true
 
   return new Promise (function (fullfill, reject) {
     Db.TeamMember.findAll({
@@ -270,14 +282,17 @@ TeamsModel.prototype.getTeamMembers = function (teamID, confirmed) {
 
 }
 
-TeamsModel.prototype.addTeamMember = function (teamID, userId) {
+/*
+ * Accept the request of a member to join a Team
+ * @params teamId Id Team
+ * @params userId Id User
+ * @reteurn Promise
+ */
+TeamsModel.prototype.addTeamMember = function (teamId, userId) {
+  var self = this;
+
   return new Promise (function (fullfill, reject) {
-    Db.TeamMember.findOne({
-        where : {
-          PersonId : userId,
-          TeamId : teamId
-        }
-      }).then(function (user) {
+    self.getTeamMember(userId, teamId).then(function (user) {
         if (user) {
           user.set({confirmed : true});
           user.save().then(function (User) {
@@ -290,17 +305,47 @@ TeamsModel.prototype.addTeamMember = function (teamID, userId) {
     });
 }
 
-TeamsModel.prototype.removeTeamMembers = function (teamID, userId) {
+/*
+ * Remove a member from a Team
+ * @params teamId Id Team
+ * @params userId Id User
+ * @return User
+ */
+TeamsModel.prototype.removeTeamMembers = function (User, teamID, userId) {
+  var self = this;
+
+  return new Promise (function (fullfill, reject) {
+    self.getTeamMember(User.id, teamID).then(function (TeamMember) {
+      if (!TeamMember || (TeamMember.status != 'owner' || TeamMember.status != 'admin')) {
+        return reject('Not enough permission to delete member ' + userId);
+      }
+
+      self.getTeamMember(userId).then(function (user) {
+          if (user) {
+            user.destroy().then(function (status) {
+              fullfill(status)
+            }).catch(function (e) {
+              reject(e)
+            })
+          } else {
+            reject('User not found')
+          }
+        })
+      })
+  });
 }
 
+/*
+ * Create a request of a member to join a Team
+ * @params teamId Id Team
+ * @params userId Id User
+ * @return Promise
+ */
 TeamsModel.prototype.addRequestTeamMembers = function (teamId, userId) {
+  var self = this;
+
   return new Promise (function (fullfill, reject) {
-    Db.TeamMember.findOne({
-      where : {
-        PersonId : userId,
-        TeamId : teamId
-      }
-    }).then(function (user) {
+    self.getTeamMember(userId, teamId).then(function (user) {
       if (user)
         return reject(user.firstname + 'already in request list')
       Db.TeamMember.create({
