@@ -25,6 +25,29 @@ exports.init = function init (router) {
       res.render("index", { user : null});
   })
 
+  router.get('/test', function (req, res) {
+    var boperson = require('../bo/person'),
+        boteam = require('../bo/team'),
+        team;
+
+    boperson.getAll().then(function (users) {
+      boteam.getTeam(1).then(function (_team) {
+        boteam.getRequestTeamMembers(1).then(function (_request) {
+          boteam.getTeamMembers(1).then(function (_members) {
+            res.render("test", { 
+              user : req.user,
+              users : users,
+              team : _team.pop(),
+              requests : _request,
+              members : _members
+            });
+          })
+        })
+      })
+    })
+
+  })
+
   /*
    * Signup / Auth / Login / Logout
    */
@@ -156,9 +179,20 @@ exports.init = function init (router) {
   // get requests
   router.get('/team', Team.index);
   router.get('/team/:id', Team.find);
-  router.get('/team/:id/members', Team.members);
+  router.get('/team/:id/members', Team.members.get);
+  router.get('/team/:id/request', Team.request.get);
   router.get('/team/:id/stats', Team.stats);
   router.get('/team/:id/badges', Team.badges);
   router.get('/team/:id/wall', Team.wall);
+  router.get('/team/exists/:name', Team.wall);
 
+  // post requests
+  router.post('/team', Team.create);
+  router.post('/team/delete', Team.remove);
+  router.post('/team/:id', Team.find);
+  router.post('/team/:id/request', Team.request.post);
+  router.post('/team/:id/request/accept', Team.request.accept)
+  router.post('/team/:id/members/remove', Team.members.remove);;
+  
 };
+

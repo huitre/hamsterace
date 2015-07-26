@@ -96,7 +96,8 @@ exports.friends = function (req, res) {
     Person.getFriends(req.user.id, true).then(function (result) {
       res.send(result);
     }).catch(function (err) {
-      return res.status(500).send(err)
+      console.log(arguments)
+      return res.status(500).send(arguments)
     })
   } else {
     res.status(500).send('Missing parameters id');

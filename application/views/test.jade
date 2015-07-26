@@ -1,0 +1,101 @@
+extends layout
+
+block content
+  
+  form(action='/login', method='post')
+    div
+      label Email:
+      input(type='text', name='email')
+      div
+        label Password:
+        input(type='password', name='password')
+      div
+        input(type='submit', value='Log In')
+  div
+    br
+    fieldset
+      legend request user
+      form(action='/user/request', method='post' target='_blank')
+        div
+          div
+            label id:
+            input(type='text', name='id')
+          div
+            input(type='submit', value='request friend')
+    br
+    fieldset
+      legend request user
+      form(action='/user/accept', method='post' target='_blank')
+        div
+          div
+            label id:
+            input(type='text', name='id')
+          div
+            input(type='submit', value='accept friend')
+    fieldset
+      legend team create
+      form(action='/team', method='post' target='_blank')
+        div
+          p
+            label name:
+            input(type='text', name='name')
+          p
+            label slogan:
+            input(type='text', name='slogan')
+          p
+            label recruit:
+            input(type='checkbox' name='recruit')
+          p
+            label max members:
+            input(type='range' name='max' max='1000')
+          p
+            label visible:
+            input(type='checkbox' name='hidden')
+          p
+            input(type='submit', value='create team')
+    fieldset
+      legend team delete
+      form(action='/team/delete', method='post' target='_blank')
+        div
+          p
+            label name:
+            input(type='text', name='teamId')
+          p
+            input(type='submit', value='delete team')
+    fieldset
+      legend team update
+      form(action='/team/update/#{team.id}', method='post' target='_blank')
+        div
+          p
+            label name:
+            input(type='text', name='name', value='#{team.name}')
+            br
+            label slogan:
+            input(type='text', name='slogan', value='#{team.slogan}')
+          p
+            input(type='submit', value='update team')
+    fieldset
+      legend request team members
+      form(action='/team/#{team.id}/request', method='post' target='_blank')
+        div
+          select(name='userId')
+            each user , i in users
+              option(value=user.id) user #{user.id}
+          input(type='submit', value='add member')
+    fieldset
+      legend accept team members
+      form(action='/team/#{team.id}/request/accept', method='post' target='_blank')
+        div
+          select(name='userId')
+            each request , i in requests
+              option(value=request.id) user #{request.id}
+          input(type='submit', value='add member')
+    fieldset
+      legend remove team members
+      form(action='/team/#{team.id}/members/remove', method='post' target='_blank')
+        div
+          select(name='userId')
+            each request , i in members
+              option(value=request.id) user #{request.id}
+          input(type='submit', value='remove member')
+      

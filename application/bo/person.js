@@ -16,11 +16,11 @@ var PersonModel = (function () {
           friends.push({
             id : row.FriendId,
             type : row.type,
-            gender : row.Friend.PersonDetails[0].gender,
-            age : row.Friend.PersonDetails[0].age,
+            gender : row.Friend.PersonDetail.gender,
+            age : row.Friend.PersonDetail.age,
             updatedAt : row.updatedAt,
-            firstname : row.Friend.PersonDetails[0].firstname,
-            name : row.Friend.PersonDetails[0].name,
+            firstname : row.Friend.PersonDetail.firstname,
+            name : row.Friend.PersonDetail.name,
             avatar : row.Friend.Avatar.Image
           });
         }
@@ -53,16 +53,16 @@ var PersonModel = (function () {
     Db.Person.findOrCreate({
       where : where,
       include : [{
-        model: Db.PersonDetails 
+        model: Db.PersonDetails
       }]
     }).spread(function (User) {
-      if (!User.PersonDetails || User.PersonDetails.length < 1) {
+      if (!User.PersonDetail || User.PersonDetail.length < 1) {
         var details = Db.PersonDetails.build({
           type : 'owner',
           name : profile.family_name || profile.lastName,
           firstname : profile.given_name || profile.firstName
         })
-        User.addPersonDetails(details);
+        User.setPersonDetail(details);
       }
       return done(null, User);
     }).catch(function (err) {
@@ -75,11 +75,25 @@ var PersonModel = (function () {
    */
   this.getAll = function (id, done) {
     return Db.Person.findAll({
-          attributes: ['Person.*', 'PeopleFriends.*', [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
-          include: [Db.PeopleFriend],
-          group : ['Person.id', 'PeopleFriends.id']
+          attributes : [Db.sequelize.col('Person.id'), [Db.sequelize.fn('COUNT', 'PeopleFriends.id'), 'FriendsCount']],
+          include : [{
+            model : Db.PeopleFriend,
+            attributes : ['id']
+          }],
+          group : ['Person.id', 'PeopleFriends.id'],
+          raw : true
         })
   }
+
+  /*
+   * @return Promise
+   */
+  this.getFriendsIdList = function (UserId) {
+    return Db.PeopleFriend.findAll({
+      where : {PersonId : UserId, confirmed : true},
+    })
+  }
+
 
   /*
    * @return Promise
@@ -91,7 +105,7 @@ var PersonModel = (function () {
       },
       attributes : ['email', 'id'],
       include : [{
-        model: Db.PersonDetails 
+        model : Db.PersonDetails 
       }]
     })
   }
@@ -99,11 +113,11 @@ var PersonModel = (function () {
   /*
    * @return Promise
    */
-  this.getFriends = function (UserId, isFriend, refused) {
+  this.getFriends = function (userId, isFriend, refused) {
     refused = refused || false;
     return new Promise(function (fulfill, reject){
       Db.PeopleFriend.findAll({
-        where : {PersonId: UserId, confirmed: isFriend, refused : refused},
+        where : {PersonId: userId, confirmed: isFriend, refused : refused},
         include : [{
           model: Db.Person,
           as : 'Friend',
@@ -131,7 +145,7 @@ var PersonModel = (function () {
    */
   this.getFriendsIdList = function (UserId) {
     return Db.PeopleFriend.findAll({
-      where : {PersonId: UserId, confirmed: true},
+      where : {PersonId : UserId, confirmed : true},
     })
   }
 

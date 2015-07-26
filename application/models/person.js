@@ -32,11 +32,12 @@ module.exports = function(Sequelize, DataTypes) {
   },
   {
     associate: function (models) {
-      models.Person.hasMany(models.PersonDetails);
+      models.Person.hasOne(models.PersonDetails);
       models.Person.hasOne(models.RegisteredDevice);
       models.Person.hasOne(models.Avatar);
       models.Person.hasMany(models.Post);
-      models.Person.hasMany(models.Person, {as : 'Friends', through : models.PeopleFriend});
+      models.Person.hasMany(models.PeopleFriend);
+      models.Person.hasMany(models.PeopleFriend, {as : 'Friend'});
     }
   });
 }
