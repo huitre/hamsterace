@@ -105,15 +105,12 @@ app.param(function(name, fn){
 
 routes.init(app, passport);
 
-sequelize.sequelize.sync({force : false}).done(function() {
 
-  // populate
-  //FakeDatas.populate();
-  //FakeDatas.populateDevice();
-  //FakeDatas.populateStats();
-  FakeDatas.incrementStats();
-  //FakeDatas.populateAvatar();
+var startServer = function(callback) {
 
+  if (callback)
+    callback()
+  
   // database setted up
   // launching server
   if (!module.parent) {
@@ -129,4 +126,25 @@ sequelize.sequelize.sync({force : false}).done(function() {
     console.log('Express started on port 4242');
   }
 
-});
+}
+
+var reset = true;
+
+if (reset)
+  sequelize.sequelize.sync({force : true}).done(
+    function () { 
+      startServer(FakeDatas.populate) 
+    }
+  );
+else
+  sequelize.sequelize.sync({force : false}).done(
+    function () { 
+      startServer(FakeDatas.incrementStats) 
+    }
+  );
+  // populate
+  //FakeDatas.populate();
+  //FakeDatas.populateDevice();
+  //FakeDatas.populateStats();
+  //FakeDatas.incrementStats();
+  //FakeDatas.populateAvatar();

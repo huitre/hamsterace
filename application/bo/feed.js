@@ -46,6 +46,7 @@ var FeedModel = (function () {
             attributes : ['id'],
             include : [{
               model : Db.PersonDetails,
+              attributes : ['name', 'firstname']
             }, {
               model : Db.Avatar,
               attributes : ['id'],

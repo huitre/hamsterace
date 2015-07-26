@@ -15,7 +15,7 @@ var FakeData = (function () {
     ]
     for (var i = 1; i < 30; ++i) {
       Db.Image.create({
-        resource : imgs[i % 5],
+        resource : 'images/' + imgs[i % 5],
         size : {w: 300, h: 300},
         type : "image/jpeg"
       }).then(function (image) {
@@ -30,7 +30,7 @@ var FakeData = (function () {
 
   this.populateDevice = function () {
     // populate device
-    for (var i = 1; i < 30; ++i) {
+    for (var i = 1; i < 10; ++i) {
       Db.Device.create({
         apiKey: 4242,
         userKey: 'azerty',
@@ -55,7 +55,7 @@ var FakeData = (function () {
       if (new Date(updatedAt) < d) {
         Db.Event.findAll({attributes : ['DeviceId'], group : ['DeviceId']}, {raw: true}).then(function (rows) {
           for (var i = rows.length - 1; i > -1; --i) {
-            self.populateStats(rows[i].DeviceId, Moment().subtract(1, 'days').hours(0).minutes(0).seconds(0).format())
+            self.populateStats(rows[i].DeviceId, Moment().subtract(3, 'hours').hours(0).minutes(0).seconds(0).format())
           }
         })
       }
@@ -549,16 +549,16 @@ var FakeData = (function () {
         })
         Db.Post.create({
           content: {text : "Hey mate cette video, ca dechire !", video : "http://img-9gag-ftw.9cache.com/photo/aGV3m17_460sv.mp4"},
-          PersonId: 3
+          PersonId: 4
         }).then(function (post) {
           Db.Comment.create({
             content: {text: "Effectivement, trop marrant quand il encule le chaton mort !"},
-            PersonId: 1,
+            PersonId: 6,
             PostId: post.id
           })
           Db.Comment.create({
             content: {text: "Ouais, mais le mieux c'est quand il le mange xD !"},
-            PersonId: 2,
+            PersonId: 4,
             PostId: post.id
           })
         })
@@ -567,52 +567,104 @@ var FakeData = (function () {
           {
             "PersonId": 1,
             "FriendId": 6,
-            "confirmed": true
+            "confirmed": true,
+            "refused": false
+          },
+          {
+            "PersonId": 1,
+            "FriendId": 4,
+            "confirmed": true,
+            "refused": false
           },
           {
             "PersonId": 1,
             "FriendId": 3,
-            "confirmed": true
+            "confirmed": false,
+            "refused": true
           },
           {
             "PersonId": 1,
             "FriendId": 2,
-            "confirmed": true
-          },
-          {
-            "PersonId": 15,
-            "FriendId": 13,
-            "confirmed": true
-          },
-          {
-            "PersonId": 10,
-            "FriendId": 4,
-            "confirmed": true
-          },
-          {
-            "PersonId": 16,
-            "FriendId": 15,
-            "confirmed": false
+            "confirmed": true,
+            "refused": false
           },
           {
             "PersonId": 1,
-            "FriendId": 4,
-            "confirmed": true
+            "FriendId": 12,
+            "confirmed": false,
+            "refused": false
           },
           {
-            "PersonId": 10,
+            "PersonId": 1,
+            "FriendId": 9,
+            "confirmed": true,
+            "refused": false
+          },
+          {
+            "PersonId": 2,
+            "FriendId": 3,
+            "confirmed": true,
+            "refused": false
+          },
+          {
+            "PersonId": 2,
+            "FriendId": 4,
+            "confirmed": true,
+            "refused": false
+          },
+          {
+            "PersonId": 2,
+            "FriendId": 15,
+            "confirmed": false,
+            "refused": false
+          },
+          {
+            "PersonId": 2,
             "FriendId": 16,
-            "confirmed": false
+            "confirmed": false,
+            "refused": false
           },
           {
             "PersonId": 8,
             "FriendId": 1,
-            "confirmed": true
+            "confirmed": true,
+            "refused": false
           },
           {
             "PersonId": 15,
-            "FriendId": 1,
-            "confirmed": false
+            "FriendId": 4,
+            "confirmed": false,
+            "refused": false
+          },
+          {
+            "PersonId": 4,
+            "FriendId": 6,
+            "confirmed": false,
+            "refused": true
+          },
+          {
+            "PersonId": 5,
+            "FriendId": 7,
+            "confirmed": false,
+            "refused": false
+          },
+          {
+            "PersonId": 5,
+            "FriendId": 6,
+            "confirmed": false,
+            "refused": true
+          },
+          {
+            "PersonId": 3,
+            "FriendId": 12,
+            "confirmed": true,
+            "refused": false
+          },
+          {
+            "PersonId": 3,
+            "FriendId": 8,
+            "confirmed": true,
+            "refused": false
           }
         ]
 
