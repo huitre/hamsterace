@@ -6,16 +6,29 @@ var Promise = require("bluebird"),
     console = require('console-plus');
 
 exports.index = function (req, res) {
-  Team.getTeams(req.params.id).then(function (Team) {
+  console.log('iundex');
+  Team.getTeams().then(function (Team) {
     res.send(Team)
   }).catch(function (e) {
     res.status(500).send(arguments);
   })
 }
 
+exports.mine = function (req, res) {
+  if (req.user) {
+    Team.getMine(req.user).then(function (Team) {
+      res.send(Team)
+    }).catch(function (e) {
+      res.status(500).send(e);
+    })
+  } else {
+    res.status(403).send('not logged in');
+  }
+}
+
 exports.exists = function (req, res) {
   if (req.params.name) {
-    Team.nameExists(req.params.id).then(function (Team) {
+    Team.nameExists(req.params.name).then(function (Team) {
       res.send(Team)
     }).catch(function (e) {
       res.status(500).send(e);
@@ -24,6 +37,19 @@ exports.exists = function (req, res) {
     res.status(500).send('missing parameters id');
   }
 }
+
+exports.findByName = function (req, res) {
+  if (req.params.name) {
+    Team.getTeamByName(req.params.name).then(function (Team) {
+      res.send(Team)
+    }).catch(function (e) {
+      res.status(500).send(e);
+    })
+  } else {
+    res.status(500).send('missing parameters id');
+  }
+}
+
 
 exports.find = function (req, res) {
   if (req.params.id) {

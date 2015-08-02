@@ -7,11 +7,11 @@ module.exports = function(Sequelize, DataTypes) {
       unique : true
     },
     slogan: { type : DataTypes.STRING(60) },
-    level: { type : DataTypes.INTEGER },
-    exp: { type : DataTypes.INTEGER },
+    level: { type : DataTypes.INTEGER, defaultValue: 1 },
+    xp: { type : DataTypes.INTEGER, defaultValue: 0 },
     maxmember: { type : DataTypes.INTEGER },
-    recruit: { type : DataTypes.BOOLEAN},
-    hidden: { type : DataTypes.BOOLEAN}
+    recruit: { type : DataTypes.BOOLEAN, defaultValue: true},
+    visible: { type : DataTypes.BOOLEAN, defaultValue: true}
   },
   {
    associate: function (models) {

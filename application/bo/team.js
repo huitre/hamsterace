@@ -30,7 +30,7 @@ TeamsModel.prototype.populateTeams = function (rows) {
         name : row.name,
         slogan : row.slogan,
         recruit : row.recruit,
-        visible : !row.hidden,
+        visible : row.visible,
         max : row.max,
         members : self.populateTeamMembers(row.TeamMembers)
       });
@@ -82,14 +82,19 @@ TeamsModel.prototype.populateTeamMembers = function (rows) {
  */
 
 TeamsModel.prototype.createTeam = function (User, team) {
-  team.exp = 0;
+  team.xp = 0;
   team.level = 1;
+
+  if (team.visible == null)
+    team.visible = true;
+  if (team.recruit == null)
+    team.recruit = true;
 
   return new Promise (function (fullfill, reject) {
     var Team = Db.Team.build(team).save().then(function (team) {
       var TeamMember = Db.TeamMember.create({
             confirmed : true,
-            status : 'admin',
+            status : 'owner',
             PersonId : User.id,
             TeamId : team.id
           }).then(function (teamMember) {
@@ -172,14 +177,15 @@ TeamsModel.prototype.getTeams = function (offset, where) {
   var self = this;
 
   offset = offset || {from : 30, to : 0};
-  where = where || {hidden: false};
+  where = where || {visible: true};
 
   return new Promise (function (fullfill, reject) {
     Db.Team.findAll({
       include : [{
         model : Db.TeamMember,
-        attributes : ['status'],
+        attributes : ['status', 'xp'],
         where : {confirmed : true},
+        order : ['id'],
         include : [{
           model: Db.Person,
           attributes : ['id'],
@@ -195,7 +201,7 @@ TeamsModel.prototype.getTeams = function (offset, where) {
             }]
           }]
         }],
-        limit : 5
+        limit : 30
       }],
       limit : offset.from,
       offset : offset.to,
@@ -208,6 +214,29 @@ TeamsModel.prototype.getTeams = function (offset, where) {
   });
 }
 
+TeamsModel.prototype.getMine = function (user) {
+  var self = this;
+
+  return new Promise(function(fulfill, reject) {
+    Db.TeamMember.findOne({
+      where : {
+        PersonId : user.id,
+        confirmed : true
+      }
+    }).then(function (TeamMember) {
+      if (TeamMember)
+        return fulfill(self.getTeam(TeamMember.TeamId))
+      else
+        fulfill(null)
+    })
+  })
+}
+
+/**
+ * 
+ * @params teamID Id of a Team
+ * @return Promise with all teams found
+ */
 TeamsModel.prototype.getTeam = function (teamID) {
   return this.getTeams(0, {id : teamID})
 }
@@ -232,11 +261,7 @@ TeamsModel.prototype.nameExists = function (teamName) {
  * @return Promise with all teams found
  */
 TeamsModel.prototype.getTeamByName = function (teamName) { 
-  return Db.Team.findAll({
-    where : {
-      name : { ilike : '%' + teamName + '%' }
-    }
-  })
+  return this.getTeams({from: 5, to: 0}, {name : { ilike : '%' + teamName + '%' }})
 }
 
 TeamsModel.prototype.getTeamMember = function (userId, teamId) {

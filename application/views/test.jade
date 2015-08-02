@@ -50,9 +50,10 @@ block content
             input(type='range' name='max' max='1000')
           p
             label visible:
-            input(type='checkbox' name='hidden')
+            input(type='checkbox' name='visible' selected='selected')
           p
             input(type='submit', value='create team')
+  if team
     fieldset
       legend team delete
       form(action='/team/delete', method='post' target='_blank')

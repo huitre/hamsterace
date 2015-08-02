@@ -178,13 +178,15 @@ exports.init = function init (router) {
 
   // get requests
   router.get('/team', Team.index);
+  router.get('/team/mine', Team.mine);
   router.get('/team/:id', Team.find);
   router.get('/team/:id/members', Team.members.get);
   router.get('/team/:id/request', Team.request.get);
   router.get('/team/:id/stats', Team.stats);
   router.get('/team/:id/badges', Team.badges);
   router.get('/team/:id/wall', Team.wall);
-  router.get('/team/exists/:name', Team.wall);
+  router.get('/team/exists/:name', Team.exists);
+  router.get('/team/by/:name', Team.findByName);
 
   // post requests
   router.post('/team', Team.create);
