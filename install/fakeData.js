@@ -30,7 +30,52 @@ var FakeData = (function () {
 
 
   this.populateTeams = function () {
-    
+    var teams = [{"name":"Id Erat Etiam Corporation","slogan":"lorem lorem, luctus ut, pellentesque eget,","level":2,"xp":14,"maxmember":26,"recruit":"true","visible":"true"},
+    {"name":"Morbi LLC","slogan":"amet, faucibus ut, nulla. Cras eu tellus eu augue porttitor","level":1,"xp":99,"maxmember":90,"recruit":"true","visible":"true"},
+    {"name":"Nec Institute","slogan":"est ac mattis semper, dui lectus rutrum","level":2,"xp":53,"maxmember":81,"recruit":"true","visible":"true"},
+    {"name":"Pharetra Industries","slogan":"Proin dolor. Nulla semper tellus","level":4,"xp":48,"maxmember":54,"recruit":"true","visible":"true"},
+    {"name":"Eget Laoreet Posuere Institute","slogan":"sed dui. Fusce","level":2,"xp":95,"maxmember":45,"recruit":"true","visible":"true"},
+    {"name":"Dictum Placerat Incorporated","slogan":"ornare placerat, orci lacus vestibulum lorem, sit amet","level":4,"xp":46,"maxmember":16,"recruit":"true","visible":"true"},
+    {"name":"Id Corp.","slogan":"interdum. Curabitur dictum.","level":10,"xp":65,"maxmember":50,"recruit":"true","visible":"true"},
+    {"name":"Mattis Velit Associates","slogan":"dolor. Fusce mi lorem, vehicula et, rutrum","level":2,"xp":81,"maxmember":74,"recruit":"true","visible":"true"},
+    {"name":"Blandit Congue Corp.","slogan":"nostra, per inceptos hymenaeos. Mauris ut quam vel sapien","level":10,"xp":13,"maxmember":79,"recruit":"true","visible":"true"},
+    {"name":"Cursus Limited","slogan":"risus. Nulla eget metus eu erat","level":2,"xp":22,"maxmember":34,"recruit":"true","visible":"true"},
+    {"name":"Phasellus Nulla Integer Corporation","slogan":"ornare lectus justo eu arcu. Morbi sit amet","level":8,"xp":61,"maxmember":78,"recruit":"true","visible":"true"},
+    {"name":"Imperdiet Ornare Consulting","slogan":"Donec sollicitudin adipiscing ligula. Aenean gravida nunc sed pede.","level":4,"xp":7,"maxmember":68,"recruit":"true","visible":"true"},
+    {"name":"Tincidunt Aliquam Arcu Company","slogan":"ligula tortor, dictum eu, placerat eget, venenatis a,","level":10,"xp":81,"maxmember":38,"recruit":"true","visible":"true"},
+    {"name":"Integer Sem Foundation","slogan":"imperdiet ornare. In faucibus. Morbi vehicula. Pellentesque tincidunt tempus risus.","level":4,"xp":74,"maxmember":48,"recruit":"true","visible":"true"},
+    {"name":"Odio Auctor Company","slogan":"a, auctor non, feugiat nec,","level":1,"xp":64,"maxmember":50,"recruit":"true","visible":"true"},
+    {"name":"Mattis Company","slogan":"hymenaeos. Mauris ut quam vel sapien imperdiet ornare. In faucibus.","level":5,"xp":93,"maxmember":29,"recruit":"true","visible":"true"}];
+
+    Db.Team.bulkCreate(teams).then(function () {
+      var makeOwners = function (TeamId, PersonId) {
+        var owners = [{
+          confirmed : true,
+          status : 'owner',
+          PersonId : PersonId,
+          TeamId : TeamId
+        }]
+
+        for (var i = PersonId + 1; i < 15; i++) {
+          owners.push({
+            confirmed : true,
+            status : 'member',
+            PersonId : i,
+            TeamId : TeamId
+          })
+        }
+        return owners
+      }, teamOwners;
+
+      teamOwners = makeOwners(1,1);
+      Db.TeamMember.bulkCreate(teamOwners).then(function () {
+        for (var i = 1; i < teams.length; i++) {
+          teamOwners = makeOwners(i, i + 15);
+          Db.TeamMember.bulkCreate(teamOwners)
+        }
+      })
+
+    })
   }
 
   this.populateDevice = function () {

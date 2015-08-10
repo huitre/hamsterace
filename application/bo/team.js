@@ -31,6 +31,9 @@ TeamsModel.prototype.populateTeams = function (rows) {
         slogan : row.slogan,
         recruit : row.recruit,
         visible : row.visible,
+        level : row.level,
+        nextlevel : Math.ceil(row.level * 10 * Math.pow(1.3, row.level + 1)),
+        xp : row.xp,
         max : row.max,
         members : self.populateTeamMembers(row.TeamMembers)
       });
@@ -53,10 +56,14 @@ TeamsModel.prototype.populateTeamMembers = function (rows) {
             id : row.Person.id,
             type : row.Person.type,
             status : row.status,
+            xp : row.xp,
+            level : row.level,
+            pcxp : row.xp / Math.ceil(row.level * 10 * Math.pow(1.3, row.level + 1)) * 100,
+            nxp : Math.ceil(row.level * 10 * Math.pow(1.3, row.level + 1)),
             confirmed : row.confirmed,
             gender : row.Person.PersonDetail.gender,
             age : row.Person.PersonDetail.age,
-            updatedAt : row.Person.updatedAt,
+            createdAt : row.updatedAt,
             firstname : row.Person.PersonDetail.firstname,
             name : row.Person.PersonDetail.name,
             avatar : {
@@ -224,9 +231,17 @@ TeamsModel.prototype.getMine = function (user) {
         confirmed : true
       }
     }).then(function (TeamMember) {
-      if (TeamMember)
-        return fulfill(self.getTeam(TeamMember.TeamId))
-      else
+      if (TeamMember) {
+        self.getTeam(TeamMember.TeamId).then(function (Team) {
+          if (!Team)
+            fulfill(null);
+          Team = Team.pop();
+          self.getTeamMembers(Team.id).then(function (Members) {
+            Team.members = Members;
+            return fulfill(Team);
+          })
+        })
+      } else
         fulfill(null)
     })
   })

@@ -6,7 +6,7 @@ module.exports = function(Sequelize, DataTypes) {
       type : DataTypes.STRING(60),
       unique : true
     },
-    slogan: { type : DataTypes.STRING(60) },
+    slogan: { type : DataTypes.STRING(150) },
     level: { type : DataTypes.INTEGER, defaultValue: 1 },
     xp: { type : DataTypes.INTEGER, defaultValue: 0 },
     maxmember: { type : DataTypes.INTEGER },

@@ -14,7 +14,7 @@ var PersonModel = (function () {
     var friends = [],
         populate = function (row) {
           friends.push({
-            id : row.FriendId,
+            id : row.FriendId || row.id,
             type : row.type,
             gender : row.Friend.PersonDetail.gender,
             age : row.Friend.PersonDetail.age,
@@ -29,6 +29,32 @@ var PersonModel = (function () {
       rows.map(populate)
     else 
       populate(rows)
+    
+    return friends;
+  }
+
+  this.populatePerson = function (rows) {
+    var friends = [],
+        populate = function (row) {
+          friends.push({
+            id : row.id,
+            type : row.type,
+            email : row.email,
+            gender : row.PersonDetail.gender,
+            age : row.PersonDetail.age,
+            updatedAt : row.updatedAt,
+            firstname : row.PersonDetail.firstname,
+            name : row.PersonDetail.name,
+            avatar : row.Avatar.Image
+          });
+        }
+
+    if (rows.hasOwnProperty('length')) 
+      rows.map(populate)
+    else {
+      populate(rows)
+      friends = friends.pop();
+    }
     
     return friends;
   }
@@ -54,6 +80,11 @@ var PersonModel = (function () {
       where : where,
       include : [{
         model: Db.PersonDetails
+      },{
+        model : Db.Avatar,
+        include : [{
+          model: Db.Image
+        }]
       }]
     }).spread(function (User) {
       if (!User.PersonDetail || User.PersonDetail.length < 1) {
@@ -64,7 +95,7 @@ var PersonModel = (function () {
         })
         User.setPersonDetail(details);
       }
-      return done(null, User);
+      return done(null, self.populatePerson(User));
     }).catch(function (err) {
       return done(err, false);
     });
