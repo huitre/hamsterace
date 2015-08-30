@@ -28,7 +28,21 @@ exports.init = function init (router) {
   router.get('/test', function (req, res) {
     var boperson = require('../bo/person'),
         boteam = require('../bo/team'),
+        boAuth = require('../bo/auth'),
         team;
+
+    var signature = boAuth.makeStringToSign({
+          route : {
+            post : 'GET'
+          },
+          headers : {
+            "content-type" : null,
+          },
+          rawBody : "this is the body content",
+          date : 'Mon, 26 Mar 2007 19:37:58 +0000'
+        });
+
+    console.log(signature, boAuth.makeSignature("4242", signature));
 
     boperson.getAll().then(function (users) {
       boteam.getTeam(1).then(function (_team) {
@@ -45,6 +59,8 @@ exports.init = function init (router) {
         })
       })
     })
+
+
 
   })
 
